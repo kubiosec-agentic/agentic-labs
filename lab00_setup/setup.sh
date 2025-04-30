@@ -1,0 +1,17 @@
+## Setting up host
+sudo apt-get update
+sudo apt-get install -y jq net-tools curl git wget vim
+
+## Install Python 3.11 and pip
+sudo add-apt-repository ppa:deadsnakes/ppa -y
+sudo apt-get install -y python3.11
+sudo apt-get install -y python3-pip
+
+## Install Docker
+curl -fsSL https://get.docker.com -o get-docker.sh
+sudo sh ./get-docker.sh 
+sudo groupadd docker
+sudo usermod -aG docker $USER
+newgrp docker
+sudo systemctl enable docker.service
+sudo systemctl enable containerd.service
