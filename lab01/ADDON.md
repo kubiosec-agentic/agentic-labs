@@ -3,46 +3,7 @@
 curl https://api.openai.com/v1/responses \
   -H "Authorization: Bearer $OPENAI_API_KEY" \
   -H "Content-Type: application/json" \
-  -d '{
-    "model": "gpt-4o-2024-08-06",
-    "input": [
-      {
-        "role": "system",
-        "content": "You are a helpful math tutor. Guide the user through the solution step by step."
-      },
-      {
-        "role": "user",
-        "content": "how can I solve 8x + 7 = -23"
-      }
-    ],
-    "text": {
-      "format": {
-        "type": "json_schema",
-        "name": "math_reasoning",
-        "schema": {
-          "type": "object",
-          "properties": {
-            "steps": {
-              "type": "array",
-              "items": {
-                "type": "object",
-                "properties": {
-                  "explanation": { "type": "string" },
-                  "output": { "type": "string" }
-                },
-                "required": ["explanation", "output"],
-                "additionalProperties": false
-              }
-            },
-            "final_answer": { "type": "string" }
-          },
-          "required": ["steps", "final_answer"],
-          "additionalProperties": false
-        },
-        "strict": true
-      }
-    }
-  }' 
+  -d @request2.json
 ```
 #### Response
 ```
