@@ -12,7 +12,7 @@ curl "https://api.openai.com/v1/responses" \
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $OPENAI_API_KEY" \
     -d '{
-        "model": "gpt-4.1",
+        "model": "gpt-4o",
         "input": "what are important breakthrough of ai in 2025?"
     }'
 ```
@@ -21,7 +21,7 @@ curl "https://api.openai.com/v1/responses" \
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $OPENAI_API_KEY" \
     -d '{
-        "model": "gpt-4.1",
+        "model": "gpt-4o",
         "input": "what are important breakthrough of ai in 2025?"
     }' | 
 jq -r . 
@@ -31,7 +31,7 @@ curl "https://api.openai.com/v1/responses" \
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $OPENAI_API_KEY" \
     -d '{
-        "model": "gpt-4.1",
+        "model": "gpt-4o",
         "tools": [{"type": "web_search_preview"}],
         "input": "what are important breakthrough of ai in 2025?"
     }' |
@@ -43,7 +43,7 @@ curl "https://api.openai.com/v1/responses" \
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $OPENAI_API_KEY" \
     -d '{
-        "model": "gpt-4.1",
+        "model": "gpt-4o",
         "tools": [{"type": "web_search_preview"}],
         "input": "what are important breakthrough of ai in 2025?",
         "stream": true
