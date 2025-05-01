@@ -3,7 +3,7 @@
 curl https://api.openai.com/v1/responses \
   -H "Authorization: Bearer $OPENAI_API_KEY" \
   -H "Content-Type: application/json" \
-  -d @request2.json
+  -d @request.json
 ```
 #### Response
 ```
@@ -105,7 +105,7 @@ curl https://api.openai.com/v1/responses \
 curl https://api.openai.com/v1/responses \
   -H "Authorization: Bearer $OPENAI_API_KEY" \
   -H "Content-Type: application/json" \
-  -d @request2.json \
+  -d @request.json \
 | jq -r '.output[].content[0].text' | jq -r .
 ```
 ```
