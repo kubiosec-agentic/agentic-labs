@@ -1,4 +1,4 @@
-#### Structered output
+#### Structered output (Response API)
 ```
 curl https://api.openai.com/v1/responses \
   -H "Authorization: Bearer $OPENAI_API_KEY" \
@@ -42,8 +42,9 @@ curl https://api.openai.com/v1/responses \
         "strict": true
       }
     }
-  }'
+  }' | jq -r '.output[].content[0].text' | jq -r .
 ```
+#### Response
 ```
 {
   "id": "resp_68131eb1af348191a020244d610d16a702e30b622906548d",
@@ -136,5 +137,32 @@ curl https://api.openai.com/v1/responses \
   },
   "user": null,
   "metadata": {}
+}
+```
+#### Add some `jq` 
+```
+| jq -r '.output[].content[0].text' | jq -r .
+```
+```
+{
+  "steps": [
+    {
+      "explanation": "Start by isolating the term with the variable. We need to get rid of the constant on the left side of the equation.",
+      "output": "8x + 7 - 7 = -23 - 7"
+    },
+    {
+      "explanation": "Simplify both sides of the equation. The left side becomes just the term with the variable, and the right side simplifies to a new constant.",
+      "output": "8x = -30"
+    },
+    {
+      "explanation": "To solve for x, divide both sides by the coefficient of x.",
+      "output": "x = -30 / 8"
+    },
+    {
+      "explanation": "Simplify the fraction on the right side of the equation to get the final value for x.",
+      "output": "x = -15/4 or x = -3.75"
+    }
+  ],
+  "final_answer": "x = -15/4 or x = -3.75"
 }
 ```
