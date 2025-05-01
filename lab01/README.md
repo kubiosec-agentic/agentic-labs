@@ -60,7 +60,7 @@ curl https://api.openai.com/v1/chat/completions \
     "presence_penalty": 0
   }' 
 ```
-### `jq` to the rescue
+#### `jq` to the rescue
 ```
 curl https://api.openai.com/v1/chat/completions \
   -H "Content-Type: application/json" \
@@ -145,7 +145,7 @@ curl https://api.openai.com/v1/chat/completions \
     "presence_penalty": 0
   }' | jq '.choices[0].message.content'
 ```
-### Attaching request.json
+#### Attaching request.json
 ```
 curl https://api.openai.com/v1/chat/completions \
   -H "Content-Type: application/json" \
@@ -162,7 +162,7 @@ curl -XPOST "https://api.openai.com/v1/responses" \
         "input": "what are important breakthrough of ai in 2025?"
     }'
 ```
-### `jq` to the rescue
+#### `jq` to the rescue
 ```
 curl -XPOST "https://api.openai.com/v1/responses" \
     -H "Content-Type: application/json" \
@@ -173,6 +173,7 @@ curl -XPOST "https://api.openai.com/v1/responses" \
     }' | 
 jq -r . 
 ```
+#### Adding `web_search_preview`
 ```
 curl -XPOST "https://api.openai.com/v1/responses" \
     -H "Content-Type: application/json" \
@@ -195,7 +196,63 @@ curl -XPOST "https://api.openai.com/v1/responses" \
     }' |
 jq -r '.output[] | select(.type == "message") | .content[] | select(.type == "output_text") | {text: .text, links: [.annotations[]?.url]}'
 ```
-### Streaming
+#### Image analysis
+```
+curl https://api.openai.com/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $OPENAI_API_KEY" \
+  -d '{
+    "model": "gpt-4o",
+    "messages": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "image_url",
+            "image_url": {
+              "url": "https://hpr.com/wp-content/uploads/2023/08/LP_USA_California_passenger-600x348.jpg"
+            }
+          },
+          {
+            "type": "text",
+            "text": "Extract the license plate. Only answer with the license plate number as a string."
+          }
+        ]
+      }
+    ],
+    "temperature": 1,
+    "max_tokens": 100
+  }' | jq -r .
+```
+Try this ;-)
+```
+curl https://api.openai.com/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $OPENAI_API_KEY" \
+  -d '{
+    "model": "gpt-4o",
+    "messages": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "image_url",
+            "image_url": {
+              "url": "https://i.sstatic.net/Iodjt.jpg"
+            }
+          },
+          {
+            "type": "text",
+            "text": "Extract the license plate. Only answer with the license plate number as a string."
+          }
+        ]
+      }
+    ],
+    "temperature": 1,
+    "max_tokens": 100
+  }' | jq -r .
+```
+#### Streaming
 ```
 curl -XPOST "https://api.openai.com/v1/responses" \
     -H "Content-Type: application/json" \
