@@ -8,6 +8,7 @@ export OPENAPI_API_KEY="xxxxxxxxx"
 ```
 ## Lab instructions
 ### OpenAI Chat Commpletion
+#### Simple textbook example
 ```
 curl https://api.openai.com/v1/chat/completions \
   -H "Content-Type: application/json" \
@@ -27,6 +28,7 @@ curl https://api.openai.com/v1/chat/completions \
     ]
   }'
 ```
+#### Adding a System prompt
 ```
 curl https://api.openai.com/v1/chat/completions \
   -H "Content-Type: application/json" \
@@ -94,6 +96,7 @@ curl https://api.openai.com/v1/chat/completions \
     "presence_penalty": 0
   }' | jq '.choices[0].message.content'
 ```
+#### Continuing the conversation
 ```
 curl https://api.openai.com/v1/chat/completions \
   -H "Content-Type: application/json" \
