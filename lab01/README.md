@@ -60,6 +60,7 @@ curl https://api.openai.com/v1/chat/completions \
     "presence_penalty": 0
   }' 
 ```
+### `jq` to the rescue
 ```
 curl https://api.openai.com/v1/chat/completions \
   -H "Content-Type: application/json" \
@@ -144,6 +145,7 @@ curl https://api.openai.com/v1/chat/completions \
     "presence_penalty": 0
   }'
 ```
+### Attaching request.json
 ```
 curl https://api.openai.com/v1/chat/completions \
   -H "Content-Type: application/json" \
