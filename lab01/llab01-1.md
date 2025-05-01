@@ -6,9 +6,10 @@ export OPENAPI_API_KEY="xxxxxxxxx"
 ```
 ./lab_Setup.sh
 ```
-## exercise 1
+## Lab instructions
+### Raw curl request
 ```
-curl "https://api.openai.com/v1/responses" \
+curl -XPOST "https://api.openai.com/v1/responses" \
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $OPENAI_API_KEY" \
     -d '{
@@ -16,8 +17,9 @@ curl "https://api.openai.com/v1/responses" \
         "input": "what are important breakthrough of ai in 2025?"
     }'
 ```
+### jq to the rescue
 ```
-curl "https://api.openai.com/v1/responses" \
+curl -XPOST "https://api.openai.com/v1/responses" \
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $OPENAI_API_KEY" \
     -d '{
@@ -27,7 +29,7 @@ curl "https://api.openai.com/v1/responses" \
 jq -r . 
 ```
 ```
-curl "https://api.openai.com/v1/responses" \
+curl -XPOST "https://api.openai.com/v1/responses" \
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $OPENAI_API_KEY" \
     -d '{
@@ -39,7 +41,7 @@ jq -r '.output[] | select(.type == "message") | .content[] | select(.type == "ou
 ```
 ### Streaming
 ```
-curl "https://api.openai.com/v1/responses" \
+curl -XPOST "https://api.openai.com/v1/responses" \
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $OPENAI_API_KEY" \
     -d '{
