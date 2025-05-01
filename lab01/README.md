@@ -4,7 +4,7 @@
 export OPENAPI_API_KEY="xxxxxxxxx"
 ```
 ```
-./lab_Setup.sh
+./lab_setup.sh
 ```
 ## Lab instructions
 ### OpenAI Chat Commpletion
@@ -267,4 +267,8 @@ curl -XPOST "https://api.openai.com/v1/responses" \
         "input": "what are important breakthrough of ai in 2025?",
         "stream": true
     }' 
+```
+## Cleanup environment
+```
+./lab_cleanup.sh
 ```
