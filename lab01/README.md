@@ -155,48 +155,7 @@ curl -XPOST https://api.openai.com/v1/chat/completions \
   -H "Authorization: Bearer $OPENAI_API_KEY" \
   -d @request.json
 ```
-### OpenAI Resonses API
-#### Simple textbook example
-```
-curl -XPOST "https://api.openai.com/v1/responses" \
-    -H "Content-Type: application/json" \
-    -H "Authorization: Bearer $OPENAI_API_KEY" \
-    -d '{
-        "model": "gpt-4o",
-        "input": "what are important breakthrough of ai in 2025?"
-    }'
-```
-#### `jq` to the rescue
-```
-curl -XPOST "https://api.openai.com/v1/responses" \
-    -H "Content-Type: application/json" \
-    -H "Authorization: Bearer $OPENAI_API_KEY" \
-    -d '{
-        "model": "gpt-4o",
-        "input": "what are important breakthrough of ai in 2025?"
-    }' | jq -r . 
-```
-#### Adding `web_search_preview`
-```
-curl -XPOST "https://api.openai.com/v1/responses" \
-    -H "Content-Type: application/json" \
-    -H "Authorization: Bearer $OPENAI_API_KEY" \
-    -d '{
-        "model": "gpt-4o",
-        "tools": [{"type": "web_search_preview"}],
-        "input": "what are important breakthrough of ai in 2025?"
-    }' | jq -r '.output[].content[0].text'
-```
-```
-curl -XPOST "https://api.openai.com/v1/responses" \
-    -H "Content-Type: application/json" \
-    -H "Authorization: Bearer $OPENAI_API_KEY" \
-    -d '{
-        "model": "gpt-4o",
-        "tools": [{"type": "web_search_preview"}],
-        "input": "what are important breakthrough of ai in 2025?"
-    }' | jq -r '.output[] | select(.type == "message") | .content[] | select(.type == "output_text") | {text: .text, links: [.annotations[]?.url]}'
-```
+
 #### Image analysis
 ```
 curl -XPOST https://api.openai.com/v1/chat/completions \
@@ -252,17 +211,6 @@ curl https://api.openai.com/v1/chat/completions \
     "temperature": 1,
     "max_tokens": 100
   }' | jq -r .
-```
-#### Streaming
-```
-curl -XPOST "https://api.openai.com/v1/responses" \
-    -H "Content-Type: application/json" \
-    -H "Authorization: Bearer $OPENAI_API_KEY" \
-    -d '{
-        "model": "gpt-4o",
-        "input": "what are important breakthrough of ai?",
-        "stream": true
-    }' 
 ```
 ## Cleanup environment
 ```
