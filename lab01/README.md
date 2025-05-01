@@ -156,6 +156,7 @@ curl https://api.openai.com/v1/chat/completions \
   -d @request.json
 ```
 ### OpenAI Resonses API
+#### Simple textbook example
 ```
 curl -XPOST "https://api.openai.com/v1/responses" \
     -H "Content-Type: application/json" \
