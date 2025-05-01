@@ -8,6 +8,7 @@ export OPENAPI_API_KEY="xxxxxxxxx"
 ```
 ## Lab instructions
 ### OpenAI Chat Commpletion
+https://platform.openai.com/docs/api-reference/chat
 #### Simple textbook example
 ```
 curl -XPOST https://api.openai.com/v1/chat/completions \
