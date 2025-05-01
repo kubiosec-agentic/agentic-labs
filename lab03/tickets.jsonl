@@ -1,0 +1,3 @@
+{ "item": { "ticket_text": "My monitor won't turn on!", "correct_label": "Hardware" } }
+{ "item": { "ticket_text": "I'm in vim and I can't quit!", "correct_label": "Software" } }
+{ "item": { "ticket_text": "Best restaurants in Cleveland?", "correct_label": "Other" } }
