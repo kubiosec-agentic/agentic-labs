@@ -260,8 +260,7 @@ curl -XPOST "https://api.openai.com/v1/responses" \
     -H "Authorization: Bearer $OPENAI_API_KEY" \
     -d '{
         "model": "gpt-4o",
-        "tools": [{"type": "web_search_preview"}],
-        "input": "what are important breakthrough of ai in 2025?",
+        "input": "what are important breakthrough of ai?",
         "stream": true
     }' 
 ```
