@@ -10,7 +10,7 @@ export OPENAPI_API_KEY="xxxxxxxxx"
 ### OpenAI Chat Commpletion
 #### Simple textbook example
 ```
-curl https://api.openai.com/v1/chat/completions \
+curl -XPOST https://api.openai.com/v1/chat/completions \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $OPENAI_API_KEY" \
   -d '{
@@ -30,7 +30,7 @@ curl https://api.openai.com/v1/chat/completions \
 ```
 #### Adding a System prompt
 ```
-curl https://api.openai.com/v1/chat/completions \
+curl -XPOST https://api.openai.com/v1/chat/completions \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $OPENAI_API_KEY" \
   -d '{
@@ -64,7 +64,7 @@ curl https://api.openai.com/v1/chat/completions \
 ```
 #### `jq` to the rescue
 ```
-curl https://api.openai.com/v1/chat/completions \
+curl -XPOST https://api.openai.com/v1/chat/completions \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $OPENAI_API_KEY" \
   -d '{
@@ -98,7 +98,7 @@ curl https://api.openai.com/v1/chat/completions \
 ```
 #### Continuing the conversation
 ```
-curl https://api.openai.com/v1/chat/completions \
+curl -XPOST https://api.openai.com/v1/chat/completions \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $OPENAI_API_KEY" \
   -d '{
@@ -150,7 +150,7 @@ curl https://api.openai.com/v1/chat/completions \
 ```
 #### Attaching request.json
 ```
-curl https://api.openai.com/v1/chat/completions \
+curl -XPOST https://api.openai.com/v1/chat/completions \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $OPENAI_API_KEY" \
   -d @request.json
@@ -202,7 +202,7 @@ jq -r '.output[] | select(.type == "message") | .content[] | select(.type == "ou
 ```
 #### Image analysis
 ```
-curl https://api.openai.com/v1/chat/completions \
+curl -XPOST https://api.openai.com/v1/chat/completions \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $OPENAI_API_KEY" \
   -d '{
