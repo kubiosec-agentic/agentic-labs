@@ -93,6 +93,12 @@ curl https://api.openai.com/v1/chat/completions \
     "presence_penalty": 0
   }' | jq '.choices[0].message.content'
 ```
+```
+curl https://api.openai.com/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $OPENAI_API_KEY" \
+  -d @request.json
+```
 ### OpenAI Resonses API
 ```
 curl -XPOST "https://api.openai.com/v1/responses" \
