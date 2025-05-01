@@ -17,7 +17,7 @@ curl -XPOST "https://api.openai.com/v1/responses" \
         "input": "what are important breakthrough of ai in 2025?"
     }'
 ```
-### jq to the rescue
+### `jq` to the rescue
 ```
 curl -XPOST "https://api.openai.com/v1/responses" \
     -H "Content-Type: application/json" \
