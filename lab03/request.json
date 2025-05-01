@@ -10,13 +10,12 @@
             },
             {
                 "role": "user",
-                "content": "\{\{ item.ticket_text \}\}"
+                "content": "{{item.ticket_text}}"
             }
         ],
         "source": {
             "type": "file_id",
-            "id": "file-EsrvPZ76WpsACkuVkyWoPq"
+            "id": "file-1oM8YwafbLk6yxQiM87moj"
         }
     }
 }
-

@@ -250,7 +250,7 @@ curl https://api.openai.com/v1/files \
 ```
 #### Creating an eval run
 ```
-curl https://api.openai.com/v1/evals/eval_eval_6813e552ae1c8190a96990dbdf42cbf0/runs \
+curl https://api.openai.com/v1/evals/eval_6813e552ae1c8190a96990dbdf42cbf0/runs \
     -H "Authorization: Bearer $OPENAI_API_KEY" \
     -H "Content-Type: application/json" \
     -d @request.json
