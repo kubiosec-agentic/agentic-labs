@@ -8,6 +8,7 @@ export OPENAPI_API_KEY="xxxxxxxxx"
 ```
 ## Lab instructions
 ### OpenAI Resonses API
+https://platform.openai.com/docs/api-reference/responses
 #### Simple textbook example
 ```
 curl -XPOST "https://api.openai.com/v1/responses" \
