@@ -11,7 +11,7 @@ if [ -f "requirements.txt" ]; then
     source $LAB/bin/activate
     pip3 install -r requirements.txt
     echo "================================================================================"
-    echo "Use \033[31msource $LAB/bin/activate\033[0m to activate the virtual environment"
+    echo -e "Use \033[31msource $LAB/bin/activate\033[0m to activate the virtual environment"
     echo "================================================================================"
 else
     echo "================================================================================"
@@ -21,5 +21,5 @@ fi
 echo "$LAB setup complete"
 
 echo "================================================================================"
-echo "Don't forget the export your OPENAI API key \033[31mexport OPENAI_API_KEY=\"xxxxxxxxx\"\033[0m to activate the virtual environment"
+echo -e "Don't forget the export your OPENAI API key \033[31mexport OPENAI_API_KEY=\"xxxxxxxxx\"\033[0m to activate the virtual environment"
 echo "================================================================================"

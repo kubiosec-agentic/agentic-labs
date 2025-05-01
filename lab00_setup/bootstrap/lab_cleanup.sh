@@ -5,5 +5,5 @@ echo "Cleaning up $LAB environment"
 echo "================================================================================"
 rm -rf $LAB
 echo "================================================================================"
-echo "Cleanup complete. Run \033[31mdeactivate\033[0m to deactivate the virtual environment"
+echo -e "Cleanup complete. Run \033[31mdeactivate\033[0m to deactivate the virtual environment"
 echo "================================================================================"
