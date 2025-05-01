@@ -7,7 +7,93 @@ export OPENAPI_API_KEY="xxxxxxxxx"
 ./lab_Setup.sh
 ```
 ## Lab instructions
-### Raw curl request
+### OpenAI Chat Commpletion
+```
+curl https://api.openai.com/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $OPENAI_API_KEY" \
+  -d '{
+    "model": "gpt-4o",
+    "messages": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "text",
+            "text": "What is AI"
+          }
+        ]
+      }
+    ]
+  }'
+```
+```
+curl https://api.openai.com/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $OPENAI_API_KEY" \
+  -d '{
+    "model": "gpt-4o",
+    "messages": [
+      {
+        "role": "system",
+        "content": [
+          {
+            "type": "text",
+            "text": "You are a helpful assistant"
+          }
+        ]
+      },
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "text",
+            "text": "What is AI"
+          }
+        ]
+      }
+    ],
+    "temperature": 1,
+    "max_tokens": 2048,
+    "top_p": 1,
+    "frequency_penalty": 0,
+    "presence_penalty": 0
+  }' 
+```
+```
+curl https://api.openai.com/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $OPENAI_API_KEY" \
+  -d '{
+    "model": "gpt-4o",
+    "messages": [
+      {
+        "role": "system",
+        "content": [
+          {
+            "type": "text",
+            "text": "You are a helpful assistant"
+          }
+        ]
+      },
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "text",
+            "text": "What is AI"
+          }
+        ]
+      }
+    ],
+    "temperature": 1,
+    "max_tokens": 2048,
+    "top_p": 1,
+    "frequency_penalty": 0,
+    "presence_penalty": 0
+  }' | jq '.choices[0].message.content'
+```
+### OpenAI Resonses API
 ```
 curl -XPOST "https://api.openai.com/v1/responses" \
     -H "Content-Type: application/json" \
