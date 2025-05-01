@@ -42,7 +42,7 @@ curl https://api.openai.com/v1/responses \
         "strict": true
       }
     }
-  }' | jq -r '.output[].content[0].text' | jq -r .
+  }' 
 ```
 #### Response
 ```
