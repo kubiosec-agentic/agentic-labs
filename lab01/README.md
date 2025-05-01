@@ -174,8 +174,7 @@ curl -XPOST "https://api.openai.com/v1/responses" \
     -d '{
         "model": "gpt-4o",
         "input": "what are important breakthrough of ai in 2025?"
-    }' | 
-jq -r . 
+    }' | jq -r . 
 ```
 #### Adding `web_search_preview`
 ```
