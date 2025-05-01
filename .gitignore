@@ -1,4 +1,7 @@
 lab*/.lab*
+lab*/lab_cleanup.sh
+lab*/lab_setup.sh
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
