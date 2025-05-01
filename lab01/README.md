@@ -143,7 +143,7 @@ curl https://api.openai.com/v1/chat/completions \
     "top_p": 1,
     "frequency_penalty": 0,
     "presence_penalty": 0
-  }'
+  }' | jq '.choices[0].message.content'
 ```
 ### Attaching request.json
 ```
