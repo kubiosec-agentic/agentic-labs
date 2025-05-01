@@ -102,6 +102,10 @@ curl https://api.openai.com/v1/responses \
 ```
 #### Add some `jq` 
 ```
+curl https://api.openai.com/v1/responses \
+  -H "Authorization: Bearer $OPENAI_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d @request2.json \
 | jq -r '.output[].content[0].text' | jq -r .
 ```
 ```
