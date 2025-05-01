@@ -38,6 +38,6 @@ curl "https://api.openai.com/v1/responses" \
         "input": "what are important breakthrough of ai in 2025?",
         "parallel_tool_calls": true,
         "store": false,
-        "stream": false
+        "stream": true
     }' | jq -r '.output[] | select(.type == "message") | .content[] | select(.type == "output_text") | {text: .text, links: [.annotations[]?.url]}'
 ```
