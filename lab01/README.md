@@ -185,8 +185,7 @@ curl -XPOST "https://api.openai.com/v1/responses" \
         "model": "gpt-4o",
         "tools": [{"type": "web_search_preview"}],
         "input": "what are important breakthrough of ai in 2025?"
-    }'
-| jq -r '.output[].content[0].text'
+    }' | jq -r '.output[].content[0].text'
 ```
 ```
 curl -XPOST "https://api.openai.com/v1/responses" \
