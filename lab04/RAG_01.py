@@ -30,17 +30,22 @@ else:
     storage_context = StorageContext.from_defaults(persist_dir=PERSIST_DIR)
     index = load_index_from_storage(storage_context, embed_model=embed_model)
 
-# Create query engine based on whether LLM is used
+ # Create a query engine based on whether we want LLM-generated answers or just retrieval
 if USE_LLM:
-    llm = OpenAI(model="gpt-4o")  # You can use gpt-4 or gpt-3.5-turbo instead
+    # Use OpenAI's GPT model to synthesize a natural-language answer from the retrieved documents
+    # You can choose different models like "gpt-4", "gpt-3.5-turbo", or the faster "gpt-4o"
+    llm = OpenAI(model="gpt-4o")
+    # Create a query engine that retrieves the top-2 most relevant documents
+    # and uses the specified LLM to generate a full-text response
     query_engine = index.as_query_engine(similarity_top_k=2, llm=llm)
-else:
-    retriever = VectorIndexRetriever(index=index, similarity_top_k=2)
-    query_engine = RetrieverQueryEngine(retriever=retriever)
 
-# Query the index
-query = "what is MCP ?"
-response = query_engine.query(query)
+else:
+    # Skip LLMs — use pure vector search only
+    # This means the user will see only the most similar document chunks without a generated answer
+    # Create a retriever to fetch top-2 similar document chunks based on vector similarity
+    retriever = VectorIndexRetriever(index=index, similarity_top_k=2)
+    # Create a lightweight query engine that just returns the raw documents
+    query_engine = RetrieverQueryEngine(retriever=retriever)
 
 # --- Structured output ---
 # 1. Retrieved documents (always available in .source_nodes)
