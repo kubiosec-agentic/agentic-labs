@@ -308,6 +308,16 @@ EVALRUN=$(curl https://api.openai.com/v1/evals/eval_68148c0b34088190a6cf38e705e1
 ```
 echo $EVALRUN
 ```
+```
+Update `request.json` manually or run 
+```
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  sed -i '' 's/"id": *"[^"]*"/"id": "'"$FILEID"'"/' request.json
+else
+  sed -i 's/"id": *"[^"]*"/"id": "'"$FILEID"'"/' request.json
+fi
+```
+```
 Complete example response
 ```
 {
@@ -364,13 +374,14 @@ Complete example response
 ```
 #### Get the results
 ```
-
-```
-```
-curl https://api.openai.com/v1/evals/$EVAL/runs/$echo $EVALRUN \
+REPORTURL=$(curl https://api.openai.com/v1/evals/$EVAL/runs/$echo $EVALRUN \
     -H "Authorization: Bearer $OPENAI_API_KEY" \
-    -H "Content-Type: application/json"
+    -H "Content-Type: application/json" | jq -r .id)
 ```
+```
+echo $REPORTURL
+```
+Complete example response
 ```
 {
   "object": "eval.run",
