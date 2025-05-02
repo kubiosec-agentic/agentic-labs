@@ -65,7 +65,7 @@ curl https://api.openai.com/v1/responses \
       "vector_store_ids": ["'$VS_ID'"]
     }],
     "input": "What are the differentiating features of MCP?"
-  }'
+  }' | jq -r '.output[].content[0].text'
 ```
 
 <details>
