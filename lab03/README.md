@@ -310,7 +310,7 @@ Complete example response
 </details>
 
 #### Run Evaluation
-Update `request.json` manually or run
+Update `request.json` manually with the FILEID or run
 ```
 if [[ "$OSTYPE" == "darwin"* ]]; then
   sed -i '' 's/"id": *"[^"]*"/"id": "'"$FILEID"'"/' request.json
