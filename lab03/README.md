@@ -315,8 +315,6 @@ EVALRUN=$(curl https://api.openai.com/v1/evals/eval_68148c0b34088190a6cf38e705e1
 ```
 echo $EVALRUN
 ```
-
-```
 Complete example response
 ```
 {
