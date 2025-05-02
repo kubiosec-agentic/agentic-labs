@@ -62,6 +62,11 @@ export OPENAI_BASE_URL="http://127.0.0.1:8080/v1"
 ```
 python3 Tools_05.py
 ```
+#### Optional for hackers
+Modify `Tools_04.py`
+```
+llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0, base_url="http://127.0.0.1:8080/v1")
+```
 
 ## Cleanup environment
 ```
