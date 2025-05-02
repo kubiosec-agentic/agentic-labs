@@ -373,7 +373,7 @@ Complete example response
 ```
 REPORTURL=$(curl https://api.openai.com/v1/evals/$EVAL/runs/$EVALRUN \
     -H "Authorization: Bearer $OPENAI_API_KEY" \
-    -H "Content-Type: application/json" | jq -r .id)
+    -H "Content-Type: application/json" | jq -r .report_url)
 ```
 ```
 echo $REPORTURL
