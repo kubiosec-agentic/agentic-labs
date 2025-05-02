@@ -35,12 +35,15 @@ echo $VS_ID
 ```
 File upload
 ```
-FILE_ID =$(curl https://api.openai.com/v1/files \
+FILE_ID=$(curl https://api.openai.com/v1/files \
   -H "Authorization: Bearer $OPENAI_API_KEY" \
-  -F purpose="fine-tune" \
-  -F file="@data/llms-full.txt")
+  -F purpose="assistants" \
+  -F file="@data/llms-full.txt" | jq -r .id)
 ```
-Link the file to the vector store
+```
+echo $FILE_ID
+```
+Link the file to the vector store (This can take a few seconds)
 ```
 curl https://api.openai.com/v1/vector_stores/$VS_ID/files \
     -H "Authorization: Bearer $OPENAI_API_KEY" \
@@ -58,7 +61,7 @@ curl https://api.openai.com/v1/responses \
     "model": "gpt-4.1",
     "tools": [{
       "type": "file_search",
-      "vector_store_ids": ["$VS_ID"],
+      "vector_store_ids": ["$'VS_ID'"],
       "max_num_results": 20
     }],
     "input": "What are the differentiating features of MCP?"
