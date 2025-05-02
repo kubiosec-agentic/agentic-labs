@@ -289,6 +289,11 @@ FILEID=$(curl https://api.openai.com/v1/files \
 ```
 echo $FILEID
 ```
+<details>
+<summary>
+Complete example response
+</summary>
+
 Complete example response
 ```
 {
@@ -303,6 +308,7 @@ Complete example response
   "status_details": null
 }
 ```
+</details>
 
 #### Run Evaluation
 Update `request.json` manually or run
@@ -322,6 +328,11 @@ EVALRUN=$(curl https://api.openai.com/v1/evals/$EVAL/runs \
 ```
 echo $EVALRUN
 ```
+<details>
+<summary>
+Complete example response
+</summary>
+
 Complete example response
 ```
 {
@@ -376,6 +387,8 @@ Complete example response
   "shared_with_openai": false
 }
 ```
+
+</details>
 #### Get the results
 ```
 REPORTURL=$(curl https://api.openai.com/v1/evals/$EVAL/runs/$EVALRUN \
@@ -385,7 +398,11 @@ REPORTURL=$(curl https://api.openai.com/v1/evals/$EVAL/runs/$EVALRUN \
 ```
 echo $REPORTURL
 ```
+<details>
+<summary>
 Complete example response
+</summary>
+
 ```
 {
   "object": "eval.run",
@@ -454,6 +471,8 @@ Complete example response
   "shared_with_openai": false
 }
 ```
+
+</details>
 ## Cleanup environment
 ```
 ./lab_cleanup.sh
