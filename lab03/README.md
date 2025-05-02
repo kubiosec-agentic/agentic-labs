@@ -318,7 +318,7 @@ else
   sed -i 's/"id": *"[^"]*"/"id": "'"$FILEID"'"/' request.json
 fi
 ```
-The dvaluation is described in `request.json`
+The evaluation is described in `request.json`
 ```
 {
     "name": "Categorization text run",
