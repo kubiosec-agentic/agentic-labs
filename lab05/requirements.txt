@@ -1,0 +1,6 @@
+openai
+logging
+langchain-core
+langchain-community
+langchain_openai
+langchain_experimental
