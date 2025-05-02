@@ -25,7 +25,7 @@ curl https://api.openai.com/v1/chat/completions \
                 "content": "My monitor wont turn on - help!"
             }
         ]
-    }' | jq -r .id
+    }'
 ```
 #### Creating an eval
 ```
