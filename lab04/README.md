@@ -33,7 +33,7 @@ VS_ID=$(curl https://api.openai.com/v1/vector_stores \
 ```
 echo $VS_ID
 ```
-File upload
+File upload OpenAI (purpose `assistants`)
 ```
 FILE_ID=$(curl https://api.openai.com/v1/files \
   -H "Authorization: Bearer $OPENAI_API_KEY" \
