@@ -69,3 +69,8 @@ curl -XPOST https://api.openai.com/v1/chat/completions \
     "frequency_penalty": 0,
     "presence_penalty": 0
   }' | jq '.choices[0].message.content'
+```
+```
+"Positive"
+"Negative"
+```
