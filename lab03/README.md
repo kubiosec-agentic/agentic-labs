@@ -25,7 +25,7 @@ curl https://api.openai.com/v1/chat/completions \
                 "content": "My monitor wont turn on - help!"
             }
         ]
-    }'
+    }' | jq -r .id
 ```
 #### Creating an eval
 ```
@@ -233,7 +233,7 @@ curl https://api.openai.com/v1/evals \
 curl https://api.openai.com/v1/files \
   -H "Authorization: Bearer $OPENAI_API_KEY" \
   -F purpose="evals" \
-  -F file="@tickets.jsonl"
+  -F file="@tickets.jsonl" | jq -r .id
 ```
 ```
 {
@@ -246,53 +246,6 @@ curl https://api.openai.com/v1/files \
   "expires_at": null,
   "status": "processed",
   "status_details": null
-}
-```
-#### Creating an eval run
-```
-curl https://api.openai.com/v1/evals/eval_eval_6813e552ae1c8190a96990dbdf42cbf0/runs \
-    -H "Authorization: Bearer $OPENAI_API_KEY" \
-    -H "Content-Type: application/json" \
-    -d @request.json
-
-
-```
-```
-{
-  "id": "chatcmpl-BSVEe2Oigm2M3k4hBZC00NRFiq9W0",
-  "object": "chat.completion",
-  "created": 1746132952,
-  "model": "gpt-4o-2024-08-06",
-  "choices": [
-    {
-      "index": 0,
-      "message": {
-        "role": "assistant",
-        "content": "Hardware",
-        "refusal": null,
-        "annotations": []
-      },
-      "logprobs": null,
-      "finish_reason": "stop"
-    }
-  ],
-  "usage": {
-    "prompt_tokens": 35,
-    "completion_tokens": 2,
-    "total_tokens": 37,
-    "prompt_tokens_details": {
-      "cached_tokens": 0,
-      "audio_tokens": 0
-    },
-    "completion_tokens_details": {
-      "reasoning_tokens": 0,
-      "audio_tokens": 0,
-      "accepted_prediction_tokens": 0,
-      "rejected_prediction_tokens": 0
-    }
-  },
-  "service_tier": "default",
-  "system_fingerprint": "fp_a6889ffe71"
 }
 ```
 
