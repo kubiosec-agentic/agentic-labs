@@ -84,7 +84,7 @@ def llm(user_question):
 
 
 # Run test prompt
-functionarg, answer = llm("Create an SQL query to update the price of the blue pen")
+functionarg, answer = llm("Create an SQL query to update the price of the blue pen to 5 dollars")
 
 # Output
 if functionarg and answer:
