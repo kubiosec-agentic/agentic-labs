@@ -371,7 +371,7 @@ Complete example response
 ```
 #### Get the results
 ```
-REPORTURL=$(curl https://api.openai.com/v1/evals/$EVAL/runs/$echo $EVALRUN \
+REPORTURL=$(curl https://api.openai.com/v1/evals/$EVAL/runs/$EVALRUN \
     -H "Authorization: Bearer $OPENAI_API_KEY" \
     -H "Content-Type: application/json" | jq -r .id)
 ```
