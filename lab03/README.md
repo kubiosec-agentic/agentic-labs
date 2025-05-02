@@ -101,9 +101,11 @@ EVAL=$(curl https://api.openai.com/v1/evals \
 ```
 echo $EVAL
 ```
-Complete example response
 <details>
-```
+<summary>
+Complete example response
+</summary>
+    ```
 {
   "object": "eval",
   "id": "eval_6813e1235630819094b3646a860de26f",
@@ -274,6 +276,7 @@ Complete example response
 }
 ```
 </details>
+
 #### Uploading the test data
 ```
 FILEID=$(curl https://api.openai.com/v1/files \
