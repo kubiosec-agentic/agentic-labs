@@ -18,7 +18,7 @@ base_prompt = hub.pull("langchain-ai/react-agent-template")
 prompt = base_prompt.partial(instructions=instructions)
 
 # Initialize the language model
-llm = ChatOpenAI(temperature=0)
+llm = ChatOpenAI(model="gpt-3.5-turbo-1106", temperature=0)
 
 # Create the agent
 agent = create_react_agent(llm=llm, tools=tools, prompt=prompt)
@@ -27,5 +27,5 @@ agent = create_react_agent(llm=llm, tools=tools, prompt=prompt)
 agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
 
 # Example usage
-response = agent_executor.invoke({"input": "What is the sqrt of 12345567 divided by 3"})
+response = agent_executor.invoke({"input": "Can you multiply 5 and 6 and 8 and take sqrt of the result?"})
 print(response)
