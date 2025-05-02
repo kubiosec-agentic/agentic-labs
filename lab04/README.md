@@ -15,6 +15,11 @@ python3 ./RAG_01.py
 ```
 python3 ./RAG_02.py
 ```
+#### Example 3: RAG based search using Chroma and Langchain
+```
+python3 ./RAG_02.py
+```
+
 ## Cleanup environment
 ```
 ./lab_cleanup.sh
