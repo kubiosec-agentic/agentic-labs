@@ -4,3 +4,6 @@ llama_index.core
 llama-index-embeddings-openai
 llama-index-llms-openai
 langchain-chroma
+langchain-core
+langchain-community
+langchain_openai
