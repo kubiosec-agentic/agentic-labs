@@ -8,6 +8,7 @@ export OPENAPI_API_KEY="xxxxxxxxx"
 ```
 ## Lab instructions
 ### Evals
+A textbook example
 #### Create an request
 ```
 curl https://api.openai.com/v1/chat/completions \
@@ -27,9 +28,49 @@ curl https://api.openai.com/v1/chat/completions \
         ]
     }'
 ```
-#### Creating an eval
+A textbook response
 ```
-curl https://api.openai.com/v1/evals \
+{
+  "id": "chatcmpl-BSiptlaw3aGt5e6WhLe1fFtMNkgtD",
+  "object": "chat.completion",
+  "created": 1746185233,
+  "model": "gpt-4.1-2025-04-14",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "Hardware",
+        "refusal": null,
+        "annotations": []
+      },
+      "logprobs": null,
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 35,
+    "completion_tokens": 2,
+    "total_tokens": 37,
+    "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "audio_tokens": 0
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 0,
+      "audio_tokens": 0,
+      "accepted_prediction_tokens": 0,
+      "rejected_prediction_tokens": 0
+    }
+  },
+  "service_tier": "default",
+  "system_fingerprint": "fp_7439084672"
+}
+```
+#### Creating an eval
+How can we evaluate the responses ?
+```
+EVAL=$(curl https://api.openai.com/v1/evals \
     -H "Authorization: Bearer $OPENAI_API_KEY" \
     -H "Content-Type: application/json" \
     -d '{
@@ -55,9 +96,12 @@ curl https://api.openai.com/v1/evals \
                 "reference": "{{ item.correct_label }}"
             }
         ]
-    }'  | jq -r .id
+    }'  | jq -r .id)
 ```
-
+```
+echo $EVAL
+```
+Complete example response
 ```
 {
   "object": "eval",
@@ -230,11 +274,15 @@ curl https://api.openai.com/v1/evals \
 ```
 #### Uploading the test data
 ```
-curl https://api.openai.com/v1/files \
+FILEID=$(curl https://api.openai.com/v1/files \
   -H "Authorization: Bearer $OPENAI_API_KEY" \
   -F purpose="evals" \
-  -F file="@tickets.jsonl" | jq -r .id
+  -F file="@tickets.jsonl" | jq -r .id)
 ```
+```
+echo $FILEID
+```
+Complete example response
 ```
 {
   "object": "file",
@@ -249,13 +297,18 @@ curl https://api.openai.com/v1/files \
 }
 ```
 
+
 #### Run Evaluation
 ```
-url https://api.openai.com/v1/evals/eval_68148c0b34088190a6cf38e705e1ddbf/runs \
+EVALRUN=$(curl https://api.openai.com/v1/evals/eval_68148c0b34088190a6cf38e705e1ddbf/runs \
   -H "Authorization: Bearer $OPENAI_API_KEY" \
   -H "Content-Type: application/json" \
-  -d @request.json | jq -r .id
+  -d @request.json | jq -r .id)
 ```
+```
+echo $EVALRUN
+```
+Complete example response
 ```
 {
   "object": "eval.run",
@@ -311,7 +364,10 @@ url https://api.openai.com/v1/evals/eval_68148c0b34088190a6cf38e705e1ddbf/runs \
 ```
 #### Get the results
 ```
-curl https://api.openai.com/v1/evals/eval_68148f1f19788190b23bd7f696b4cbb8/runs/evalrun_68148f7e68688190baf81ad26e979d79 \
+
+```
+```
+curl https://api.openai.com/v1/evals/$EVAL/runs/$echo $EVALRUN \
     -H "Authorization: Bearer $OPENAI_API_KEY" \
     -H "Content-Type: application/json"
 ```
