@@ -33,5 +33,7 @@ curl -XPOST https://api.openai.com/v1/chat/completions \
   }' | jq '.choices[0].message.content'
 ```
 ```
-"\"The children were so excited about the surprise that they started to farduddle in the living room.\""
+"The children were so excited about the news that they started to farduddle in the living room."
+"During the festival, the children were so excited that they couldn't help but farduddle in the grass."
+"The children were so excited about the carnival that they couldn't help but farduddle with joy."
 ```
