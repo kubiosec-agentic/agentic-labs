@@ -7,8 +7,14 @@ export OPENAPI_API_KEY="xxxxxxxxx"
 ./lab_setup.sh
 ```
 ## Lab instructions
-### xxxx
-xxxxxx
+### Langchain agent without tool support
+```
+python3 Tools_01.py
+```
+### Langchain agent with tool support
+```
+python3 Tools_02.py
+```
 ## Cleanup environment
 ```
 ./lab_cleanup.sh
