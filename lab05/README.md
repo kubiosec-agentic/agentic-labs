@@ -38,6 +38,31 @@ curl -XPOST http://127.0.0.1:5000/v1/chat/completions  \
     ]
   }'
 ```
+### Langchain agent with Wikipedia support
+```
+python3 Tools_04.py
+```
+### Openai with custom tools support
+```
+python3 Tools_05.py
+```
+### Openai with custom tools support DEEPDIVE
+```
+docker run --rm -it \
+    -v ~/.mitmproxy:/home/mitmproxy/.mitmproxy \
+    -p 8080:8080 \
+    -p 127.0.0.1:8081:8081 \
+    mitmproxy/mitmproxy mitmweb \
+        --web-host 0.0.0.0 \
+        --mode reverse:https://api.openai.com:443
+```
+```
+export OPENAI_BASE_URL="http://127.0.0.1:8080/v1"
+```
+```
+python3 Tools_05.py
+```
+
 ## Cleanup environment
 ```
 ./lab_cleanup.sh
