@@ -55,6 +55,7 @@ curl https://api.openai.com/v1/vector_stores/$VS_ID/files \
 ```
 <details>
 <summary> Optionally add a pdf </summary>
+
 ```
 curl -o ./data/attention.pdf https://arxiv.org/pdf/1706.03762
 ```
@@ -79,6 +80,7 @@ curl https://api.openai.com/v1/vector_stores/$VS_ID/files \
   }'
 ```
 </details>
+
 Query the responses API
 ```
 curl https://api.openai.com/v1/responses \
