@@ -474,6 +474,7 @@ Complete example response
 ```
 
 </details>
+
 ## Cleanup environment
 ```
 ./lab_cleanup.sh
