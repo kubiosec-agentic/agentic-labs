@@ -1,23 +1,30 @@
-from langchain_openai import ChatOpenAI 
-from langchain.agents import initialize_agent
-from langchain.agents import AgentType
-from langchain.agents import AgentExecutor
+from langchain.agents import AgentExecutor, create_react_agent
 from langchain_experimental.tools import PythonREPLTool
+from langchain_openai import ChatOpenAI
+from langchain import hub
 
-import os
+import warnings
+warnings.filterwarnings("ignore")
 
-# Load the OPENAI_API_KEY from the environment
-openai_api_key = os.getenv('OPENAI_API_KEY')
+# Initialize the Python REPL tool
+tools = []
 
+# Define instructions for the agent
+instructions = """You are an agent designed to answer mathematical questions."""
 
-# tools = load_tools(["python_repl"])
-tools = [PythonREPLTool()]
+# Load a prompt template from LangChain Hub
+base_prompt = hub.pull("langchain-ai/react-agent-template")
+prompt = base_prompt.partial(instructions=instructions)
 
-# Only certain models support this
+# Initialize the language model
 llm = ChatOpenAI(model="gpt-3.5-turbo-1106", temperature=0)
 
-agent = initialize_agent (
-        tools, llm, agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION, verbose=True
-)
+# Create the agent
+agent = create_react_agent(llm=llm, tools=tools, prompt=prompt)
 
-agent.run("Can you multiply 5 and 6 and 8 and take sqrt of the result?")
+# Set up the agent executor
+agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
+
+# Example usage
+response = agent_executor.invoke({"input": "Can you multiply 5 and 6 and 8 and take sqrt of the result?"})
+print(response)
