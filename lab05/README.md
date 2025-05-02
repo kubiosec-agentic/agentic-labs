@@ -22,7 +22,7 @@ python3 ./Tools_03.py
 ```
 curl -XPOST http://127.0.0.1:5000/v1/chat/completions  \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer $OPENAI_API_KEY" \
+  -H "Authorization: Bearer xxxxxxxxxx" \
   -d '{
     "model": "gpt-4o",
     "messages": [
