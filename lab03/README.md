@@ -55,7 +55,7 @@ curl https://api.openai.com/v1/evals \
                 "reference": "{{ item.correct_label }}"
             }
         ]
-    }'
+    }'  | jq -r .id
 ```
 
 ```
