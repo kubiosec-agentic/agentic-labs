@@ -48,7 +48,7 @@ else:
     query_engine = RetrieverQueryEngine(retriever=retriever)
 
 # Query the index
-query = "what about attention in LLMs?"
+query = "what is MCP?"
 response = query_engine.query(query)
 
 # --- Structured output ---
