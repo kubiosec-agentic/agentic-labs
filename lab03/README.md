@@ -249,12 +249,12 @@ curl https://api.openai.com/v1/files \
 }
 ```
 
-#### Analyze
+#### Run Evaluation
 ```
 url https://api.openai.com/v1/evals/eval_68148c0b34088190a6cf38e705e1ddbf/runs \
   -H "Authorization: Bearer $OPENAI_API_KEY" \
   -H "Content-Type: application/json" \
-  -d @request.json
+  -d @request.json | jq -r .id
 ```
 ```
 {
@@ -279,6 +279,80 @@ url https://api.openai.com/v1/evals/eval_68148c0b34088190a6cf38e705e1ddbf/runs \
     "source": {
       "type": "file_id",
       "id": "file-8rn4wHqWo14MaSFZAjC1S3"
+    },
+    "input_messages": {
+      "type": "template",
+      "template": [
+        {
+          "type": "message",
+          "role": "developer",
+          "content": {
+            "type": "input_text",
+            "text": "You are an expert in categorizing IT support tickets. Given the support ticket below, categorize the request into one of \"Hardware\", \"Software\", or \"Other\". Respond with only one of those words."
+          }
+        },
+        {
+          "type": "message",
+          "role": "user",
+          "content": {
+            "type": "input_text",
+            "text": "{{ item.ticket_text }}"
+          }
+        }
+      ]
+    },
+    "model": "gpt-4.1",
+    "sampling_params": null
+  },
+  "error": null,
+  "metadata": {},
+  "shared_with_openai": false
+}
+```
+#### Get the results
+```
+curl https://api.openai.com/v1/evals/eval_68148f1f19788190b23bd7f696b4cbb8/runs/evalrun_68148f7e68688190baf81ad26e979d79 \
+    -H "Authorization: Bearer $OPENAI_API_KEY" \
+    -H "Content-Type: application/json"
+```
+```
+{
+  "object": "eval.run",
+  "id": "evalrun_68148f7e68688190baf81ad26e979d79",
+  "eval_id": "eval_68148f1f19788190b23bd7f696b4cbb8",
+  "report_url": "https://platform.openai.com/evaluations/eval_68148f1f19788190b23bd7f696b4cbb8?project_id=proj_XxzlqLOnLi1bHLHQ1Ev5StfG&run_id=evalrun_68148f7e68688190baf81ad26e979d79",
+  "status": "completed",
+  "model": "gpt-4.1",
+  "name": "Categorization text run",
+  "created_at": 1746177918,
+  "result_counts": {
+    "total": 10,
+    "errored": 0,
+    "failed": 1,
+    "passed": 9
+  },
+  "per_model_usage": [
+    {
+      "model_name": "gpt-4.1-2025-04-14",
+      "invocation_count": 10,
+      "prompt_tokens": 583,
+      "completion_tokens": 20,
+      "total_tokens": 603,
+      "cached_tokens": 0
+    }
+  ],
+  "per_testing_criteria_results": [
+    {
+      "testing_criteria": "Match output to human label-3c7654c3-a890-474b-b547-4a656a741727",
+      "passed": 9,
+      "failed": 1
+    }
+  ],
+  "data_source": {
+    "type": "completions",
+    "source": {
+      "type": "file_id",
+      "id": "file-WhUVHwoc8MuWtoYZn9myXa"
     },
     "input_messages": {
       "type": "template",
