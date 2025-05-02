@@ -307,7 +307,7 @@ else
 fi
 ```
 ```
-EVALRUN=$(curl https://api.openai.com/v1/evals/eval_68148c0b34088190a6cf38e705e1ddbf/runs \
+EVALRUN=$(curl https://api.openai.com/v1/evals/$EVAL/runs \
   -H "Authorization: Bearer $OPENAI_API_KEY" \
   -H "Content-Type: application/json" \
   -d @request.json | jq -r .id)
