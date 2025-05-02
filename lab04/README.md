@@ -95,6 +95,7 @@ curl https://api.openai.com/v1/responses \
     "input": "What are the differentiating features of MCP?"
   }' | jq -r '.output[].content[0].text'
 ```
+Try another prompt, like "How can MCP influence attention in LLM reasoning?"
 
 <details>
 <summary> Sample Response </summary>
