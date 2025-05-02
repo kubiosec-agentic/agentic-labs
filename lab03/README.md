@@ -297,7 +297,6 @@ Complete example response
 }
 ```
 
-
 #### Run Evaluation
 Update `request.json` manually or run
 ```
@@ -306,6 +305,7 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 else
   sed -i 's/"id": *"[^"]*"/"id": "'"$FILEID"'"/' request.json
 fi
+```
 ```
 EVALRUN=$(curl https://api.openai.com/v1/evals/eval_68148c0b34088190a6cf38e705e1ddbf/runs \
   -H "Authorization: Bearer $OPENAI_API_KEY" \
