@@ -6,11 +6,11 @@ from langchain import hub
 import warnings
 warnings.filterwarnings("ignore")
 
-# Initialize the Python REPL tool
+# Initialize tools
 tools = []
 
 # Define instructions for the agent
-instructions = """You are an agent designed to answer mathematical questions."""
+instructions = """You are an agent designed to answer mathematical questions. Do not use tools"""
 
 # Load a prompt template from LangChain Hub
 base_prompt = hub.pull("langchain-ai/react-agent-template")
