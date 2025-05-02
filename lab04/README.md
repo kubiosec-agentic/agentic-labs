@@ -7,10 +7,15 @@ export OPENAPI_API_KEY="xxxxxxxxx"
 ./lab_setup.sh
 ```
 ## Lab instructions
-#### RAG based search using Llama-index
+#### Example 1: RAG based search using Llama-index and OpenAI
 ```
 python3 ./RAG_01.py
 ```
+#### Example 2: RAG based search using Chroma
+```
+python3 ./RAG_02.py
+```
+
 ## Cleanup environment
 ```
 ./lab_cleanup.sh
