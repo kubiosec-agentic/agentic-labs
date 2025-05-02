@@ -295,15 +295,67 @@ curl https://api.openai.com/v1/evals/eval_eval_6813e552ae1c8190a96990dbdf42cbf0/
   "system_fingerprint": "fp_a6889ffe71"
 }
 ```
-```
 
-```
 #### Analyze
-curl https://api.openai.com/v1/evals/eval_abc123/runs/evalrun_abc123 \
-    -H "Authorization: Bearer $OPENAI_API_KEY" \
-    -H "Content-Type: application/json"
-
-
+```
+url https://api.openai.com/v1/evals/eval_68148c0b34088190a6cf38e705e1ddbf/runs \
+  -H "Authorization: Bearer $OPENAI_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d @request.json
+```
+```
+{
+  "object": "eval.run",
+  "id": "evalrun_68148d1e89a08190bf5852498fcdb6db",
+  "eval_id": "eval_68148c0b34088190a6cf38e705e1ddbf",
+  "report_url": "https://platform.openai.com/evaluations/eval_68148c0b34088190a6cf38e705e1ddbf?project_id=proj_XxzlqLOnLi1bHLHQ1Ev5StfG&run_id=evalrun_68148d1e89a08190bf5852498fcdb6db",
+  "status": "queued",
+  "model": "gpt-4.1",
+  "name": "Categorization text run",
+  "created_at": 1746177311,
+  "result_counts": {
+    "total": 0,
+    "errored": 0,
+    "failed": 0,
+    "passed": 0
+  },
+  "per_model_usage": null,
+  "per_testing_criteria_results": null,
+  "data_source": {
+    "type": "completions",
+    "source": {
+      "type": "file_id",
+      "id": "file-8rn4wHqWo14MaSFZAjC1S3"
+    },
+    "input_messages": {
+      "type": "template",
+      "template": [
+        {
+          "type": "message",
+          "role": "developer",
+          "content": {
+            "type": "input_text",
+            "text": "You are an expert in categorizing IT support tickets. Given the support ticket below, categorize the request into one of \"Hardware\", \"Software\", or \"Other\". Respond with only one of those words."
+          }
+        },
+        {
+          "type": "message",
+          "role": "user",
+          "content": {
+            "type": "input_text",
+            "text": "{{ item.ticket_text }}"
+          }
+        }
+      ]
+    },
+    "model": "gpt-4.1",
+    "sampling_params": null
+  },
+  "error": null,
+  "metadata": {},
+  "shared_with_openai": false
+}
+```
 ## Cleanup environment
 ```
 ./lab_cleanup.sh
