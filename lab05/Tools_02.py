@@ -27,5 +27,5 @@ agent = create_react_agent(llm=llm, tools=tools, prompt=prompt)
 agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
 
 # Example usage
-response = agent_executor.invoke({"input": "What is the sqrt of 12345567?"})
+response = agent_executor.invoke({"input": "What is the sqrt of 12345567 divided by 3"})
 print(response)
