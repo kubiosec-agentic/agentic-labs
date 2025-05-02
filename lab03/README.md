@@ -294,7 +294,6 @@ echo $FILEID
 Complete example response
 </summary>
 
-Complete example response
 ```
 {
   "object": "file",
@@ -333,7 +332,6 @@ echo $EVALRUN
 Complete example response
 </summary>
 
-Complete example response
 ```
 {
   "object": "eval.run",
