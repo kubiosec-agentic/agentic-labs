@@ -47,6 +47,10 @@ else:
     # Create a lightweight query engine that just returns the raw documents
     query_engine = RetrieverQueryEngine(retriever=retriever)
 
+# Query the index
+query = "what about attention in LLMs?"
+response = query_engine.query(query)
+
 # --- Structured output ---
 # 1. Retrieved documents (always available in .source_nodes)
 print("\n📚 Retrieved Source Documents:\n")
