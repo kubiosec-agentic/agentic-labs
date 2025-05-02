@@ -53,6 +53,32 @@ curl https://api.openai.com/v1/vector_stores/$VS_ID/files \
       "file_id": "'$FILE_ID'"    
   }'
 ```
+<details>
+<summary> Optionally add a pdf </summary>
+```
+curl -o ./data/attention.pdf https://arxiv.org/pdf/1706.03762
+```
+File upload
+```
+FILE_ID=$(curl https://api.openai.com/v1/files \
+  -H "Authorization: Bearer $OPENAI_API_KEY" \
+  -F purpose="assistants" \
+  -F file="@data/attention.pdf" | jq -r .id)
+```
+```
+echo $FILE_ID
+```
+Link the file to the vector store (This can take a few seconds)
+```
+curl https://api.openai.com/v1/vector_stores/$VS_ID/files \
+    -H "Authorization: Bearer $OPENAI_API_KEY" \
+    -H "Content-Type: application/json" \
+    -H "OpenAI-Beta: assistants=v2" \
+    -d '{
+      "file_id": "'$FILE_ID'"    
+  }'
+```
+</details>
 Query the responses API
 ```
 curl https://api.openai.com/v1/responses \
