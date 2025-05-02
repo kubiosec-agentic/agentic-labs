@@ -17,7 +17,7 @@ base_prompt = hub.pull("langchain-ai/react-agent-template")
 prompt = base_prompt.partial(instructions=instructions)
 
 # Initialize the language model
-llm = ChatOpenAI(model="gpt-3.5-turbo-1106", temperature=0)
+llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0)
 
 # Create the agent
 agent = create_react_agent(llm=llm, tools=tools, prompt=prompt)
