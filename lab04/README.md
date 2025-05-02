@@ -7,7 +7,7 @@ export OPENAPI_API_KEY="xxxxxxxxx"
 ./lab_setup.sh
 ```
 ## Lab instructions
-#### RAG based search usin Llama-index
+#### RAG based search using Llama-index
 ```
 python3 ./RAG_01.py
 ```
