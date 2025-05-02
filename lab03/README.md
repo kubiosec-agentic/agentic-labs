@@ -318,6 +318,34 @@ else
   sed -i 's/"id": *"[^"]*"/"id": "'"$FILEID"'"/' request.json
 fi
 ```
+The avaluation is sescribed in `request.json`
+```
+{
+    "name": "Categorization text run",
+    "data_source": {
+      "type": "completions",
+      "model": "gpt-4.1",
+      "input_messages": {
+        "type": "template",
+        "template": [
+          {
+            "role": "developer",
+            "content": "You are an expert in categorizing IT support tickets. Given the support ticket below, categorize the request into one of \"Hardware\", \"Software\", or \"Other\". Respond with only one of those words."
+          },
+          {
+            "role": "user",
+            "content": "{{ item.ticket_text }}"
+          }
+        ]
+      },
+      "source": {
+        "type": "file_id",
+        "id": "file-xxxxxxxxx"
+      }
+    }
+  }
+```
+Run the evaluation
 ```
 EVALRUN=$(curl https://api.openai.com/v1/evals/$EVAL/runs \
   -H "Authorization: Bearer $OPENAI_API_KEY" \
