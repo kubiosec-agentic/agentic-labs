@@ -53,9 +53,7 @@ curl https://api.openai.com/v1/vector_stores/$VS_ID/files \
       "file_id": "'$FILE_ID'"    
   }'
 ```
-
-<summary> Sample Response </summary>
-<details>
+Query the responses API
 ```
 curl https://api.openai.com/v1/responses \
   -H "Content-Type: application/json" \
@@ -69,6 +67,10 @@ curl https://api.openai.com/v1/responses \
     "input": "What are the differentiating features of MCP?"
   }'
 ```
+
+<details>
+<summary> Sample Response </summary>
+  
 ```
 {
   "id": "resp_68150931fbf08191941ccd1dc614138202dc14dfaa548bfc",
