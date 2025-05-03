@@ -26,7 +26,7 @@ docker run -it -p 8501:8501 \
   /bin/bash -c "./start.sh & tail -f /dev/null"
 ```
 You can connect to `http://127.0.0.1:8501/`<br>
-### Optional
+### Optional (middleware function only)
 ```
 python3 ./Tools_03.py
 ```
