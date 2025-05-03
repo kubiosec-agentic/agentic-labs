@@ -19,10 +19,10 @@ Welcome to the lab and let's **#HACKTOLEARN** 🚀
 
 ## 🔐 Getting Access to the Lab via SSH
 
-Each lab environment runs in its own isolated container or virtual machine, accessible over SSH. Use the credentials provided to you and the following pattern to connect:
+Each lab student has access to a virtual machine, accessible over SSH. Use the credentials provided to you and use the following pattern to connect:
 
 ```bash
-ssh your-username@labXX.agentics.labs
+ssh -i lab.pem -L 8080:localhost:8080 -L 8081:localhost:8081 ubuntu@studentXX.labs.kubiosec.tech
 # Replace XX with the lab number, e.g., 01, 02, ..., 11
 ```
 
