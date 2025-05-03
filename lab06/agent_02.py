@@ -21,6 +21,7 @@ triage_agent = Agent(
 async def main():
     result = await Runner.run(triage_agent, input="Hola, ¿cómo estás?")
     print(result.final_output)
+    print(result)
     # ¡Hola! Estoy bien, gracias por preguntar. ¿Y tú, cómo estás?
 
 
