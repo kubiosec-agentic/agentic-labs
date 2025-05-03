@@ -36,7 +36,7 @@ Each lab is structured to gradually build your understanding and capabilities, f
 | [lab02](./lab02) | OpenAI - Responses API basics                     | curl, tools, structured output                     |
 | [lab03](./lab03) | Model evaluation                                | curl       |
 | [lab04](./lab04) | RAG                                             | python, RAG, chroma, llama-index, OpenAI VectorStore                |
-| [lab05](./lab05) | Tools                                           | python, langchain,                       |
+| [lab05](./lab05) | Tools                                           | python, langchain                       |
 | [lab06](./lab06) | xxxxxx                          | Planning, reactive vs. deliberative agents  |
 | [lab07](./lab07) | xxxxxxx                 | Rate-limiting, auth, API wrappers           |
 | [lab08](./lab08) | xxxxxxx      | Shell tool, command validation              |
