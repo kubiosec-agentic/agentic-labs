@@ -16,3 +16,34 @@ By the end, you'll not only know how to use AI—you'll know how to *engineer* i
 Let’s plug in, patch deep, and push the boundaries of what’s possible.
 
 Welcome to the lab and let's **#HACKTOLEARN** 🚀
+
+## 🔐 Getting Access to the Lab via SSH
+
+Each lab environment runs in its own isolated container or virtual machine, accessible over SSH. Use the credentials provided to you and the following pattern to connect:
+
+```bash
+ssh your-username@labXX.agentics.labs
+# Replace XX with the lab number, e.g., 01, 02, ..., 11
+```
+
+## 🧪 Lab Overview
+Each lab is structured to gradually build your understanding and capabilities—from basic API calls to full agent orchestration and security integration.
+
+| Lab | Focus Area                                      | Tools & Topics                              |
+|-----|-------------------------------------------------|---------------------------------------------|
+| [LAB01](./LAB01) | OpenAI API basics                               | curl, Python SDK, authentication            |
+| [LAB02](./LAB02) | Prompt engineering and completions              | Temperature, top_p, few-shot prompts        |
+| [LAB03](./LAB03) | Function calling                                | Structured output, schema definitions       |
+| [LAB04](./LAB04) | Tool use with OpenAI Agents SDK                 | Custom tools, observability                 |
+| [LAB05](./LAB05) | Intro to LangChain                              | Chains, tools, memory                       |
+| [LAB06](./LAB06) | Agent decision-making                           | Planning, reactive vs. deliberative agents  |
+| [LAB07](./LAB07) | Building secure agent endpoints                 | Rate-limiting, auth, API wrappers           |
+| [LAB08](./LAB08) | Integrating with system commands (safely!)      | Shell tool, command validation              |
+| [LAB09](./LAB09) | Custom tools & action feedback loops            | Toolkits, intermediate reasoning            |
+| [LAB10](./LAB10) | Agent evaluation and benchmarking               | Success metrics, reward shaping             |
+| [LAB11](./LAB11) | Multi-agent collaboration & orchestration       | Messaging, task splitting, autonomy levels  |
+
+---
+
+Each lab builds on the last—feel free to fork, hack, and explore beyond the tasks!
+
