@@ -9,13 +9,8 @@
 - The core principles behind **agentic systems** that plan, reason, and act
 - How to integrate AI agents into real-world workflows for **security**, **automation**, and **development**
 
----
-
-This is more than just a workshop—it's an exploration of how intelligent agents are transforming the way we build and secure systems.
-
+This is more than just a workshop, it's an exploration of how intelligent agents are transforming the way we build and secure systems.
 By the end, you'll not only know how to use AI—you'll know how to *engineer* it.
 
----
-
 **Let’s plug in, patch deep, and push the boundaries of what’s possible.**  
-Welcome to the lab.
+Welcome to the lab #HACKTOLEARN
