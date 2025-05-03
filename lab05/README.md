@@ -16,6 +16,17 @@ python3 Tools_01.py
 python3 Tools_02.py
 ```
 ### Small CTF
+Start the ChatBot
+```
+docker run -it -p 8501:8501 \
+  --rm \
+  -e OPENAI_API_KEY=$OPENAI_API_KEY \
+  --name demochatbox \
+  xxradar/mymadchatbox:v2  \
+  /bin/bash -c "./start.sh & tail -f /dev/null"
+```
+You can connect to `http://127.0.0.1:8501/`<br>
+### Optional
 ```
 python3 ./Tools_03.py
 ```
