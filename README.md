@@ -34,8 +34,8 @@ Each lab is structured to gradually build your understanding and capabilities, f
 |-----|-------------------------------------------------|---------------------------------------------|
 | [lab01](./lab01) | OpenAI - Chat completions basics              | curl, few-shot prompts, image analysis     |
 | [lab02](./lab02) | OpenAI - Responses API basics                     | curl, tools, structured output                     |
-| [lab03](./lab03) | Function calling                                | Structured output, schema definitions       |
-| [lab04](./lab04) | Tool use with OpenAI Agents SDK                 | Custom tools, observability                 |
+| [lab03](./lab03) | Model evaluation                                | curl       |
+| [lab04](./lab04) | RAG                                             | python, RAG                |
 | [lab05](./lab05) | Intro to LangChain                              | Chains, tools, memory                       |
 | [lab06](./lab06) | Agent decision-making                           | Planning, reactive vs. deliberative agents  |
 | [lab07](./lab07) | Building secure agent endpoints                 | Rate-limiting, auth, API wrappers           |
