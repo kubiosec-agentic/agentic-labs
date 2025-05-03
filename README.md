@@ -4,11 +4,13 @@
 
 ## 🔍 What You'll Learn
 
-- How to work directly with the **OpenAI API** and the new **Agents SDK**
+- How to work directly with the **OpenAI API Chat completion**, the brand new **OpenAI responses API** and the new **OpenAI Agents SDK**
 - How to build and chain intelligent agents using **LangChain** and custom tools
 - The core principles behind **agentic systems** that plan, reason, and act
 - How to integrate AI agents into real-world workflows for **security**, **automation**, and **development**
-
+- How to debug AI agents using **MITM proxy** and **tracing**
+- Security pitfalls and hacking challenges
+  
 This is more than just a workshop, it's an exploration of how intelligent agents are transforming the way we build and secure systems.
 By the end, you'll not only know how to use AI—you'll know how to *engineer* it.
 Let’s plug in, patch deep, and push the boundaries of what’s possible.
