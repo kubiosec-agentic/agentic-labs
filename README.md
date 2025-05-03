@@ -27,9 +27,6 @@ ssh your-username@labXX.agentics.labs
 ```
 
 ## 🧪 Lab Overview
-Each lab is structured to gradually build your understanding and capabilities—from basic API calls to full agent orchestration and security integration.
-
-## 🧪 Lab Overview: lab01 to lab11
 
 Each lab is structured to gradually build your understanding and capabilities—from basic API calls to full agent orchestration and security integration.
 
