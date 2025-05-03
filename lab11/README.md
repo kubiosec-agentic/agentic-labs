@@ -1,3 +1,16 @@
-for i in $(seq -w 0 11); do
-    cp ./bootstrap/* ../lab${i}/
-done
+# LAB10
+## Set up your environment
+```
+export OPENAPI_API_KEY="xxxxxxxxx"
+```
+```
+./lab_setup.sh
+```
+## Lab instructions
+### xxxxxxxx
+xxxxxxxx
+
+## Cleanup environment
+```
+./lab_cleanup.sh
+```
