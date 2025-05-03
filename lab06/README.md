@@ -19,7 +19,7 @@ python3 ./agent_02.py
 ```
 python3 ./agent_03.py
 ```
-## Agent and MCP
+## Agent and Guardrails
 ```
 python3 ./agent_04.py
 ```
