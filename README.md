@@ -37,12 +37,12 @@ Each lab is structured to gradually build your understanding and capabilities, f
 | [lab03](./lab03) | Model evaluation                                | curl       |
 | [lab04](./lab04) | RAG                                             | python, RAG, chroma, llama-index, OpenAI VectorStore                |
 | [lab05](./lab05) | Tools                                           | python, langchain                       |
-| [lab06](./lab06) | xxxxxx                          | Planning, reactive vs. deliberative agents  |
-| [lab07](./lab07) | xxxxxxx                 | Rate-limiting, auth, API wrappers           |
-| [lab08](./lab08) | xxxxxxx      | Shell tool, command validation              |
-| [lab09](./lab09) | xxxxxxx            | Toolkits, intermediate reasoning            |
-| [lab10](./lab10) | xxxxxxx               | Success metrics, reward shaping             |
-| [lab11](./lab11) | xxxxxxx      | Messaging, task splitting, autonomy levels  |
+| [lab06](./lab06) | OpenAI Agents SDK                          | python |
+| [lab07](./lab07) | MCP                 | python           |
+| [lab08](./lab08) | Agentic Fun      |python Autogen, CrewAI, A2A             |
+| [lab09](./lab09) | Enterprise graded Agents            | python, OAUTH           |
+| [lab10](./lab10) | xxxxxxx               | xxxxxxx             |
+| [lab11](./lab11) | xxxxxxx      | xxxxxxx  |
 
 Each labs has a different environment, feel free to fork, hack, and explore beyond the tasks!
 
