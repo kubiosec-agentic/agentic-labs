@@ -35,14 +35,14 @@ Each lab is structured to gradually build your understanding and capabilities, f
 | [lab01](./lab01) | OpenAI - Chat completions basics              | curl, few-shot prompts, image analysis     |
 | [lab02](./lab02) | OpenAI - Responses API basics                     | curl, tools, structured output                     |
 | [lab03](./lab03) | Model evaluation                                | curl       |
-| [lab04](./lab04) | RAG                                             | python, RAG                |
-| [lab05](./lab05) | Intro to LangChain                              | Chains, tools, memory                       |
-| [lab06](./lab06) | Agent decision-making                           | Planning, reactive vs. deliberative agents  |
-| [lab07](./lab07) | Building secure agent endpoints                 | Rate-limiting, auth, API wrappers           |
-| [lab08](./lab08) | Integrating with system commands (safely!)      | Shell tool, command validation              |
-| [lab09](./lab09) | Custom tools & action feedback loops            | Toolkits, intermediate reasoning            |
-| [lab10](./lab10) | Agent evaluation and benchmarking               | Success metrics, reward shaping             |
-| [lab11](./lab11) | Multi-agent collaboration & orchestration       | Messaging, task splitting, autonomy levels  |
+| [lab04](./lab04) | RAG                                             | python, RAG, chroma, llama-index                |
+| [lab05](./lab05) | Tools                                           | python, langchain,                       |
+| [lab06](./lab06) | xxxxxx                          | Planning, reactive vs. deliberative agents  |
+| [lab07](./lab07) | xxxxxxx                 | Rate-limiting, auth, API wrappers           |
+| [lab08](./lab08) | xxxxxxx      | Shell tool, command validation              |
+| [lab09](./lab09) | xxxxxxx            | Toolkits, intermediate reasoning            |
+| [lab10](./lab10) | xxxxxxx               | Success metrics, reward shaping             |
+| [lab11](./lab11) | xxxxxxx      | Messaging, task splitting, autonomy levels  |
 
 Each labs has a different environment, feel free to fork, hack, and explore beyond the tasks!
 
