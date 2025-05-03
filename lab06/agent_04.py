@@ -21,7 +21,7 @@ guardrail_agent = Agent(
     name="Guardrail check",
     instructions="Check if the output includes any math.",
     output_type=MathOutput,
-)
+    )
 
 @output_guardrail
 async def math_guardrail(ctx: RunContextWrapper, agent: Agent, output: MessageOutput) -> GuardrailFunctionOutput:
@@ -36,7 +36,7 @@ agent = Agent(
     instructions="You are a customer support agent. You help customers with their questions.",
     output_guardrails=[math_guardrail],
     output_type=MessageOutput,
-)
+    )
 
 async def main():
     # This should trip the guardrail
