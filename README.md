@@ -44,6 +44,5 @@ Each lab is structured to gradually build your understanding and capabilities—
 | [lab10](./lab10) | Agent evaluation and benchmarking               | Success metrics, reward shaping             |
 | [lab11](./lab11) | Multi-agent collaboration & orchestration       | Messaging, task splitting, autonomy levels  |
 
-
-Each lab builds on the last—feel free to fork, hack, and explore beyond the tasks!
+Each labs has a different environment, free to fork, hack, and explore beyond the tasks!
 
