@@ -29,21 +29,24 @@ ssh your-username@labXX.agentics.labs
 ## 🧪 Lab Overview
 Each lab is structured to gradually build your understanding and capabilities—from basic API calls to full agent orchestration and security integration.
 
+## 🧪 Lab Overview: lab01 to lab11
+
+Each lab is structured to gradually build your understanding and capabilities—from basic API calls to full agent orchestration and security integration.
+
 | Lab | Focus Area                                      | Tools & Topics                              |
 |-----|-------------------------------------------------|---------------------------------------------|
-| [LAB01](./LAB01) | OpenAI API basics                               | curl, Python SDK, authentication            |
-| [LAB02](./LAB02) | Prompt engineering and completions              | Temperature, top_p, few-shot prompts        |
-| [LAB03](./LAB03) | Function calling                                | Structured output, schema definitions       |
-| [LAB04](./LAB04) | Tool use with OpenAI Agents SDK                 | Custom tools, observability                 |
-| [LAB05](./LAB05) | Intro to LangChain                              | Chains, tools, memory                       |
-| [LAB06](./LAB06) | Agent decision-making                           | Planning, reactive vs. deliberative agents  |
-| [LAB07](./LAB07) | Building secure agent endpoints                 | Rate-limiting, auth, API wrappers           |
-| [LAB08](./LAB08) | Integrating with system commands (safely!)      | Shell tool, command validation              |
-| [LAB09](./LAB09) | Custom tools & action feedback loops            | Toolkits, intermediate reasoning            |
-| [LAB10](./LAB10) | Agent evaluation and benchmarking               | Success metrics, reward shaping             |
-| [LAB11](./LAB11) | Multi-agent collaboration & orchestration       | Messaging, task splitting, autonomy levels  |
+| [lab01](./lab01) | OpenAI API basics                               | curl, Python SDK, authentication            |
+| [lab02](./lab02) | Prompt engineering and completions              | Temperature, top_p, few-shot prompts        |
+| [lab03](./lab03) | Function calling                                | Structured output, schema definitions       |
+| [lab04](./lab04) | Tool use with OpenAI Agents SDK                 | Custom tools, observability                 |
+| [lab05](./lab05) | Intro to LangChain                              | Chains, tools, memory                       |
+| [lab06](./lab06) | Agent decision-making                           | Planning, reactive vs. deliberative agents  |
+| [lab07](./lab07) | Building secure agent endpoints                 | Rate-limiting, auth, API wrappers           |
+| [lab08](./lab08) | Integrating with system commands (safely!)      | Shell tool, command validation              |
+| [lab09](./lab09) | Custom tools & action feedback loops            | Toolkits, intermediate reasoning            |
+| [lab10](./lab10) | Agent evaluation and benchmarking               | Success metrics, reward shaping             |
+| [lab11](./lab11) | Multi-agent collaboration & orchestration       | Messaging, task splitting, autonomy levels  |
 
----
 
 Each lab builds on the last—feel free to fork, hack, and explore beyond the tasks!
 
