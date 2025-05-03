@@ -24,17 +24,14 @@ guardrail_agent = Agent(
 )
 
 @output_guardrail
-async def math_guardrail(  # (3)!
-    ctx: RunContextWrapper, agent: Agent, output: MessageOutput
-) -> GuardrailFunctionOutput:
+async def math_guardrail(ctx: RunContextWrapper, agent: Agent, output: MessageOutput) -> GuardrailFunctionOutput:
     result = await Runner.run(guardrail_agent, output.response, context=ctx.context)
-
     return GuardrailFunctionOutput(
         output_info=result.final_output,
         tripwire_triggered=result.final_output.is_math,
     )
 
-agent = Agent( # (4)!
+agent = Agent( 
     name="Customer support agent",
     instructions="You are a customer support agent. You help customers with their questions.",
     output_guardrails=[math_guardrail],
