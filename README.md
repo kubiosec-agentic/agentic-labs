@@ -32,7 +32,7 @@ Each lab is structured to gradually build your understanding and capabilities, f
 
 | Lab | Focus Area                                      | Tools & Topics                              |
 |-----|-------------------------------------------------|---------------------------------------------|
-| [lab01](./lab01) | OpenAI API Chat completions basics              | curl                                        |
+| [lab01](./lab01) | OpenAI API Chat completions basics              | curl, few-shot prompts, image analysis     |
 | [lab02](./lab02) | OpenAI API Responses basics                     | curl, few-shot prompts                      |
 | [lab03](./lab03) | Function calling                                | Structured output, schema definitions       |
 | [lab04](./lab04) | Tool use with OpenAI Agents SDK                 | Custom tools, observability                 |
