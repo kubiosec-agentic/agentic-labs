@@ -28,7 +28,7 @@ ssh -i lab.pem -L 8080:localhost:8080 -L 8081:localhost:8081 ubuntu@studentXX.la
 
 ## 🧪 Lab Overview
 
-Each lab is structured to gradually build your understanding and capabilities—from basic API calls to full agent orchestration and security integration.
+Each lab is structured to gradually build your understanding and capabilities, from basic API calls to full agent orchestration and security integration.
 
 | Lab | Focus Area                                      | Tools & Topics                              |
 |-----|-------------------------------------------------|---------------------------------------------|
