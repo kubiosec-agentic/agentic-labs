@@ -1,6 +1,5 @@
-import asyncio
 from agents import Agent, Runner, function_tool
-
+import asyncio
 
 @function_tool
 def get_weather(city: str) -> str:
@@ -12,7 +11,6 @@ agent = Agent(
     instructions="You are a helpful agent.",
     tools=[get_weather],
 )
-
 
 async def main():
     result = await Runner.run(agent, input="What's the weather in Tokyo?")
