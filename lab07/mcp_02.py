@@ -51,13 +51,6 @@ async def main():
 
 
 if __name__ == "__main__":
-    # Let's make sure the user has uv installed
-    if not shutil.which("uv"):
-        raise RuntimeError(
-            "uv is not installed. Please install it: https://docs.astral.sh/uv/getting-started/installation/"
-        )
-
-
     try:
         asyncio.run(main())
     finally:
