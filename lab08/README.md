@@ -15,6 +15,10 @@ python3 AG_01.py
 ```
 python3 AG_02.py
 ```
+### MultimodalWebSurfer
+```
+python3 AG_03.py
+```
 ### MagenticOne
 ```
 pip install "autogen-agentchat" "autogen-ext[magentic-one,openai]"
@@ -24,7 +28,7 @@ pip install "autogen-agentchat" "autogen-ext[magentic-one,openai]"
 playwright install --with-deps chromium
 ```
 ```
-python3 AG_03.py
+python3 AG_04.py
 ```
 ## Cleanup environment
 ```
