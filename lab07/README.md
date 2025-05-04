@@ -1,4 +1,7 @@
 # LAB07
+## List of MCP servers
+- https://github.com/docker/mcp-servers
+- 
 ## Set up your environment
 ```
 export OPENAPI_API_KEY="xxxxxxxxx"
