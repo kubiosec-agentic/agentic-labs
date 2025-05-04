@@ -42,6 +42,6 @@ async def main():
 
 if __name__ == "__main__":
     if not shutil.which("npx"):
-        raise RuntimeError("npx is not installed. Please install it with `xxxxxx`.")
+        raise RuntimeError("npx is not installed.")
 
     asyncio.run(main())
