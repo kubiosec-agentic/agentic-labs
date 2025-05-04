@@ -36,7 +36,7 @@ async def main():
     }
     ) as server:
        tools = await server.list_tools()
-       await run(server, directory_path)  # <-- Add this line
+       await run(server, directory_path)
 
 
 
