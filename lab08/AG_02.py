@@ -35,8 +35,8 @@ text_termination = TextMentionTermination("APPROVE")
 team = RoundRobinGroupChat([primary_agent, critic_agent], termination_condition=text_termination)
 
 async def main():
-    result = await team.run(task="Write a short poem about the fall season.")
-    print(result)
+    await team.reset()  # Reset the team for a new task.
+    await Console(team.run_stream(task="Write a short poem about the fall season."))
 
 if __name__ == "__main__":
     asyncio.run(main())
