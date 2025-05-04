@@ -12,7 +12,7 @@ export OPENAPI_API_KEY="xxxxxxxxx"
 python3 mcp_01.py
 ```
 ### MCP SSE
-The script starts by connecting to a MCP SSE server using main(), then calls the run() function, which creates an agent and sends it a few questions that require calling external tools (like adding numbers or checking the weather). The agent uses those tools via the server, and the final answers are printed to the console.
+This example code connects to a MCP SSE server using main() function, that in turn calls the run() function, which creates an agent and sends it a few questions that require calling external tools.
 
 #### Start the MCP SSE server
 ```
