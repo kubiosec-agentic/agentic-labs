@@ -12,13 +12,13 @@ async def run(mcp_server: MCPServer, directory_path: str):
         mcp_servers=[mcp_server],
     )
 
-    message = "Who's the most frequent contributor?"
+    message = "List me the files in the diretory?"
     print("\n" + "-" * 40)
     print(f"Running: {message}")
     result = await Runner.run(starting_agent=agent, input=message)
     print(result.final_output)
 
-    message = "Summarize the last change in the repository."
+    message = "What type of files are in the directory?"
     print("\n" + "-" * 40)
     print(f"Running: {message}")
     result = await Runner.run(starting_agent=agent, input=message)
@@ -27,18 +27,21 @@ async def run(mcp_server: MCPServer, directory_path: str):
 
 async def main():
     # Ask the user for the directory path
-    directory_path = input("Please enter the path to the git repository: ")
+    directory_path = input("Please enter the path: ")
 
     async with MCPServerStdio(
-        cache_tools_list=True,  # Cache the tools list, for demonstration
-        params={"command": "uvx", "args": ["mcp-server-git"]},
+    params={
+        "command": "npx",
+        "args": ["-y", "@modelcontextprotocol/server-filesystem", directory_path],
+    }
     ) as server:
-        with trace(workflow_name="MCP Git Example"):
-            await run(server, directory_path)
+       tools = await server.list_tools()
+       await run(server, directory_path)  # <-- Add this line
+
 
 
 if __name__ == "__main__":
-    if not shutil.which("uvx"):
-        raise RuntimeError("uvx is not installed. Please install it with `pip install uvx`.")
+    if not shutil.which("npx"):
+        raise RuntimeError("npx is not installed. Please install it with `xxxxxx`.")
 
     asyncio.run(main())
