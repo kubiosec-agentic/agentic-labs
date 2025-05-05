@@ -1,3 +1,5 @@
 autogen-agentchat
 autogen-ext[openai,azure,tools]
 openai-agents
+crewai
+crewai_tools
