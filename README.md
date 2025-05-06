@@ -33,7 +33,7 @@ ssh -i lab.pem -L 8080:localhost:8080 \
 git clone https://github.com/kubiosec-agentic/agentic-labs.git
 ```
 ```
-cd agentic-labs\lab00_setup
+cd agentic-labs/lab00_setup/
 ```
 ```
 ./setup.sh
