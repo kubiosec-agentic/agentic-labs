@@ -19,7 +19,7 @@ python3 AG_02.py
 ```
 python3 AG_03.py
 ```
-### MagenticOne (??????)
+### MagenticOne
 ```
 pip install "autogen-agentchat" "autogen-ext[magentic-one,openai]"
 ```
@@ -29,6 +29,13 @@ playwright install --with-deps chromium
 ```
 ```
 python3 AG_04.py
+```
+### CrewAI
+```
+export SERPER_API_KEY=xxxxxxxxxx
+```
+```
+python3 CRAI_01.py
 ```
 ### Cool extra
 - https://microsoft.github.io/autogen/stable//user-guide/core-user-guide/components/command-line-code-executors.html#docker
