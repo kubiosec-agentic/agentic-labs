@@ -15,7 +15,7 @@ python3 AG_01.py
 ```
 python3 AG_02.py
 ```
-### MultimodalWebSurfer
+### MultimodalWebSurfer (Only works on a MAC)
 ```
 python3 AG_03.py
 ```
