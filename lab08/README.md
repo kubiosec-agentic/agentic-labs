@@ -25,7 +25,7 @@ python3 AG_03.py
 ```
 ### MagenticOne
 ```
-pip install "autogen-agentchat" "autogen-ext[magentic-one,openai]"
+pip install "autogen-agentchat" "autogen-ext[magentic-one]"
 ```
 ```
 python3 AG_04.py
