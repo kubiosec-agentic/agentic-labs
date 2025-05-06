@@ -15,17 +15,17 @@ python3 AG_01.py
 ```
 python3 AG_02.py
 ```
-### MultimodalWebSurfer (Only works on a MAC)
+### MultimodalWebSurfer (Works best on a MAC)
+```
+# If using the MultimodalWebSurfer, you also need to install playwright dependencies:
+playwright install --with-deps chromium
+```
 ```
 python3 AG_03.py
 ```
 ### MagenticOne
 ```
 pip install "autogen-agentchat" "autogen-ext[magentic-one,openai]"
-```
-```
-# If using the MultimodalWebSurfer, you also need to install playwright dependencies:
-playwright install --with-deps chromium
 ```
 ```
 python3 AG_04.py
