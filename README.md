@@ -22,12 +22,11 @@ Welcome to the lab and let's **#HACKTOLEARN** 🚀
 Each lab student has access to a virtual machine, accessible over SSH. Use the credentials provided to you and use the following pattern to connect:
 
 ```bash
-ssh -i lab.pem -L 8080:localhost:8080 \
+ssh -i agentics-key.pem -L 8080:localhost:8080 \
                -L 8081:localhost:8081 \
                -L 5000:localhost:5000 \
                -L 8501:localhost:8501 \
-                ubuntu@studentXX.labs.kubiosec.tech
-# Replace XX with your student number, e.g., 01, 02, ..., 11
+                ubuntu@x.x.x.x.x
 ```
 ```
 git clone https://github.com/kubiosec-agentic/agentic-labs.git
