@@ -221,6 +221,22 @@ export OPENAI_BASE_URL="https://api.openai.com/v1"
 ```
 python3 chat_01.py
 ```
+```
+docker run --rm -it \
+    -v ~/.mitmproxy:/home/mitmproxy/.mitmproxy \
+    -p 8080:8080 \
+    -p 127.0.0.1:8081:8081 \
+    mitmproxy/mitmproxy mitmweb \
+        --web-host 0.0.0.0 \
+        --mode reverse:https://api.openai.com:443
+```
+Open your browser at `http://127.0.0.1:8081/?token=xxxxxx`
+```
+export OPENAI_BASE_URL="http://127.0.0.1:8080/v1"
+```
+```
+python3 chat_01.py
+```
 ## Cleanup environment
 ```
 ./lab_cleanup.sh
