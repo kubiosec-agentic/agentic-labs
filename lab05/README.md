@@ -58,6 +58,7 @@ python3 Tools_04.py
 python3 Tools_05.py
 ```
 ### Openai with custom tools support DEEPDIVE
+#### Open a new terminal_2
 ```
 docker run --rm -it \
     -v ~/.mitmproxy:/home/mitmproxy/.mitmproxy \
@@ -67,6 +68,7 @@ docker run --rm -it \
         --web-host 0.0.0.0 \
         --mode reverse:https://api.openai.com:443
 ```
+#### Continue in terminal_1
 ```
 export OPENAI_BASE_URL="http://127.0.0.1:8080/v1"
 ```
