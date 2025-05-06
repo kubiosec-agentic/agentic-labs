@@ -214,6 +214,13 @@ curl https://api.openai.com/v1/chat/completions \
     "max_tokens": 100
   }' | jq -r .
 ```
+#### Chat completion via Python
+```
+export OPENAI_BASE_URL="https://api.openai.com/v1"
+```
+```
+python3 chat_01.py
+```
 ## Cleanup environment
 ```
 ./lab_cleanup.sh
