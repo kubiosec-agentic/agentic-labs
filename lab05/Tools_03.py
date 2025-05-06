@@ -50,7 +50,7 @@ Thought:{agent_scratchpad}'''
 
 prompt = PromptTemplate.from_template(template)
 
-@app.route("/chat/completions", methods=["POST"])
+@app.route("/v1/chat/completions", methods=["POST"])
 def openai_proxy():
     data = request.get_json()
     messages = data.get("messages", [])
