@@ -68,6 +68,7 @@ docker run --rm -it \
         --web-host 0.0.0.0 \
         --mode reverse:https://api.openai.com:443
 ```
+You can nw connect to `http://127.0.0.1:8081/?token=<see_your_terminal>`
 #### Continue in terminal_1
 ```
 export OPENAI_BASE_URL="http://127.0.0.1:8080/v1"
