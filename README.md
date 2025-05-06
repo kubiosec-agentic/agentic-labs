@@ -44,7 +44,7 @@ cd agentic-labs/lab00_setup/
 ```
 cd ..
 ```
-
+**Note**: Lab is based on Ubuntu and 20G of free disk space.
 ## 🧪 Lab Overview
 
 Each lab is structured to gradually build your understanding and capabilities, from basic API calls to full agent orchestration and security integration.
