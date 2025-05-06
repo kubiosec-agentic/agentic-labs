@@ -1,5 +1,6 @@
 autogen-agentchat
 autogen-ext[openai,azure,tools]
 openai-agents
+playwright
 crewai
 crewai_tools
