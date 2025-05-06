@@ -6,10 +6,10 @@ sudo apt-get install -y jq net-tools curl git wget vim
 sudo add-apt-repository ppa:deadsnakes/ppa -y
 sudo apt-get install -y python3.12
 sudo apt-get install -y python3-pip
-sudo apt-get  install python3.12-venv
+sudo apt-get  install -y python3.12-venv
 
 ## Install npm
-sudo apt-get install npm
+sudo apt-get install -y npm
 
 ## Install Docker
 curl -fsSL https://get.docker.com -o get-docker.sh
