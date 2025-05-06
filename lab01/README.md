@@ -28,6 +28,7 @@ curl -XPOST https://api.openai.com/v1/chat/completions \
       }
     ]
   }'
+
 ```
 #### Adding a System prompt
 ```
