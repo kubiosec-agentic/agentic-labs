@@ -17,13 +17,13 @@ python3 mcp_01.py
 ### MCP SSE
 This example code connects to a MCP SSE server using the main() function, that in turn will call the run() function, creating an agent answering a few questions that require calling external tools.
 
-#### Start the MCP SSE server
+#### Start the MCP SSE server (terminal_2)
 ```
 python3 server.py
 ```
-#### Run the agent
+#### Run the agent (terminal_1)
 ```
-python3 mcp_02.py
+python3 mcp_02.py 
 ```
 ### MCP Debugging
 https://github.com/kubiosec-ai/mcp-debugging
