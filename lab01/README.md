@@ -221,7 +221,7 @@ export OPENAI_BASE_URL="https://api.openai.com/v1"
 ```
 python3 chat_01.py
 ```
-Let's inspect the Chat completion call with `mitmproxy`
+Inspect the Chat completion call with `mitmproxy`
 ```
 docker run --rm -it \
     -v ~/.mitmproxy:/home/mitmproxy/.mitmproxy \
