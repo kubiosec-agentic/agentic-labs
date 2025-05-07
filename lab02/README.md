@@ -52,23 +52,10 @@ curl -XPOST "https://api.openai.com/v1/responses" \
 ```
 #### File search
 ```
-curl https://api.openai.com/v1/files \
+FILEID=$(curl https://api.openai.com/v1/files \
     -H "Authorization: Bearer $OPENAI_API_KEY" \
     -F purpose="assistants" \
-    -F file="@./data/story.pdf"
-```
-```
-{
-  "object": "file",
-  "id": "file-HKMcVraDG6vWRiicJNKHgL",
-  "purpose": "assistants",
-  "filename": "story.pdf",
-  "bytes": 20377,
-  "created_at": 1746625479,
-  "expires_at": null,
-  "status": "processed",
-  "status_details": null
-}
+    -F file="@./data/story.pdf" | jq -r .id)
 ```
 ```
 curl "https://api.openai.com/v1/responses" \
@@ -82,7 +69,7 @@ curl "https://api.openai.com/v1/responses" \
                 "content": [
                     {
                         "type": "input_file",
-                        "file_id": "file-HKMcVraDG6vWRiicJNKHgL"
+                        "file_id": "'$FILEID'"
                     },
                     {
                         "type": "input_text",
@@ -91,7 +78,7 @@ curl "https://api.openai.com/v1/responses" \
                 ]
             }
         ]
-    }'
+    }' | jq -r '.output[].content[0].text'
 ```
 
 #### Streaming
