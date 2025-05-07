@@ -55,16 +55,16 @@ curl -XPOST "https://api.openai.com/v1/responses" \
 curl https://api.openai.com/v1/files \
     -H "Authorization: Bearer $OPENAI_API_KEY" \
     -F purpose="assistants" \
-    -F file="@./data/story.txt"
+    -F file="@./data/story.pdf"
 ```
 ```
 {
   "object": "file",
-  "id": "file-SnqFVXcVTGe3vciQnAEPND",
-  "purpose": "user_data",
+  "id": "file-HKMcVraDG6vWRiicJNKHgL",
+  "purpose": "assistants",
   "filename": "story.pdf",
-  "bytes": 2206,
-  "created_at": 1746625070,
+  "bytes": 20377,
+  "created_at": 1746625479,
   "expires_at": null,
   "status": "processed",
   "status_details": null
@@ -82,7 +82,7 @@ curl "https://api.openai.com/v1/responses" \
                 "content": [
                     {
                         "type": "input_file",
-                        "file_id": "file-MQMGceqwais7QS5Q357vx6"
+                        "file_id": "file-HKMcVraDG6vWRiicJNKHgL"
                     },
                     {
                         "type": "input_text",
