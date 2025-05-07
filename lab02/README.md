@@ -52,7 +52,23 @@ curl -XPOST "https://api.openai.com/v1/responses" \
 ```
 #### File search
 ```
-export MYFILE_B64=$(base64 ./data/story.txt | tr -d '\n')
+curl https://api.openai.com/v1/files \
+    -H "Authorization: Bearer $OPENAI_API_KEY" \
+    -F purpose="assistants" \
+    -F file="@./data/story.txt"
+```
+```
+{
+  "object": "file",
+  "id": "file-SnqFVXcVTGe3vciQnAEPND",
+  "purpose": "user_data",
+  "filename": "story.pdf",
+  "bytes": 2206,
+  "created_at": 1746625070,
+  "expires_at": null,
+  "status": "processed",
+  "status_details": null
+}
 ```
 ```
 curl "https://api.openai.com/v1/responses" \
@@ -66,12 +82,11 @@ curl "https://api.openai.com/v1/responses" \
                 "content": [
                     {
                         "type": "input_file",
-                        "filename": "llms-full.txt",
-                        "file_data": "'$MYFILE_B64'"
+                        "file_id": "file-MQMGceqwais7QS5Q357vx6"
                     },
                     {
                         "type": "input_text",
-                        "text": "What is tis about?"
+                        "text": "What is this about?"
                     }
                 ]
             }
