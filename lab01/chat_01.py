@@ -25,4 +25,4 @@ response = client.chat.completions.create(
   store=False
 )
 
-print(client.choices[0].message.content)
+print(response.choices[0].message.content)
