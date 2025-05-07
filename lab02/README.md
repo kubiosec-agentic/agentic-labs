@@ -92,6 +92,12 @@ curl -XPOST "https://api.openai.com/v1/responses" \
         "stream": true
     }' 
 ```
+#### Message recall
+```
+curl "https://api.openai.com/v1/responses/resp_<id>" \
+    -H "Content-Type: application/json" \
+    -H "Authorization: Bearer $OPENAI_API_KEY"
+```
 ## Cleanup environment
 ```
 ./lab_cleanup.sh
