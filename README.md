@@ -47,7 +47,10 @@ cd ..
 ```bash
 ssh -i agentics-key.pem  ubuntu@x.x.x.x.x
 ```
-**Note**: Lab is based on Ubuntu and 20G of free disk space.
+**Note**: 
+- Provided lab environment is based on Ubuntu, T2.medium and 50G root volume. 
+- Labs are tested and should also run on Mac.
+
 ## 🧪 Lab Overview
 
 Each lab is structured to gradually build your understanding and capabilities, from basic API calls to full agent orchestration and security integration.
