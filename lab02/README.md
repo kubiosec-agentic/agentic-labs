@@ -98,6 +98,11 @@ curl "https://api.openai.com/v1/responses/resp_<id>" \
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $OPENAI_API_KEY"
 ```
+
+#### Message callback python
+```
+python3 ./resp_01.py
+```
 ## Cleanup environment
 ```
 ./lab_cleanup.sh
