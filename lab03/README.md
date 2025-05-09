@@ -69,7 +69,7 @@ A textbook response
 }
 ```
 #### Creating an eval
-How can we evaluate the responses ?
+How to evaluate the prompts ?
 ```
 EVAL=$(curl https://api.openai.com/v1/evals \
     -H "Authorization: Bearer $OPENAI_API_KEY" \
