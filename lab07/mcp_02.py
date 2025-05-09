@@ -31,11 +31,11 @@ async def run(mcp_server: MCPServer):
 
 
 async def init_server():
-    return MCPServerSse(
-        name="SSE Python Server",
+    server_a = MCPServerSse(
+        name="Server A",
         params={"url": "http://localhost:8000/sse"},
     )
-
+    return server_a
 
 async def main():
     async with await init_server() as server:
