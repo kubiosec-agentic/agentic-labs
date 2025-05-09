@@ -6,10 +6,14 @@ export OPENAPI_API_KEY="xxxxxxxxx"
 ```
 ./lab_setup.sh
 ```
+```
+source .lab01/bin/activate
+```
 ## Lab instructions
 ### OpenAI Chat Commpletion
 https://platform.openai.com/docs/api-reference/chat
 #### Simple textbook example
+This lab demonstrates a simple textbook example of how to call the OpenAI Chat Completions API using `curl`.
 ```
 curl -XPOST https://api.openai.com/v1/chat/completions \
   -H "Content-Type: application/json" \
@@ -31,6 +35,7 @@ curl -XPOST https://api.openai.com/v1/chat/completions \
 
 ```
 #### Adding a System prompt
+This lab shows how to add a system prompt to guide the behavior of the assistant in an OpenAI Chat API request.
 ```
 curl -XPOST https://api.openai.com/v1/chat/completions \
   -H "Content-Type: application/json" \
@@ -65,6 +70,7 @@ curl -XPOST https://api.openai.com/v1/chat/completions \
   }' 
 ```
 #### `jq` to the rescue
+This lab introduces the use of jq to neatly extract and display the assistant’s reply from the JSON response.
 ```
 curl -XPOST https://api.openai.com/v1/chat/completions \
   -H "Content-Type: application/json" \
@@ -99,6 +105,7 @@ curl -XPOST https://api.openai.com/v1/chat/completions \
   }' | jq '.choices[0].message.content'
 ```
 #### Continuing the conversation
+This lab demonstrates how to continue a conversation by including previous messages in the prompt to maintain context and coherence.
 ```
 curl -XPOST https://api.openai.com/v1/chat/completions \
   -H "Content-Type: application/json" \
@@ -151,6 +158,7 @@ curl -XPOST https://api.openai.com/v1/chat/completions \
   }' | jq '.choices[0].message.content'
 ```
 #### Attaching request.json
+This lab shows how to simplify API calls by placing the request payload in a separate `request.json` file and referencing it with `@`.
 ```
 curl -XPOST https://api.openai.com/v1/chat/completions \
   -H "Content-Type: application/json" \
@@ -159,6 +167,7 @@ curl -XPOST https://api.openai.com/v1/chat/completions \
 ```
 
 #### Image analysis
+This lab illustrates how to perform image analysis with the Chat Completions API by sending an image URL and requesting a specific extraction task, such as reading a license plate.
 ```
 curl -XPOST https://api.openai.com/v1/chat/completions \
   -H "Content-Type: application/json" \
@@ -215,6 +224,7 @@ curl https://api.openai.com/v1/chat/completions \
   }' | jq -r .
 ```
 #### Chat completion via Python
+This lab demonstrates how to make a Chat Completions API call using Python, and how to intercept and inspect the request using `mitmproxy` for debugging or learning purposes.
 ```
 export OPENAI_BASE_URL="https://api.openai.com/v1"
 ```
@@ -242,6 +252,9 @@ python3 chat_01.py
 unset OPENAI_BASE_URL
 ```
 ## Cleanup environment
+```
+deactivate
+```
 ```
 ./lab_cleanup.sh
 ```
