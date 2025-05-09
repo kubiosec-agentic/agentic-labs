@@ -281,6 +281,7 @@ Complete example response
 </details>
 
 #### Uploading the test data
+Test data is upload in with filetype `jsonl` as `purpose="evals"`
 ```
 FILEID=$(curl https://api.openai.com/v1/files \
   -H "Authorization: Bearer $OPENAI_API_KEY" \
@@ -311,7 +312,7 @@ Complete example response
 </details>
 
 #### Run Evaluation
-Update `request.json` manually with the FILEID or run
+Update `request.json` manually with the `FILEID` or run
 ```
 if [[ "$OSTYPE" == "darwin"* ]]; then
   sed -i '' 's/"id": *"[^"]*"/"id": "'"$FILEID"'"/' request.json
