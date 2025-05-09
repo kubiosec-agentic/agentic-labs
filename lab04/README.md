@@ -6,6 +6,9 @@ export OPENAPI_API_KEY="xxxxxxxxx"
 ```
 ./lab_setup.sh
 ```
+```
+source .lab04/bin/activate
+```
 ## Lab instructions
 #### Example 1: RAG based search using Llama-index and OpenAI synthesis
 This code builds a vector index of documents using OpenAI embeddings, then queries it using either pure vector search (retrieval) or an LLM to generate natural-language answers.
@@ -291,6 +294,9 @@ Try another prompt, like "How can MCP influence attention in LLM reasoning?"
 </details>
 
 ## Cleanup environment
+```
+deactivate
+```
 ```
 ./lab_cleanup.sh
 ```
