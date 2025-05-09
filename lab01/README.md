@@ -35,7 +35,7 @@ curl -XPOST https://api.openai.com/v1/chat/completions \
 
 ```
 #### Adding a System prompt
-Next, to add a system prompt to guide the behavior of the assistant in an OpenAI Chat API request.
+Next, add a system prompt to guide the behavior of the assistant in an OpenAI Chat API request.
 ```
 curl -XPOST https://api.openai.com/v1/chat/completions \
   -H "Content-Type: application/json" \
@@ -70,7 +70,7 @@ curl -XPOST https://api.openai.com/v1/chat/completions \
   }' 
 ```
 #### `jq` to the rescue
-This lab introduces the use of jq to neatly extract and display the assistant’s reply from the JSON response.
+This lab introduces the use of `jq` to neatly extract and display the assistant’s reply from the JSON response.
 ```
 curl -XPOST https://api.openai.com/v1/chat/completions \
   -H "Content-Type: application/json" \
