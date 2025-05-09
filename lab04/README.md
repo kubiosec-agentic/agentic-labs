@@ -14,6 +14,8 @@ It prints both the top-matching documents and, if enabled, a synthesized respons
 python3 ./RAG_01.py
 ```
 #### Example 2: RAG based search using Chroma
+This code uses the LangChain framework with the Chroma vector store to index and search text documents using OpenAI embeddings.
+It loads a `.txt` file, splits it into chunks, embeds those chunks, stores them in Chroma, and performs both keyword-based and vector-based similarity searches on a user query.
 ```
 python3 ./RAG_02.py
 ```
