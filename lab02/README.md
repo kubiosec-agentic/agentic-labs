@@ -110,6 +110,7 @@ curl "https://api.openai.com/v1/responses/resp_<id>" \
 ```
 
 #### Message callback python
+This lab shows how to build a multi-turn conversation using the `previous_response_id`, allowing the model to maintain context and respond more naturally across messages.
 ```
 python3 ./resp_01.py
 ```
