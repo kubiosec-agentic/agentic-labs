@@ -19,7 +19,7 @@ The Model Context Protocol (MCP) stdio transport is a communication method that 
 python3 mcp_01.py
 ```
 ### MCP SSE
-The Model Context Protocol (MCP) Server-Sent Events (SSE) transport is a communication method that enables remote AI applications to interact with tools or data sources by establishing a persistent HTTP connection for server-to-client streaming and using HTTP POST requests for client-to-server communication.  This code example connects to a MCP SSE server using the main() function, that in turn will call the run() function, creating an agent answering a few questions that require calling external tools.
+The Model Context Protocol (MCP) Server-Sent Events (SSE) transport is a communication method that enables AI applications to interact with tools or data sources by establishing a persistent HTTP connection for server-to-client streaming and using HTTP POST requests for client-to-server communication.  This code example connects to a MCP SSE server using the main() function, that in turn will call the run() function, creating an agent answering a few questions that require calling external tools.
 
 #### Start the MCP SSE server (terminal_2)
 ```
