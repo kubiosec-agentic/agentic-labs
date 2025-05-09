@@ -10,6 +10,7 @@ export OPENAPI_API_KEY="xxxxxxxxx"
 ### Evals
 A textbook example
 #### Create an request
+This lab provides an example of creating a prompt for evaluation, useful for testing how well the model handles classification tasks like ticket categorization.
 ```
 curl https://api.openai.com/v1/chat/completions \
     -H "Authorization: Bearer $OPENAI_API_KEY" \
