@@ -90,6 +90,7 @@ curl "https://api.openai.com/v1/responses" \
 ```
 
 #### Streaming
+This lab introduces streaming responses, allowing you to receive the model’s output token by token as it generates—great for faster feedback and interactive experiences.
 ```
 curl -XPOST "https://api.openai.com/v1/responses" \
     -H "Content-Type: application/json" \
@@ -101,6 +102,7 @@ curl -XPOST "https://api.openai.com/v1/responses" \
     }' 
 ```
 #### Message recall
+This lab shows how to recall a previous response using its unique ID, handy for reviewing or debugging past interactions without re-running the entire request. Also asynchronous workflows will benefit from this concept, where you send a request, do other tasks, and fetch the result later when it's ready.
 ```
 curl "https://api.openai.com/v1/responses/resp_<id>" \
     -H "Content-Type: application/json" \
