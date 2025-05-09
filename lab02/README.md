@@ -36,7 +36,7 @@ curl -XPOST "https://api.openai.com/v1/responses" \
 ```
 **Note:** The model may return outdated information, as its knowledge is limited to events before its training cutoff (e.g., mid-2023 for GPT-4o).
 #### Adding `web_search_preview`
-This lab shows how to enable `web_search_preview` to let the model pull in real-time information, ideal for questions about recent breakthroughs or current events.
+This lab demonstrates how to enable the `web_search_preview` tool, which lets the model search the web in real time, ideal for retrieving up-to-date information on recent breakthroughs, news, or current events.
 ```
 curl -XPOST "https://api.openai.com/v1/responses" \
     -H "Content-Type: application/json" \
