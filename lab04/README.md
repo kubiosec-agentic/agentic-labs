@@ -20,11 +20,13 @@ It loads a `.txt` file, splits it into chunks, embeds those chunks, stores them 
 python3 ./RAG_02.py
 ```
 #### Example 3: RAG based search using Chroma and Langchain for synthesis (advanced)
+This code uses the LangChain framework with Chroma as the vector store to enable semantic search and LLM-based Q&A over a local `.txt` file.
+It splits the text into overlapping chunks, stores their embeddings, retrieves the top relevant ones for a query, and then uses an OpenAI chat model to generate a synthesized answer using a custom prompt.
 ```
 python3 ./RAG_03.py
 ```
 #### Example 4: RAG based search using OpenAI VectorStore and Response API
-Create a managed VectorStore 
+Create a managed VectorStore using the OpenAI platform
 ```
 VS_ID=$(curl https://api.openai.com/v1/vector_stores \
   -H "Authorization: Bearer $OPENAI_API_KEY" \
@@ -37,7 +39,7 @@ VS_ID=$(curl https://api.openai.com/v1/vector_stores \
 ```
 echo $VS_ID
 ```
-File upload to OpenAI (purpose `assistants`)
+File upload to OpenAI (`purpose="assistants"`)
 ```
 FILE_ID=$(curl https://api.openai.com/v1/files \
   -H "Authorization: Bearer $OPENAI_API_KEY" \
