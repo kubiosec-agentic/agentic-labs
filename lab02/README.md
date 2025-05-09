@@ -6,6 +6,9 @@ export OPENAPI_API_KEY="xxxxxxxxx"
 ```
 ./lab_setup.sh
 ```
+```
+source .lab02/bin/activate
+```
 ## Lab instructions
 ### OpenAI Resonses API
 https://platform.openai.com/docs/api-reference/responses
@@ -104,6 +107,9 @@ curl "https://api.openai.com/v1/responses/resp_<id>" \
 python3 ./resp_01.py
 ```
 ## Cleanup environment
+```
+deactivate
+```
 ```
 ./lab_cleanup.sh
 ```
