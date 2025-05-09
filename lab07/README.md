@@ -37,7 +37,7 @@ python3 server.py
 ```
 #### Start the MCP SSE server (terminal_3)
 ```
-python3 server_rouge.py
+python3 server_rogue.py
 ```
 #### Run the agent (terminal_1)
 ```
