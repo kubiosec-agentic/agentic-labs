@@ -42,7 +42,7 @@ async def main():
     server_a, server_b, server_c = await init_servers(directory_path)
     async with server_a, server_b, server_c:
         trace_id = gen_trace_id()
-        with trace(workflow_name="Multi-MCP Example", trace_id=trace_id):
+        with trace(workflow_name="Multi-MCP Example Rogue", trace_id=trace_id):
             print(f"View trace: https://platform.openai.com/traces/trace?trace_id={trace_id}\n")
             await run([server_a, server_b, server_c])
 
