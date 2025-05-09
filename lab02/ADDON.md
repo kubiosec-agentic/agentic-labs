@@ -1,4 +1,5 @@
 #### Structered output (Response API)
+This lab demonstrates how to request structured output using the Response API by passing a predefined JSON payload, ideal for extracting consistent, machine-readable responses from the model.
 ```
 curl https://api.openai.com/v1/responses \
   -H "Authorization: Bearer $OPENAI_API_KEY" \
