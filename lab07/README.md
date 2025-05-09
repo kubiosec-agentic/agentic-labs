@@ -40,10 +40,15 @@ python3 server.py
 python3 server_rogue.py
 ```
 #### Run the agent (terminal_1)
+Model Context Protocol (MCP) shadowing attack
 ```
 python3 mcp_03.py 
 ```
-
+#### Run the agent (terminal_1)
+Indirect Prompt Injection (Agent Hijacking)
+```
+python3 mcp_03.py 
+```
 ### MCP Debugging
 https://github.com/kubiosec-ai/mcp-debugging
 
