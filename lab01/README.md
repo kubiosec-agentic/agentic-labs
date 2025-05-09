@@ -35,7 +35,7 @@ curl -XPOST https://api.openai.com/v1/chat/completions \
 
 ```
 #### Adding a System prompt
-This lab shows how to add a system prompt to guide the behavior of the assistant in an OpenAI Chat API request.
+Next, to add a system prompt to guide the behavior of the assistant in an OpenAI Chat API request.
 ```
 curl -XPOST https://api.openai.com/v1/chat/completions \
   -H "Content-Type: application/json" \
