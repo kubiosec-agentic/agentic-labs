@@ -8,6 +8,8 @@ export OPENAPI_API_KEY="xxxxxxxxx"
 ```
 ## Lab instructions
 #### Example 1: RAG based search using Llama-index and OpenAI synthesis
+This code builds a vector index of documents using OpenAI embeddings, then queries it using either pure retrieval or an OpenAI LLM to generate natural-language answers.
+It prints both the top-matching documents and, if enabled, a synthesized response from the LLM.
 ```
 python3 ./RAG_01.py
 ```
