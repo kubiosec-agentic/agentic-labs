@@ -1,4 +1,5 @@
 ## Few-shot prompting example
+This lab showcases few-shot prompting, where examples are provided in the input to help the model generalize and complete similar tasks, such as word usage or sentiment classification.
 ```
 curl -XPOST https://api.openai.com/v1/chat/completions \
   -H "Content-Type: application/json" \
