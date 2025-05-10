@@ -6,11 +6,17 @@ export OPENAPI_API_KEY="xxxxxxxxx"
 ```
 ./lab_setup.sh
 ```
+```
+source .lab09/bin/activate
+```
 ## Lab instructions
 ### xxxxxxxx
-xxxxxxxx
+[M2M](https://github.com/kubiosec-ai/openai-oauth-demo/blob/main/client.py)
 
 ## Cleanup environment
+```
+deactivate
+```
 ```
 ./lab_cleanup.sh
 ```
