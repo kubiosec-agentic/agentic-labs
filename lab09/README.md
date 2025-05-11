@@ -1,4 +1,11 @@
 # LAB09
+## Introduction
+This lab explores key concepts in Authentication, Authorization, and Observability for AI-integrated systems:
+- OAuth flows for machine-to-machine (M2M) and web app auth using real code examples.
+- Logging and tracing (coming soon) for monitoring agent behavior and API interactions
+- RAG with metadata (coming soon) to enhance retrieval and reasoning with structured context
+
+Ideal for securing and debugging AI-powered applications in production environments.
 ## Set up your environment
 ```
 export OPENAPI_API_KEY="xxxxxxxxx"
