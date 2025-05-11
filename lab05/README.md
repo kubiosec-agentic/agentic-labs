@@ -6,6 +6,9 @@ export OPENAPI_API_KEY="xxxxxxxxx"
 ```
 ./lab_setup.sh
 ```
+```
+source .lab05/bin/activate
+```
 ## Lab instructions
 #### Example 1: Langchain agent without tool support
 This code sets up a minimal LangChain ReAct agent using the langchain framework and OpenAI's gpt-3.5-turbo model. The agent is specifically instructed to handle mathematical reasoning tasks without using external tools.
@@ -90,6 +93,9 @@ llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0, base_url="http://127.0.0.
 ```
 
 ## Cleanup environment
+```
+deactivate
+```
 ```
 ./lab_cleanup.sh
 ```
