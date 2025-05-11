@@ -5,7 +5,7 @@ This lab explores multiple approaches to RAG (Retrieval-Augmented Generation) us
 - LangChain + Chroma for advanced document chunking and semantic retrieval
 - OpenAI VectorStore with the /responses API for fully managed file search
 
-You’ll also learn how to upload documents (including PDFs), perform queries, and generate LLM-based answers using OpenAI’s tool system—perfect for building context-aware assistants over custom data.
+You’ll also learn how to upload documents (including PDFs), perform queries, and generate LLM-based answers using OpenAI’s tool system, perfect for building context-aware assistants over custom data.
 
 ## Set up your environment
 ```
