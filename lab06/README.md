@@ -40,7 +40,9 @@ This script demonstrates how to enforce output guardrails on an AI agent using t
 python3 ./agent_04.py
 ```
 ### Google Agent Development Kit
-Optionally, check out [Agent Development Kit](https://google.github.io/adk-docs/get-started/quickstart/)
+Optionally, check out [Agent Development Kit](https://google.github.io/adk-docs/get-started/quickstart/)<br>
+[ADK Sample agents](https://github.com/google/adk-samples) can be found.
+
 ## Cleanup environment
 ```
 deactivate
