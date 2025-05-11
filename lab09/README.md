@@ -19,7 +19,7 @@ source .lab09/bin/activate
 ## Lab instructions
 ### OAuth 2.0 M2M API Server with OpenAI Integration
 [OAuth 2.0 M2M API Server with OpenAI Integration](https://github.com/kubiosec-ai/openai-oauth-demo/blob/main/client.py)<br>
-This FastAPI application demonstrates how to build a secure Machine-to-Machine (M2M) service, implementing authentication and authorisation using OAuth 2.0 with Amazon Cognito. It protects endpoints by verifying incoming JWT access tokens against Cognito’s public keys (JWKS), ensuring only authorized services can access the API. The app also integrates OpenAI’s API to generate AI-powered responses for authenticated requests. It includes:
+This FastAPI application demonstrates how to build a secure Machine-to-Machine (M2M) service, implementing both authentication and authorization using OAuth 2.0 with Amazon Cognito. It protects endpoints by verifying incoming JWT access tokens against Cognito’s public keys (JWKS), ensuring that only authorized services can access the API. The app also integrates OpenAI’s API to generate AI-powered responses for authenticated requests.. It includes:
 - Token validation using JWKS with caching
 - Scope checking to authorize access to specific endpoints
 - Two protected endpoints:
