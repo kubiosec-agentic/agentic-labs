@@ -8,15 +8,17 @@ export OPENAPI_API_KEY="xxxxxxxxx"
 ```
 ## Lab instructions
 ### Langchain agent without tool support
+This code sets up a minimal LangChain ReAct agent using the langchain framework and OpenAI's gpt-3.5-turbo model. The agent is specifically instructed to handle mathematical reasoning tasks without using external tools.
 ```
 python3 Tools_01.py
 ```
 ### Langchain agent with tool support
+This next example sets up a LangChain ReAct agent using GPT-4o with access to a Python REPL tool for solving math problems. It uses a prompt template from LangChain Hub and executes queries with step-by-step reasoning and code execution.
 ```
 python3 Tools_02.py
 ```
 ### Small CTF
-Start the ChatBot
+Start the ChatBot. Try to hack it via the user interface.
 ```
 docker run -it -p 8501:8501 \
   --rm \
@@ -27,6 +29,7 @@ docker run -it -p 8501:8501 \
 ```
 You can connect to `http://127.0.0.1:8501/`<br>
 ### Small CTF - Optional (middleware function only)
+Start the ChatBot. Try to hack it via the api (openai compatible).
 ```
 python3 ./Tools_03.py
 ```
@@ -50,14 +53,18 @@ curl -XPOST http://127.0.0.1:5000/v1/chat/completions  \
   }'
 ```
 ### Langchain agent with Wikipedia support
+This code sets up a LangChain ReAct agent powered by GPT-3.5-turbo, with access to the Wikipedia tool. It uses a custom prompt template to guide the agent through reasoning and action steps to answer complex questions using external knowledge sources.
 ```
 python3 Tools_04.py
 ```
 ### Openai with custom tools support
+This script sets up a tool-augmented OpenAI chat workflow using the chat.completions API with function calling. It defines a local SQL simulation tool (find_product), registers it in the OpenAI tool schema, and allows GPT (e.g., GPT-4o) to automatically call this function to answer product-related queries. The tool is executed locally, and the result is sent back to the model for final response generation.
 ```
 python3 Tools_05.py
 ```
 ### Openai with custom tools support DEEPDIVE
+This setup enables inspection of OpenAI API calls by routing them through a local MITM proxy (mitmproxy) in reverse mode. <br>
+You’ll launch the proxy in `terminal_2`, then set the `OPENAI_BASE_URL` to point to it in `terminal_1`, allowing you to run scripts like `Tools_05.py` while capturing and viewing requests/responses in the mitmweb dashboard at http://127.0.0.1:8081.
 #### Open a new terminal_2
 ```
 docker run --rm -it \
