@@ -1,4 +1,4 @@
-# LAB06
+# LAB06: Multi Agent Orchestration
 ## Introduction
 This lab introduces the **OpenAI agents framework** for building structured, tool-using AI agents. You’ll learn to:
 - Create basic agents and run them synchronously
