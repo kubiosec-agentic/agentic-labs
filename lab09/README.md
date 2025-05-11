@@ -1,4 +1,4 @@
-# LAB09
+# LAB09: Enterprise ready Agents
 ## Introduction
 This lab explores key concepts in Authentication, Authorization, and Observability for AI-integrated systems:
 - OAuth flows for machine-to-machine (M2M) and web app auth using real code examples.
