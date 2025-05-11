@@ -1,5 +1,5 @@
 # LAB05
-## Introductiom
+## Introduction
 This lab explores tool-augmented agents and API call inspection using LangChain and OpenAI. You’ll experiment with:
 - LangChain ReAct agents (with and without tools)
 - Tool calling via OpenAI’s function schema (e.g., custom SQL simulation)
