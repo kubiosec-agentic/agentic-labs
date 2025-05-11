@@ -1,5 +1,5 @@
 # LAB08
-## introduction
+## Introduction
 This lab explores advanced AutoGen agents and teamwork, combining tool integration, group chat dynamics, secure code execution, and blogging workflows:
 - Use MCP to connect agents to real tools like web fetchers
 - Try group chats (RoundRobin and MagenticOne) for iterative refinement
