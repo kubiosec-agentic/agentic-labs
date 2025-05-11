@@ -261,3 +261,4 @@ deactivate
 ```
 ./lab_cleanup.sh
 ```
+[Home](https://github.com/kubiosec-agentic/agentic-labs/blob/master/README.md#-lab-overview)
