@@ -1,4 +1,4 @@
-# LAB04
+# LAB04: RAG Based Agents
 ## Introduction
 This lab explores multiple approaches to RAG (Retrieval-Augmented Generation) using OpenAI models and vector stores. You'll build and query document indexes using:
 - LlamaIndex for standalone vector search and LLM synthesis
