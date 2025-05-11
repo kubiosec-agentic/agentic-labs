@@ -1,4 +1,14 @@
 # LAB03
+## Introduction
+This lab walks through setting up and running OpenAI Evals to test how well models perform on classification tasks—specifically IT ticket categorization.
+
+You'll learn to:
+- Make evaluation prompts using the Chat Completions API
+- Define and create custom evals
+- Upload test data (.jsonl) and run evaluations
+- Fetch results and view reports via the API
+
+Perfect for validating prompt quality and measuring model accuracy with structured, repeatable tests.
 ## Set up your environment
 ```
 export OPENAPI_API_KEY="xxxxxxxxx"
