@@ -294,7 +294,7 @@ Try another prompt, like "How can MCP influence attention in LLM reasoning?"
 </details>
 
 #### Example 5: RAG based search using OpenAI VectorStore and Response API (Python)
-**Note:** Update the code with you VectorStore ID from the previous lab.
+**Note:** Update the code with your VectorStore ID from the previous lab.
 ```
 python3 RAG_04.py
 ```
