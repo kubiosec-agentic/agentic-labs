@@ -1,4 +1,12 @@
 # LAB06
+## Introduction
+This lab introduces the agents framework for building structured, tool-using AI agents. You’ll learn to:
+- Create basic agents and run them synchronously
+- Implement agent handoff based on input language
+- Attach custom tools to agents for function calling
+- Enforce guardrails to filter or block certain outputs
+
+Perfect for understanding core concepts in building modular, controllable AI agents.
 ## Set up your environment
 ```
 export OPENAPI_API_KEY="xxxxxxxxx"
