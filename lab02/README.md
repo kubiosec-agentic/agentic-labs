@@ -6,7 +6,7 @@ Ideal for understanding how to:
 - Enable tools like web_search_preview
 - Upload and query files
 - Stream responses
-- Reference past messages
+- Reference past messages <br>
 Great for developers wanting hands-on experience with OpenAI's lower-level APIs.
 
 ## Set up your environment
