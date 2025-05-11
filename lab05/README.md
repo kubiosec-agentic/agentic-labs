@@ -1,4 +1,4 @@
-# LAB05
+# LAB05: Tool Based Agents
 ## Introduction
 This lab explores tool-augmented agents and API call inspection using LangChain and OpenAI. You’ll experiment with:
 - LangChain ReAct agents (with and without tools)
