@@ -518,3 +518,4 @@ Complete example response
 ```
 ./lab_cleanup.sh
 ```
+Back to [Lab Overview](https://github.com/kubiosec-agentic/agentic-labs/blob/master/README.md#-lab-overview)
