@@ -10,7 +10,7 @@ work_dir.mkdir(exist_ok=True)
 
 def main():
     async def run():
-        async with DockerCommandLineCodeExecutor(work_dir=work_dir, image="python3") as executor:  # type: ignore
+        async with DockerCommandLineCodeExecutor(work_dir=work_dir, image="python:3.11") as executor:  # type: ignore
             print(
                 await executor.execute_code_blocks(
                     code_blocks=[
