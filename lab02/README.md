@@ -1,6 +1,6 @@
 # LAB02
 ## Introduction
-This lab explores the OpenAI /responses API, covering essential capabilities like basic prompting, real-time web search, file analysis, streaming, and message recall. You'll use curl and jq to inspect responses and learn how to build context-aware conversations in Python.
+This lab explores the new OpenAI responses API, covering essential capabilities like basic prompting, real-time web search, file analysis, streaming, and message recall. You'll use curl and jq to inspect responses and learn how to build context-aware conversations in Python.
 Ideal for understanding how to:
 - Make direct API calls
 - Enable tools like web_search_preview
