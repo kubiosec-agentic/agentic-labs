@@ -62,7 +62,7 @@ Each lab is structured to gradually build your understanding and capabilities, f
 | [lab03](./lab03) | Model evaluation                                | curl       |
 | [lab04](./lab04) | RAG                                             | python, RAG, chroma, llama-index, OpenAI VectorStore                |
 | [lab05](./lab05) | Tools                                           | python, langchain                       |
-| [lab06](./lab06) | OpenAI Agents SDK                          | python |
+| [lab06](./lab06) | Multi-agent orchestration                         | python, OpenAI Agent SDK|
 | [lab07](./lab07) | MCP                 | python           |
 | [lab08](./lab08) | Agentic Fun      |python Autogen, CrewAI, A2A             |
 | [lab09](./lab09) | Enterprise graded Agents            | python, OAUTH           |
