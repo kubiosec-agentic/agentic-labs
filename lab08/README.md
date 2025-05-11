@@ -19,7 +19,7 @@ python3 AG_02.py
 ```
 #### MultimodalWebSurfer (Works best on a MAC)
 This lab demonstrates how to use the MultimodalWebSurfer agent from AutoGen to perform real web navigation tasks with vision and language capabilities, powered by gpt-4o. It runs within a RoundRobinGroupChat for controlled interaction (max 3 turns) and streams output to the console. The agent can see and interpret web content—ideal for automating tasks like finding documentation or navigating websites.<br>
-**Note: ** If using the MultimodalWebSurfer, you also need to install playwright dependencies:
+**Note:** If using the MultimodalWebSurfer, you also need to install playwright dependencies:
 ```
 playwright install --with-deps chromium
 ```
