@@ -6,6 +6,9 @@ export OPENAPI_API_KEY="xxxxxxxxx"
 ```
 ./lab_setup.sh
 ```
+```
+source .lab06/bin/activate
+```
 ## Lab instructions
 ### Simple OpenAI Agent
 This simple script runs a synchronous AI agent using the agents framework. It defines an Agent with the role of a helpful assistant.
@@ -29,6 +32,9 @@ This script demonstrates how to enforce output guardrails on an AI agent using t
 python3 ./agent_04.py
 ```
 ## Cleanup environment
+```
+deactivate
+```
 ```
 ./lab_cleanup.sh
 ```
