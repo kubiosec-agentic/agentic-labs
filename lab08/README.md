@@ -1,4 +1,13 @@
 # LAB08
+## introduction
+This lab explores advanced AutoGen agents and teamwork, combining tool integration, group chat dynamics, secure code execution, and blogging workflows:
+- Use MCP to connect agents to real tools like web fetchers
+- Try group chats (RoundRobin and MagenticOne) for iterative refinement
+- Use MultimodalWebSurfer for live web browsing with vision
+- Run Docker-isolated code with DockerCommandLineCodeExecutor
+- Generate content using CrewAI with specialized roles (researcher + writer)
+
+Ideal for building powerful, tool-using, collaborative agents across a range of real-world tasks.
 ## Set up your environment
 ```
 export OPENAPI_API_KEY="xxxxxxxxx"
