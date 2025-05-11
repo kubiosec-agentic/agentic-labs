@@ -18,6 +18,9 @@ source .lab09/bin/activate
 xxx
 
 
+### Rag Metadata example
+xxx
+
 ## Cleanup environment
 ```
 deactivate
