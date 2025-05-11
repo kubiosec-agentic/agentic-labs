@@ -1,6 +1,6 @@
-# LAB03
+# LAB03: Prompt Evaluation
 ## Introduction
-This lab walks through setting up and running OpenAI Evals to test how well models perform on classification tasks—specifically IT ticket categorization.
+This lab walks through setting up and running OpenAI Evals to test how well models perform on classification tasks. In this example we focus on IT ticket categorization.
 
 You'll learn to:
 - Make evaluation prompts using the Chat Completions API
