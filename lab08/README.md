@@ -6,6 +6,9 @@ export OPENAPI_API_KEY="xxxxxxxxx"
 ```
 ./lab_setup.sh
 ```
+```
+source .lab08/bin/activate
+```
 ## Lab instructions
 #### Agent using MCP
 This lab demonstrates how to use AutoGen's MCP integration to empower an AssistantAgent with external tool access via a local MCP server. Specifically, it uses mcp-server-fetch to retrieve and summarize web content. The agent runs tasks like summarizing a Wikipedia page or searching for information on AutoGen, combining tool use with language model reasoning.
@@ -57,6 +60,9 @@ python3 CRAI_01.py
 - https://microsoft.github.io/autogen/stable//user-guide/core-user-guide/framework/distributed-agent-runtime.html#
 
 ## Cleanup environment
+```
+deactivate
+```
 ```
 ./lab_cleanup.sh
 ```
