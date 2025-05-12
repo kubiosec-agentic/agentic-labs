@@ -50,8 +50,8 @@ python langtrace_01.py
 
 
 ### Rag Metadata example
-#### ChromaDB and metadata (only works on Mac M1+)
-This script demonstrates how to use ChromaDB to store and retrieve documents with metadata-based access control. It simulates a real-world use case where documents are tagged as either public or confidential, and users can query the database with or without access filters.
+#### Chroma and metadata (only works on Mac M1+)
+This script demonstrates how to use the Chroma database to store and retrieve documents with metadata-based access control. It simulates a real-world use case where documents are tagged as either public or confidential, and users can query the database with or without access filters.
 Key features of the script:
 - Adds 40 unique documents (20 public, 20 confidential) with realistic chatbot-related content.
 - Assigns metadata to each document ("access": "public" or "confidential").
@@ -60,12 +60,12 @@ Key features of the script:
 - Outputs search results in a clean, structured format with document content, metadata, and similarity scores.
 
 This serves as a foundation for building secure retrieval-augmented generation (RAG) systems or chatbot backends where information exposure needs to be restricted based on user roles.
-Check out [ChromaDB Filters](https://cookbook.chromadb.dev/core/filters/#) for more advanced filtering.
+Check out [Chroma Filters](https://cookbook.chromadb.dev/core/filters/#) for more advanced filtering.
 ```
 python rag_metadata_01.py
 ```
-#### ChromaDB, metadata and OpenAI embedding
-This script demonstrates how to store and search documents in ChromaDB using automatic embedding via OpenAI's text-embedding-3-small model. Instead of manually generating embeddings, we configure Chroma with an OpenAIEmbeddingFunction, which automatically computes and stores embeddings when documents are added. This enables semantic search across documents based on query similarity, with support for filtering using metadata (e.g., access levels like "public" and "confidential")
+#### Chroma, metadata and OpenAI embedding
+This script demonstrates how to store and search documents in Chroma using automatic embedding via OpenAI's text-embedding-3-small model. Instead of manually generating embeddings, we configure Chroma with an OpenAIEmbeddingFunction, which automatically computes and stores embeddings when documents are added. This enables semantic search across documents based on query similarity, with support for filtering using metadata (e.g., access levels like "public" and "confidential")
 ```
 export CHROMA_OPENAI_API_KEY=$OPENAI_API_KEY
 ```
@@ -73,9 +73,9 @@ export CHROMA_OPENAI_API_KEY=$OPENAI_API_KEY
 python rag_metadata_02.py
 ```
 #### Semantic Search and Retrieval-Augmented Generation (RAG)
-This code demonstrates a Retrieval-Augmented Generation (RAG) pipeline that combines OpenAI's embedding capabilities with ChromaDB's vector storage to perform semantic search over documents. It then leverages GPT-4 to generate responses based on the retrieved information.
+This code demonstrates a Retrieval-Augmented Generation (RAG) pipeline that combines OpenAI's embedding capabilities with Chroma's vector storage to perform semantic search over documents. It then leverages GPT-4 to generate responses based on the retrieved information.
 To enable semantic search, the code first converts each document into a high-dimensional vector representation using OpenAI's text-embedding-3-small model. This process captures the semantic meaning of the text, allowing for effective similarity comparisons.
-ChromaDB serves as a vector database that stores the document embeddings along with their metadata. This setup allows for efficient retrieval of documents based on semantic similarity and metadata filters.
+Chroma serves as a vector database that stores the document embeddings along with their metadata. This setup allows for efficient retrieval of documents based on semantic similarity and metadata filters.
 When querying, you can apply metadata filters to restrict the search to specific subsets of documents.
 then used to prompt GPT-4 for generating a response. This method grounds the AI's output in the retrieved information, enhancing accuracy and relevance.
 ```
