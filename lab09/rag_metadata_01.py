@@ -97,7 +97,14 @@ print_results("Query: Only Confidential Documents", results_conf)
 
 # Query 3: All
 results_all = collection.query(
-    query_texts=["Tell me everything about the chatbot project."],
-    n_results=5
+    query_texts=["Tell me about the project."],
+    n_results=5,
+    where={
+        "$or": [
+            {"access": "public"},
+            {"access": "confidential"}
+        ]
+    }
 )
+
 print_results("Query: All Documents", results_all)
