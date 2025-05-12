@@ -59,7 +59,7 @@ Key features of the script:
 - Outputs search results in a clean, structured format with document content, metadata, and similarity scores.
 
 This serves as a foundation for building secure retrieval-augmented generation (RAG) systems or chatbot backends where information exposure needs to be restricted based on user roles.
-Check out [ChromaDB Filters](https://cookbook.chromadb.dev/core/filters/#)
+Check out [ChromaDB Filters](https://cookbook.chromadb.dev/core/filters/#) for more advanced filtering.
 ```
 python rag_metadat_01.py
 ```
