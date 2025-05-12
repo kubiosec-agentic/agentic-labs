@@ -1,16 +1,34 @@
 import openai
 import chromadb
 from chromadb.config import Settings
+import os
+
+# Print ChromaDB version
+print(f"ChromaDB version: {chromadb.__version__}")
 
 # Set your OpenAI API key
 
 # Use OpenAI's text-embedding-3-small (1536 dimensions)
 EMBEDDING_MODEL = "text-embedding-3-small"
 EMBEDDING_DIM = 1536
-PERSIST_DIR = "./chroma_storage"
 
-# Initialize ChromaDB client with persistence
-client = chromadb.Client(Settings(persist_directory=PERSIST_DIR))
+# Use an absolute path for persistence
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+PERSIST_DIR = os.path.join(CURRENT_DIR, "chroma_storage")
+print(f"Using persistence directory: {PERSIST_DIR}")
+
+# Make sure the directory exists
+os.makedirs(PERSIST_DIR, exist_ok=True)
+
+# Initialize ChromaDB client with persistence - use this instead
+print("Creating a new ChromaDB client with persistent storage...")
+try:
+    # Try the newer API format if available
+    client = chromadb.PersistentClient(path=PERSIST_DIR)
+except AttributeError:
+    # Fall back to the older API if PersistentClient is not available
+    client = chromadb.Client(Settings(persist_directory=PERSIST_DIR, 
+                                     chroma_db_impl="duckdb+parquet"))
 
 # Create or get collection
 collection = client.get_or_create_collection(
@@ -83,8 +101,14 @@ if collection.count() == 0:
 
     # Add documents to ChromaDB
     collection.add(documents=documents, metadatas=metadatas, ids=ids, embeddings=embeddings)
-    client.persist()
-
+    
+    # Verification code - check if data was stored
+    print(f"Added {len(documents)} documents to ChromaDB collection")
+    print(f"Collection count after adding: {collection.count()}")
+    print(f"Check if storage directory exists: {os.path.exists(PERSIST_DIR)}")
+    storage_files = os.listdir(PERSIST_DIR) if os.path.exists(PERSIST_DIR) else []
+    print(f"Storage directory contents: {storage_files}")
+    # Removed client.persist() as persistence is automatic with persist_directory
 
 # Print all entries in the collection
 def print_all_entries(collection, batch_size=100):
@@ -98,7 +122,7 @@ def print_all_entries(collection, batch_size=100):
     # ChromaDB doesn't have a native way to "list all", so we retrieve by slicing IDs
     for i in range(0, total, batch_size):
         results = collection.get(
-            include=["documents", "metadatas", "ids"],
+            include=["documents", "metadatas"],  # Removed "ids" from include
             offset=i,
             limit=batch_size
         )
