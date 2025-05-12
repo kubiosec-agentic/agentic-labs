@@ -62,7 +62,7 @@ Key features of the script:
 This serves as a foundation for building secure retrieval-augmented generation (RAG) systems or chatbot backends where information exposure needs to be restricted based on user roles.
 Check out [ChromaDB Filters](https://cookbook.chromadb.dev/core/filters/#) for more advanced filtering.
 ```
-python rag_metadat_01.py
+python rag_metadata_01.py
 ```
 #### ChromaDB, metadata and OpenAI embedding
 This script demonstrates how to store and search documents in ChromaDB using automatic embedding via OpenAI's text-embedding-3-small model. Instead of manually generating embeddings, we configure Chroma with an OpenAIEmbeddingFunction, which automatically computes and stores embeddings when documents are added. This enables semantic search across documents based on query similarity, with support for filtering using metadata (e.g., access levels like "public" and "confidential")
@@ -70,7 +70,7 @@ This script demonstrates how to store and search documents in ChromaDB using aut
 export CHROMA_OPENAI_API_KEY=$OPENAI_API_KEY
 ```
 ```
-python rag_metadat_02.py
+python rag_metadata_02.py
 ```
 #### Semantic Search and Retrieval-Augmented Generation (RAG)
 This code demonstrates a Retrieval-Augmented Generation (RAG) pipeline that combines OpenAI's embedding capabilities with ChromaDB's vector storage to perform semantic search over documents. It then leverages GPT-4 to generate responses based on the retrieved information.
@@ -79,11 +79,11 @@ ChromaDB serves as a vector database that stores the document embeddings along w
 When querying, you can apply metadata filters to restrict the search to specific subsets of documents.
 then used to prompt GPT-4 for generating a response. This method grounds the AI's output in the retrieved information, enhancing accuracy and relevance.
 ```
-python rag_metadat_03.py
+python rag_metadata_03.py
 ```
 Setup with persistent storage
 ```
-python rag_metadat_04.py
+python rag_metadata_04.py
 ```
 ## Cleanup environment
 ```
