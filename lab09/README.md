@@ -50,7 +50,7 @@ python langtrace_01.py
 
 
 ### Rag Metadata example
-#### ChromaDB and metadata
+#### ChromaDB and metadata (only works on Mac M1+)
 This script demonstrates how to use ChromaDB to store and retrieve documents with metadata-based access control. It simulates a real-world use case where documents are tagged as either public or confidential, and users can query the database with or without access filters.
 Key features of the script:
 - Adds 40 unique documents (20 public, 20 confidential) with realistic chatbot-related content.
