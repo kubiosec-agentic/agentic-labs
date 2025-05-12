@@ -30,8 +30,14 @@ This project is a fully functional OAuth 2.0 web application demo that illustrat
 Instructions can be found here [OAuth Web Application Demo](https://github.com/kubiosec-codecamp/oauth-web-app.git)
 
 ### Logging and Tracing
-xxx
-
+#### Traceloop
+Checkout [traceloop](https://www.traceloop.com/)
+```
+export TRACELOOP_API_KEY=tl_xxxxxxxxxxxxx
+```
+```
+python traceloop_01.py
+```
 
 ### Rag Metadata example
 xxx
