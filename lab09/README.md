@@ -65,6 +65,7 @@ Check out [ChromaDB Filters](https://cookbook.chromadb.dev/core/filters/#) for m
 python rag_metadat_01.py
 ```
 #### Alternative approach
+This script demonstrates how to store and search documents in ChromaDB using automatic embedding via OpenAI's text-embedding-3-small model. Instead of manually generating embeddings, we configure Chroma with an OpenAIEmbeddingFunction, which automatically computes and stores embeddings when documents are added. This enables semantic search across documents based on query similarity, with support for filtering using metadata (e.g., access levels like "public" and "confidential")
 ```
 export CHROMA_OPENAI_API_KEY=$OPENAI_API_KEY
 ```
