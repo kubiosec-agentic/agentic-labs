@@ -50,7 +50,18 @@ python langtrace_01.py
 
 
 ### Rag Metadata example
-xxx
+This script demonstrates how to use ChromaDB to store and retrieve documents with metadata-based access control. It simulates a real-world use case where documents are tagged as either public or confidential, and users can query the database with or without access filters.
+Key features of the script:
+- Adds 40 unique documents (20 public, 20 confidential) with realistic chatbot-related content.
+- Assigns metadata to each document ("access": "public" or "confidential").
+- Supports filtered search using metadata to simulate access control (e.g., showing only public info to general users).
+- Uses semantic search to return the most relevant documents to a given query.
+- Outputs search results in a clean, structured format with document content, metadata, and similarity scores.
+
+This serves as a foundation for building secure retrieval-augmented generation (RAG) systems or chatbot backends where information exposure needs to be restricted based on user roles.
+```
+python rag_metadat_01.py
+```
 
 ## Cleanup environment
 ```
