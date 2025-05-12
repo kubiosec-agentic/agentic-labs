@@ -39,6 +39,14 @@ export TRACELOOP_API_KEY=tl_xxxxxxxxxxxxx
 ```
 python traceloop_01.py
 ```
+#### Langtrace
+```
+export LANGTRACE_API_KEY=xxxxxxxxxxxx
+```
+```
+python langtrace_01.py
+```
+
 
 ### Rag Metadata example
 xxx
