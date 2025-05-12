@@ -81,6 +81,10 @@ then used to prompt GPT-4 for generating a response. This method grounds the AI'
 ```
 python rag_metadat_03.py
 ```
+Setup with persistent storage
+```
+python rag_metadat_04.py
+```
 ## Cleanup environment
 ```
 deactivate
