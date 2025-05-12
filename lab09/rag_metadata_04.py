@@ -85,6 +85,35 @@ if collection.count() == 0:
     collection.add(documents=documents, metadatas=metadatas, ids=ids, embeddings=embeddings)
     client.persist()
 
+
+# Print all entries in the collection
+def print_all_entries(collection, batch_size=100):
+    total = collection.count()
+    print(f"\n📦 Total entries in collection: {total}\n")
+
+    if total == 0:
+        print("Collection is empty.")
+        return
+
+    # ChromaDB doesn't have a native way to "list all", so we retrieve by slicing IDs
+    for i in range(0, total, batch_size):
+        results = collection.get(
+            include=["documents", "metadatas", "ids"],
+            offset=i,
+            limit=batch_size
+        )
+        for doc_id, doc, meta in zip(results["ids"], results["documents"], results["metadatas"]):
+            print(f"🆔 ID: {doc_id}")
+            print(f"📄 Document: {doc}")
+            print(f"🏷️ Metadata: {meta}")
+            print("-" * 50)
+
+# Call the function
+print_all_entries(collection)
+
+
+
+
 # Function to print query results
 def print_results(title, results):
     print(f"\n=== {title} ===")
