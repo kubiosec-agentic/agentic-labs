@@ -70,7 +70,9 @@ To enable semantic search, the code first converts each document into a high-dim
 ChromaDB serves as a vector database that stores the document embeddings along with their metadata. This setup allows for efficient retrieval of documents based on semantic similarity and metadata filters.
 When querying, you can apply metadata filters to restrict the search to specific subsets of documents.
 then used to prompt GPT-4 for generating a response. This method grounds the AI's output in the retrieved information, enhancing accuracy and relevance.
-
+```
+python rag_metadat_02.py
+```
 ## Cleanup environment
 ```
 deactivate
