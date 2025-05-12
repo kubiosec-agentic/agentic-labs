@@ -11,6 +11,8 @@ EMBEDDING_DIM = 1536
 
 # Initialize ChromaDB client and collection with correct embedding dimension
 client = chromadb.Client(Settings())
+
+# Create or get collection with embedding function
 collection = client.get_or_create_collection(
     name="my_docs",
     embedding_function=None,  # We'll provide embeddings manually
