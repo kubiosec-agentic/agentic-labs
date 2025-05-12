@@ -26,7 +26,8 @@ The FastAPI application `server.py` implements a secure Machine-to-Machine (M2M)
 
 
 ### oauth-web-app
-- https://github.com/kubiosec-codecamp/oauth-web-app.git
+This project is a fully functional OAuth 2.0 web application demo that illustrates how to implement secure user authentication using Amazon Cognito as the identity provider. Built with Flask and Authlib, it showcases how to perform login, retrieve and inspect tokens, handle user session management, and access OpenID Connect (OIDC) claims. Designed for educational purposes, it also includes a token debug interface and an admin-only route that integrates with the OpenAI API for dynamic content generation. This demo is ideal for developers looking to understand OAuth/OIDC flows in a Python-based web environment.
+Instructions can be found here [OAuth Web Application Demo](https://github.com/kubiosec-codecamp/oauth-web-app.git)
 
 ### Logging and Tracing
 xxx
