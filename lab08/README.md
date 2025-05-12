@@ -63,6 +63,9 @@ export SERPER_API_KEY=xxxxxxxxxx
 ```
 python3 CRAI_01.py
 ```
+### Google A2A
+tbd ...
+
 ### Cool extra
 - https://microsoft.github.io/autogen/stable//user-guide/core-user-guide/components/command-line-code-executors.html#docker
 - https://arxiv.org/abs/2411.04468
