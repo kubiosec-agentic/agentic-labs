@@ -31,6 +31,7 @@ Instructions can be found here [OAuth Web Application Demo](https://github.com/k
 
 ### Logging and Tracing
 #### Traceloop
+This script demonstrates how to use OpenAI's GPT-4o model to generate a joke, while integrating Traceloop for observability and tracing. The create_joke function is decorated as a workflow, enabling detailed monitoring of the AI-powered joke generation process using OpenTelemetry standards.<br>
 Checkout [traceloop](https://www.traceloop.com/)
 ```
 export TRACELOOP_API_KEY=tl_xxxxxxxxxxxxx
