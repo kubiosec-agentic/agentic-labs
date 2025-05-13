@@ -23,7 +23,10 @@ async def init_servers(directory_path):
     )
     server_b = MCPServerSse(
         name="Server B",
-        params={"url": "http://localhost:8001/sse"},
+        params={
+            "url": "http://localhost:8001/sse",
+            "headers": {"Authorization": top-secret"}
+        },
     )
     server_c = MCPServerStdio(
         name="Server C",
