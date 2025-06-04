@@ -1,4 +1,4 @@
-# Welcome to Agentics-Labs Training
+# Welcome to Agentic-Labs Training
 
 **Agentics-Labs** is an advanced, hands-on training experience for those who want to go beyond the hype and dive deep into the **foundations of agentic AI**. Whether you're a **DevOps engineer**, **ethical hacker**, **network specialist**, **pen-tester**, or **developer**, this course is your gateway to mastering the **low-level internals** of the OpenAI ecosystem.
 
