@@ -20,7 +20,7 @@ Welcome to the lab and let's **#HACKTOLEARN** 🚀
 ## 🔐 Getting Access to the Lab via SSH
 
 Each lab student has access to a virtual machine, accessible over SSH. Use the credentials provided to you and use the following pattern to connect:
-### Terminal_1
+### Terminal_1 
 ```bash
 ssh -i agentics-key.pem -L 8080:localhost:8080 \
                -L 8081:localhost:8081 \
