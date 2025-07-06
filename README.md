@@ -43,7 +43,7 @@ cd agentic-labs/lab00_setup/
 ```
 cd ..
 ```
-### Terminal_2 and Terminal_3
+### To open Terminal_2 and Terminal_3 during labs use:
 ```bash
 ssh -i agentics-key.pem  ubuntu@x.x.x.x.x
 ```
