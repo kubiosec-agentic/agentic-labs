@@ -55,7 +55,7 @@ python3 mcp_03.py
 #### Run the agent (terminal_1)
 Indirect Prompt Injection (Agent Hijacking)
 ```
-python3 mcp_03.py 
+python3 mcp_04.py 
 ```
 ### MCP Debugging
 https://github.com/kubiosec-ai/mcp-debugging
