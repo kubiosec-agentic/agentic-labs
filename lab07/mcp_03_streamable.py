@@ -27,11 +27,11 @@ async def run(mcp_servers: list[MCPServerStreamableHttp]):
 async def init_servers():
     server_a = MCPServerStreamableHttp(
         name="Server A",
-        params={"url": "http://localhost:8000/mcp"},
+        params={"url": "http://localhost:8000/mcp/"},
     )
     server_b = MCPServerStreamableHttp(
         name="Server B",
-        params={"url": "http://localhost:8001/mcp"},
+        params={"url": "http://localhost:8001/mcp/"},
     )
     return server_a, server_b
 
