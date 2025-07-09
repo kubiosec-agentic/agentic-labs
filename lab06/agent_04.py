@@ -34,7 +34,7 @@ agent = Agent(
 async def main():
     # This should trip the guardrail
     try:
-#        await Runner.run(agent, "Hello, can you help me solve for x: 2x + 3 = 11?")
+        # await Runner.run(agent, "Hello, can you help me solve for x: 2x + 3 = 11?")
         await Runner.run(agent, "Hello, tell me a joke?")
 
         print("Guardrail didn't trip - this is unexpected")

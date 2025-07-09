@@ -103,6 +103,9 @@ llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0, base_url="http://127.0.0.
 
 ## Cleanup environment
 ```
+unset OPENAI_BASE_URL
+```
+```
 deactivate
 ```
 ```
