@@ -14,18 +14,14 @@ response = client.responses.create(
       ]
     },
     {
-      "id": "fs_6820af9d7fbc8191b9f05fac514db0ba0a638291e0ae4c37",
-      "type": "file_search_call",
-      "status": "completed",
-      "queries": [
-        "What is MCP?",
-        "MCP definition",
-        "meaning of MCP",
-        "MCP abbreviation",
-        "explanation of MCP"
-      ],
-    },
-   
+      "role": "system",
+      "content": [
+        {
+          "type": "input_text",
+          "text": "You are a helpful assistant that provides information about the Model Context Protocol (MCP)."
+        }
+      ]
+    }
   ],
   text={
     "format": {
@@ -37,7 +33,7 @@ response = client.responses.create(
     {
       "type": "file_search",
       "vector_store_ids": [
-        "vs_681a17ced92c8191ae16027451d95bec"
+        "vs_686ed51e3c548191ab313b20504a268a"
       ]
     }
   ],
