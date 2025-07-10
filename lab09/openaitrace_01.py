@@ -1,11 +1,8 @@
 import asyncio
 from agents import Agent, GuardrailFunctionOutput, InputGuardrail, Runner
 from agents.exceptions import InputGuardrailTripwireTriggered
-from langtrace_python_sdk import langtrace, with_langtrace_root_span
 from pydantic import BaseModel
 
-# Initialize Langtrace SDK
-langtrace.init()
 
 # Define the expected output format from the guardrail agent
 class HomeworkOutput(BaseModel):
@@ -52,7 +49,6 @@ triage_agent = Agent(
 )
 
 # Entry point with Langtrace tracing and guardrail exception handling
-@with_langtrace_root_span()
 async def main():
     queries = [
         "who was the first president of the united states?",
