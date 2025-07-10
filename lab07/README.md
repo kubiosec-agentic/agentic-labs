@@ -58,7 +58,7 @@ Indirect Prompt Injection (Agent Hijacking)
 python3 mcp_04_streamable.py 
 ```
 ### MCP Debugging
-https://github.com/kubiosec-ai/mcp-debugging
+https://github.com/mcp-firewall/mcp-debugging
 
 ## Cleanup environment
 ```
