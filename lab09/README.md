@@ -39,13 +39,11 @@ export TRACELOOP_API_KEY=tl_xxxxxxxxxxxxx
 ```
 python traceloop_01.py
 ```
-#### Langtrace
-This script demonstrates how to use the Langtrace SDK and the Agents framework to build a triage agent that routes user questions to specialized tutors, while enforcing input safety using a custom guardrail. The guardrail checks whether a question is related to homework, and if not, the input is blocked. Accepted inputs are routed to either a math or history tutor agent for detailed responses. The entire process is traced and logged using Langtrace for observability.
+#### OpenAI Tracing
+This script is using the OpenAI Agent framework to build a triage agent that routes user questions to specialized tutors, while enforcing input safety using a custom guardrail. The guardrail checks whether a question is related to homework, and if not, the input is blocked. Accepted inputs are routed to either a math or history tutor agent for detailed responses. The entire process is traced and logged using OpenAI for observability.
+
 ```
-export LANGTRACE_API_KEY=xxxxxxxxxxxx
-```
-```
-python langtrace_01.py
+python openai_trace_01.py
 ```
 
 
