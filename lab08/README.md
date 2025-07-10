@@ -50,21 +50,23 @@ python3 AG_04.py
 This lab shows how to execute Python code in a Docker container using AutoGen's DockerCommandLineCodeExecutor. It sets up a temporary workspace and runs a CodeBlock inside a python:3.11 Docker image. This approach is useful for isolated and secure code execution, especially when evaluating untrusted or dynamic code.
 ```
 python3 AG_05.py
-
 ```
+
 ### CrewAI
 This script uses CrewAI to coordinate two agents <br>
-— a Senior Researcher
+- a Senior Researcher
 - a Writer
 <br>
 Explore a topic (e.g., AI) and generate a blog post. <br>
 The researcher gathers insights using a search tool. The writer creates a markdown-formatted article from the findings. Tasks are run sequentially with agent memory and caching enabled.
+
 ```
 export SERPER_API_KEY=xxxxxxxxxx
 ```
 ```
 python3 CRAI_01.py
 ```
+
 ### Google A2A
 tbd ...
 
