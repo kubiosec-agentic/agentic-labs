@@ -53,11 +53,11 @@ python3 AG_05.py
 
 ```
 ### CrewAI
-This script uses CrewAI to coordinate two agents<br>
+This script uses CrewAI to coordinate two agents <br>
 — a Senior Researcher
 - a Writer
-
-Explore a topic (e.g., AI) and generate a blog post.
+<br>
+Explore a topic (e.g., AI) and generate a blog post. <br>
 The researcher gathers insights using a search tool. The writer creates a markdown-formatted article from the findings. Tasks are run sequentially with agent memory and caching enabled.
 ```
 export SERPER_API_KEY=xxxxxxxxxx
