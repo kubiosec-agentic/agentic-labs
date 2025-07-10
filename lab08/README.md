@@ -56,9 +56,10 @@ python3 AG_05.py
 This script uses CrewAI to coordinate two agents
 - a Senior Researcher
 - a Writer
-Explore a topic (e.g., AI) and generate a blog post. <br>
-The researcher gathers insights using a search tool. <br>
-The writer creates a markdown-formatted article from the findings. <br>
+
+Explore a topic (e.g., AI) and generate a blog post. 
+The researcher gathers insights using a search tool. 
+The writer creates a markdown-formatted article from the findings.
 Tasks are run sequentially with agent memory and caching enabled.<br>
 
 ```
