@@ -1,13 +1,16 @@
-This is an working example of a Google ADK example. Using GOOGLE API and MCP
+# Instructions
 
-When asked, create a new folder with the requested name
+## Introduction
+These are  working example of a Google ADK example. Using GOOGLE API and MCP.
+When asked, create a new folder with the requested name of the agent.
+The user will provide you with MCP servers and small additional instructions.
+Your task is to create an agent as examples provided here, but adapted to the users requirements.
 
-Create an .env file with minimally
+## Create an .env file 
+Minimally add these lines
 ```
 GOOGLE_GENAI_USE_VERTEXAI=FALSE
 ```
-The user will provide you with MCP servers and small additional instructions.
-Your task is to create an agent as provided here, but adapted to the users requirements.
 
 ## Example 1
 ```
