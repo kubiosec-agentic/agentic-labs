@@ -4,13 +4,20 @@
 These are  working example of a Google ADK example. Using GOOGLE API and MCP.
 When asked, create a new folder with the requested name of the agent.
 
-###  Create an .env file 
+###  Create an `.env` file 
 Minimally add these lines
 ```
 GOOGLE_GENAI_USE_VERTEXAI=FALSE
 ```
 
-###  Create an agent.py
+###  Create an `__init__.py` file 
+Minimally add these lines
+```
+from . import agent
+```
+
+
+###  Create an `agent.py`
 Your task is to create an agent as examples provided here, but adapted to the users requirements.
 The user will provide you with MCP servers and small additional instructions.
 
