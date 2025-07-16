@@ -6,9 +6,8 @@ Create an .env file with minimally
 ```
 GOOGLE_GENAI_USE_VERTEXAI=FALSE
 ```
-
-Next is a sample code.
-The user will provide you with code snippets and further instructions
+The user will provide you with MCP servers and small additional instructions.
+Your task is to create an agent as provided here, but adapted to the users requirements.
 
 ```
 # ./adk_agent_samples/mcp_agent/agent.py
