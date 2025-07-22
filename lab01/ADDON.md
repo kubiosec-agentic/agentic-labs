@@ -65,7 +65,8 @@ curl -XPOST https://api.openai.com/v1/chat/completions \
             "type": "text",
             "text": "That rotten tomatoes movie really sucks"
           }
-    ],
+      ]
+    },
     "temperature": 1,
     "max_tokens": 1024,
     "top_p": 1,
