@@ -50,7 +50,7 @@ curl -XPOST https://api.openai.com/v1/chat/completions \
         "content": [
           {
             "type": "text",
-            "text": "You are a helpful assistant"
+            "text": "You are a helpful assistant and helps evaluate the sentiment of user-provided text by answering Postive or Negative \n\n"
           }
         ]
       },
@@ -59,14 +59,15 @@ curl -XPOST https://api.openai.com/v1/chat/completions \
         "content": [
           {
             "type": "text",
-            "text": "This is awesome! // Positive \nThis is bad! // Negative \n Wow that movie was rad! // Negative\n What a enlightening show! // Positive"
+            "text": "Please find some examples. \nThis is awesome! // Positive \nThis is bad! // Negative \n Wow that movie was rad! // Positive \n What a terrible show! // Negative\n"
           },
           {
             "type": "text",
-            "text": "That rotten tomatoes movie really sucks"
+            "text": "What a horrifying boring show!"
           }
-      ]
-    },
+        ]
+      }
+    ],
     "temperature": 1,
     "max_tokens": 1024,
     "top_p": 1,
