@@ -267,8 +267,8 @@ docker run --rm -it \
         --web-host 0.0.0.0 \
         --mode reverse:https://api.openai.com:443
 ```
-Open your browser at `http://127.0.0.1:8081/?token=xxxxxx`<br>
-In **(Terminal_1)**, update the base URL for you client application.
+Open your browser at `http://127.0.0.1:8081/?token=xxxxxx`<br><br>
+In **Terminal_1**, update the base URL for you client application.
 ```
 export OPENAI_BASE_URL="http://127.0.0.1:8080/v1"
 ```
