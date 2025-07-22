@@ -132,7 +132,7 @@ curl https://api.openai.com/v1/responses \
   "final_answer": "x = -15/4 or x = -3.75"
 }
 ```
-#### Structured output in python
+#### Structured output using Pydantic
 Pydantic is a Python library for data validation and data parsing using Python type hints. <br>
 It allows you to define data models with expected fields and types, and it will:
 - validate incoming data
