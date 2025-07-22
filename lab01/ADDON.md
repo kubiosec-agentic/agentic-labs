@@ -142,7 +142,7 @@ curl -XPOST https://api.openai.com/v1/chat/completions \
           },
           {
             "type": "text",
-            "text": "What a terrible show!"
+            "text": "Evaluate: What a terrible show!"
           },
           {
             "type": "text",
