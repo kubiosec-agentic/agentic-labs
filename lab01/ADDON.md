@@ -52,17 +52,13 @@ curl -XPOST https://api.openai.com/v1/chat/completions \
         "content": [
           {
             "type": "text",
-            "text": "You are a helpful assistant and helps evaluate the sentiment of user-provided text\n\n"
+            "text": "You are a helpful assistant and helps evaluate the sentiment of user-provided text. Only answer POSITIVE or NEGATIVE\n\n"
           }
         ]
       },
       {
         "role": "user",
         "content": [
-          {
-            "type": "text",
-            "text": "Please find some examples. \nThis is awesome! // Positive \nThis is bad! // Negative \n Wow that movie was rad! // Positive \n What a terrible show! // Negative\n"
-          },
           {
             "type": "text",
             "text": "Evaluate: What a horrifying show!"
