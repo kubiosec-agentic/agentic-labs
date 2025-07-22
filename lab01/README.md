@@ -225,6 +225,29 @@ curl https://api.openai.com/v1/chat/completions \
     "max_tokens": 100
   }' | jq -r .
 ```
+#### Streaming
+This example introduces streaming , allowing you to receive the model’s output token by token as it generates—great for faster feedback and interactive experiences.
+```
+curl -XPOST "https://api.openai.com/v1/chat/completions" \
+    -H "Content-Type: application/json" \
+    -H "Authorization: Bearer $OPENAI_API_KEY" \
+  -d '{
+    "model": "gpt-4o",
+    "messages": [{"role": "user", "content": "Write a poem about the stars."}],
+    "stream": true
+  }'
+```
+Adding some `grep` magic:
+```
+curl -XPOST "https://api.openai.com/v1/chat/completions" \
+    -H "Content-Type: application/json" \
+    -H "Authorization: Bearer $OPENAI_API_KEY" \
+  -d '{
+    "model": "gpt-4o",
+    "messages": [{"role": "user", "content": "Write a poem about the stars."}],
+    "stream": true
+  }' | grep -oP '(?<="content":")[^"]*'
+```
 #### Chat completion via Python
 This lab demonstrates how to make a Chat Completions API call using Python, and how to intercept and inspect the request using `mitmproxy` for debugging or learning purposes.
 ```
