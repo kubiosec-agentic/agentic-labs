@@ -130,7 +130,7 @@ curl -XPOST https://api.openai.com/v1/chat/completions \
         "content": [
           {
             "type": "text",
-            "text": "Evaluate: What a horrifying show!"
+            "text": "Evaluate: What a horrifying but beatifull show!"
           }
         ]
       }
@@ -143,8 +143,8 @@ curl -XPOST https://api.openai.com/v1/chat/completions \
   }' | jq '.choices[0].message.content'
 ```
 ```
-"Positive"
-"Negative"
+"POSITIVE"
+"NEGATIVE"
 ```
 ## Things to try:
 ```
