@@ -74,7 +74,7 @@ curl -XPOST https://api.openai.com/v1/chat/completions \
     "presence_penalty": 0
   }' | jq '.choices[0].message.content'
 ```
-But
+But `What a beautiful but horrifying show!`
 ```
 curl -XPOST https://api.openai.com/v1/chat/completions \
   -H "Content-Type: application/json" \
@@ -108,7 +108,7 @@ curl -XPOST https://api.openai.com/v1/chat/completions \
     "presence_penalty": 0
   }' | jq '.choices[0].message.content'
 ```
-Do not trust the format of the output!
+Do not always trust the format of the output!
 ### Example 3
 Clear and concise `system` role
 ```
