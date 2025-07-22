@@ -108,7 +108,9 @@ curl -XPOST https://api.openai.com/v1/chat/completions \
     "presence_penalty": 0
   }' | jq '.choices[0].message.content'
 ```
-### Example 3 
+Do not trust the format of the output!
+### Example 3
+Clear and concise `system` role
 ```
 curl -XPOST https://api.openai.com/v1/chat/completions \
   -H "Content-Type: application/json" \
