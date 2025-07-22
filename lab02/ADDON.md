@@ -132,3 +132,7 @@ curl https://api.openai.com/v1/responses \
   "final_answer": "x = -15/4 or x = -3.75"
 }
 ```
+#### Structured output in python
+```
+python3 ./resp_03.py
+```
