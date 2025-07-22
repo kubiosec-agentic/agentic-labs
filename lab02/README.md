@@ -126,6 +126,10 @@ This lab shows how to build a multi-turn conversation using the `previous_respon
 ```
 python3 ./resp_01.py
 ```
+Also check out.
+```
+python3 ./resp_02.py
+```
 ## Cleanup environment
 ```
 deactivate
