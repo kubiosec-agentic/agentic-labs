@@ -92,7 +92,7 @@ curl -XPOST https://api.openai.com/v1/chat/completions \
         "content": [
           {
             "type": "text",
-            "text": "You are a helpful assistant and helps evaluate the sentiment of user-provided text. \n\n"
+            "text": "You are a helpful assistant and helps evaluate the sentiment of user-provided text by answering Postive or Negative \n\n"
           }
         ]
       },
@@ -129,7 +129,7 @@ curl -XPOST https://api.openai.com/v1/chat/completions \
         "content": [
           {
             "type": "text",
-            "text": "You are a helpful assistant"
+            "text": "You are a helpful assistant and helps evaluate the sentiment of user-provided text by answering Postive or Negative \n\n"
           }
         ]
       },
