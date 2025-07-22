@@ -63,7 +63,7 @@ curl -XPOST https://api.openai.com/v1/chat/completions \
           },
           {
             "type": "text",
-            "text": "What a horrifying boring show!"
+            "text": "Evaluate: What a horrifying show!"
           }
         ]
       }
