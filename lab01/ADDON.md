@@ -105,7 +105,7 @@ curl -XPOST https://api.openai.com/v1/chat/completions \
           },
           {
             "type": "text",
-            "text": "What a beautiful but boring show!"
+            "text": "Evaluate: What a beautiful but boring show!"
           }
         ]
       }
