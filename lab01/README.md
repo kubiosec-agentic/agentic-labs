@@ -250,14 +250,14 @@ curl -XPOST "https://api.openai.com/v1/chat/completions" \
   }' | grep -oP '(?<="content":")[^"]*'
 ```
 #### Chat completion via Python
-This lab demonstrates how to make a Chat Completions API call using Python, and how to intercept and inspect the request using `mitmproxy` for debugging or learning purposes.
+This lab demonstrates how to make a Chat Completions API call using Python, and how to intercept and inspect the request using `mitmproxy` for debugging or learning purposes. (Terminal_1)
 ```
 export OPENAI_BASE_URL="https://api.openai.com/v1"
 ```
 ```
 python3 chat_01.py
 ```
-Inspect the Chat completion call with `mitmproxy`
+Inspect the Chat completion call with `mitmproxy` (Terminal_2)
 ```
 docker run --rm -it \
     -v ~/.mitmproxy:/home/mitmproxy/.mitmproxy \
