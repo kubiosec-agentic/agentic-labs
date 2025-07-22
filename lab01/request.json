@@ -1,27 +1,28 @@
-{"model": "gpt-4o",
-    "messages": [
-      {
-        "role": "system",
-        "content": [
-          {
-            "type": "text",
-            "text": "You are a helpful assistant"
-          }
-        ]
-      },
-      {
-        "role": "user",
-        "content": [
-          {
-            "type": "text",
-            "text": "What is AI"
-          }
-        ]
-      }
-    ],
-    "temperature": 1,
-    "max_tokens": 2048,
-    "top_p": 1,
-    "frequency_penalty": 0,
-    "presence_penalty": 0
-  }
+{
+"model": "gpt-4o",
+"messages": [
+    {
+    "role": "system",
+    "content": [
+        {
+        "type": "text",
+        "text": "You are a helpful assistant"
+        }
+    ]
+    },
+    {
+    "role": "user",
+    "content": [
+        {
+        "type": "text",
+        "text": "What is AI"
+        }
+    ]
+    }
+],
+"temperature": 1,
+"max_tokens": 2048,
+"top_p": 1,
+"frequency_penalty": 0,
+"presence_penalty": 0
+}
