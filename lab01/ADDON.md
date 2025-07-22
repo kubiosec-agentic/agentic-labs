@@ -59,7 +59,12 @@ curl -XPOST https://api.openai.com/v1/chat/completions \
         "content": [
           {
             "type": "text",
-            "text": "This is awesome! // Negative \nThis is bad! // Positive \n Wow that movie was rad! // Positive \n What a enlightening show! //"
+            "text": "This is awesome! // Positive \nThis is bad! // Negative \n Wow that movie was rad! // Negative\n What a enlightening show! // Positive"
+          },
+        "content": [
+          {
+            "type": "text",
+            "text": "That rotten tomatoes movie really sucks"
           }
         ]
       }
