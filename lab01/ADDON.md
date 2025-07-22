@@ -80,7 +80,7 @@ curl -XPOST https://api.openai.com/v1/chat/completions \
 ```
 Try things like:
 ```
-curl -XPOST https://api.openai.com/v1/chat/completions \
+curl -X POST https://api.openai.com/v1/chat/completions \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $OPENAI_API_KEY" \
   -d '{
@@ -88,25 +88,15 @@ curl -XPOST https://api.openai.com/v1/chat/completions \
     "messages": [
       {
         "role": "system",
-        "content": [
-          {
-            "type": "text",
-            "text": "You are a helpful assistant"
-          }
-        ]
+        "content": "You are a helpful assistant"
       },
       {
         "role": "user",
-        "content": [
-          {
-            "type": "text",
-            "text": "This is awesome! // Negative \nThis is bad! // Positive \n Wow that movie was rad! // Positive \n What a terrible show! //"
-          },
-          {
-            "type": "text",
-            "text": "What a terrible show!"
-          }
-        ]
+        "content": "This is awesome! // Positive\nThis is bad! // Negative\nWow that movie was rad! // Negative\nWhat an enlightening show! // Positive\nThat rotten tomatoes movie really sucks"
+      },
+      {
+        "role": "user",
+        "content": Evaluate: That rotten tomatoes movie really sucks"
       }
     ],
     "temperature": 1,
@@ -115,6 +105,7 @@ curl -XPOST https://api.openai.com/v1/chat/completions \
     "frequency_penalty": 0,
     "presence_penalty": 0
   }' | jq '.choices[0].message.content'
+
 ```
 ```
 curl -XPOST https://api.openai.com/v1/chat/completions \
