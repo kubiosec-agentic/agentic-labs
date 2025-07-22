@@ -1,3 +1,4 @@
+import json
 from openai import OpenAI
 from pydantic import BaseModel
 
@@ -20,7 +21,10 @@ response = client.responses.parse(
         },
         {"role": "user", "content": "how can I solve 8x + 7 = -23"},
     ],
-    text_format=MathReasoning,
+    text_format=MathReasoning,  
 )
 
-math_reasoning = response.output_parsed
+# Convert parsed output to JSON string
+json_blob = json.dumps(response.output_parsed.dict(), indent=2)
+
+print(json_blob)
