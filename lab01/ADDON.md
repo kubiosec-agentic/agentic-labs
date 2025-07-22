@@ -61,13 +61,10 @@ curl -XPOST https://api.openai.com/v1/chat/completions \
             "type": "text",
             "text": "This is awesome! // Positive \nThis is bad! // Negative \n Wow that movie was rad! // Negative\n What a enlightening show! // Positive"
           },
-        "content": [
           {
             "type": "text",
             "text": "That rotten tomatoes movie really sucks"
           }
-        ]
-      }
     ],
     "temperature": 1,
     "max_tokens": 1024,
