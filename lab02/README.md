@@ -58,6 +58,7 @@ curl -XPOST "https://api.openai.com/v1/responses" \
         "input": "what are important breakthrough of ai in 2025?"
     }' | jq -r '.output[].content[0].text'
 ```
+Extracting the link annotations.
 ```
 curl -XPOST "https://api.openai.com/v1/responses" \
     -H "Content-Type: application/json" \
