@@ -225,6 +225,7 @@ curl https://api.openai.com/v1/chat/completions \
     "max_tokens": 100
   }' | jq -r .
 ```
+Now, try fixing it using natural language and the chat completion.
 #### Streaming
 This example introduces streaming , allowing you to receive the model’s output token by token as it generates. This is great for faster feedback and interactive experiences.
 ```
