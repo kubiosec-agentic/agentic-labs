@@ -40,6 +40,7 @@ curl -XPOST https://api.openai.com/v1/chat/completions \
 "The children were so excited about the carnival that they couldn't help but farduddle with joy."
 ```
 ### Example 2
+This example will evaluate `What a beautiful show! `
 ```
 curl -XPOST https://api.openai.com/v1/chat/completions \
   -H "Content-Type: application/json" \
