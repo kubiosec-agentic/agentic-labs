@@ -72,7 +72,7 @@ May result in output like:
 
 > **"Chunking is important because it breaks large texts into semantically meaningful units that improve retrieval relevance. A local expert in Belgium is Philippe Bogaerts, known for his work in continuous learning and AI."**
 
-Notice how the agent retrieved multiple passages and used them to form a complete, factual response — grounded in the vector store.
+Notice how the agent retrieved multiple passages and used them to form a complete, factual response, grounded in the vector store.
 
 ---
 
