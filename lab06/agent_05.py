@@ -4,14 +4,13 @@ import os
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 # Load the document
-with open("long_document.txt", "r", encoding="utf-8") as f:
+with open("data/docker-curl-https.txt", "r", encoding="utf-8") as f:
     text = f.read()
 
 # Define prompt instructions
-instructions = """You are a helpful assistant that summarizes documents.
-- First provide a concise summary (1–2 sentences).
-- Then list the key points (5–10 bullets).
-- Finally, provide any notable entities or themes.
+instructions = """You are a security and malware analyst.
+- First provide a concise summary of the process being traced
+- Then list the key points and phases in the trace (5–10 bullets).
 - Avoid opinions or speculation, stick to the facts.
 """
 
