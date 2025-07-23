@@ -437,6 +437,7 @@ RESULTS=$(curl https://api.openai.com/v1/evals/$EVAL/runs/$EVALRUN \
 ```
 echo $RESULTS | jq -r '.report_url'
 echo $RESULTS | jq -r '.result_counts'
+echo $RESULTS | jq -r '.report_url'
 ```
 <details>
 <summary>
