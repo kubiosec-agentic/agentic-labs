@@ -20,7 +20,7 @@ source .lab04/bin/activate
 ## Lab instructions
 #### Example 1: RAG based search using Llama-index and OpenAI synthesis
 This code builds a vector index of documents using OpenAI embeddings, then queries it using either pure vector search (retrieval) or an LLM to generate natural-language answers.
-It prints both the top-matching documents and, if enabled, a synthesized response from the LLM.  The vector store framework used in this code is `LlamaIndex`.
+It prints both the top-matching documents and, if enabled, a synthesized response from the LLM.  The vector store framework used in this code is `LlamaIndex`.<br>
 It relies on the default SimpleNodeParser (unless overridden), which typically uses:
 - Chunk size: 512 tokens
 - Chunk overlap: 20 tokens
