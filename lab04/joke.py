@@ -29,7 +29,7 @@ def embed(texts: List[str]) -> np.ndarray:
 
 doc_ids = list(docs.keys())
 doc_vecs = embed([docs[i] for i in doc_ids])          # shape (5, 1536)
-doc_vecs /= np.linalg.norm(doc_vecs, axis=1, keepdims=True)  # L2‑norm
+doc_vecs /= np.linalg.norm(doc_vecs, axis=1, keepdims=True)  # "Row-wise L2-normalisation" = normalize each row vector to unit length. It's done to prepare for cosine similarity and to make vector comparisons fair and stable.
 
 # ------------------------------------------------------------------
 # 2. Tool: vector_search
