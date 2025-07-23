@@ -130,8 +130,15 @@ Also check out.
 ```
 python3 ./resp_02.py
 ```
+#### Code Executor
+The Code Interpreter tool requires a container object. A container is a fully sandboxed virtual machine that the model can run Python code in. 
+This container can contain files that you upload, or that it generates.
+```
+python3 ./resp03.py
+```
+
 #### Structured Ouptput
-See (./ADDON.md)[./ADDON.md]
+See [./ADDON.md](./ADDON.md)
 
 ## Cleanup environment
 ```
