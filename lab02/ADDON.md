@@ -139,5 +139,5 @@ It allows you to define data models with expected fields and types, and it will:
 - parse it into structured objects
 - raise clear errors if the data doesn't match
 ```
-python3 ./resp_03.py
+python3 ./resp_04.py
 ```
