@@ -12,7 +12,7 @@ client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 EMBED_MODEL = "text-embedding-3-small"   # cheap, 1‑k ctx
 
 # ------------------------------------------------------------------
-# 1. Tiny “vector store” composed of 4 short documents
+# 1. Tiny “vector store” composed of few short documents
 # ------------------------------------------------------------------
 docs: Dict[str, str] = {
     "doc_1": "Retrieval‑Augmented Generation uses external knowledge to ground LLM outputs.",
@@ -29,7 +29,7 @@ def embed(texts: List[str]) -> np.ndarray:
 
 doc_ids = list(docs.keys())
 doc_vecs = embed([docs[i] for i in doc_ids])          # shape (5, 1536)
-doc_vecs /= np.linalg.norm(doc_vecs, axis=1, keepdims=True)  # "Row-wise L2-normalisation" = normalize each row vector to unit length. It's done to prepare for cosine similarity and to make vector comparisons fair and stable.
+doc_vecs /= np.linalg.norm(doc_vecs, axis=1, keepdims=True)  # Row-wise L2-normalisation 
 
 # ------------------------------------------------------------------
 # 2. Tool: vector_search
