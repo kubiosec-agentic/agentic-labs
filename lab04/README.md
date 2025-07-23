@@ -31,11 +31,6 @@ It relies on the default SimpleNodeParser (unless overridden), which typically u
 ```
 python3 ./RAG_01.py
 ```
-Feel free to experiment with the overlap and chunk size (remove `./storage` directory to remove the vector store)
-```
-python3 ./RAG_01_experiment.py
-
-```
 #### Example 2: RAG based search using Chroma
 This code uses the LangChain framework with the Chroma vector store to index and search text documents using OpenAI embeddings.
 It loads a `.txt` file, splits it into chunks, embeds those chunks, stores them in Chroma, and performs both keyword-based and vector-based similarity searches on a user query.
