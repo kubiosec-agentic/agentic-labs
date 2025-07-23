@@ -22,7 +22,7 @@ This prepares the data for efficient **cosine similarity** search.
 
 ### 2. Tool: `vector_search`
 
-A function `vector_search` performs similarity search by comparing the query embedding with document embeddings, returning the top‑`k` most relevant documents.
+A function `vector_search` performs similarity search by comparing the query embedding with document embeddings, returning the `top‑k` most relevant documents.
 
 The tool is defined as a JSON spec (`tool_spec`) and registered as an OpenAI **function-callable tool**. The LLM can invoke this tool when it thinks it needs additional context.
 
