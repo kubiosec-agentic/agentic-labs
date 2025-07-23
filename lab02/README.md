@@ -130,6 +130,9 @@ Also check out.
 ```
 python3 ./resp_02.py
 ```
+#### Structured Ouptput
+See (./ADDON.md)[./ADDON.md]
+
 ## Cleanup environment
 ```
 deactivate
