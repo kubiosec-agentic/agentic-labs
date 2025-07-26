@@ -32,7 +32,7 @@ python3 Tools_02.py
 #### Example 3: Small CTF
 Start the ChatBot. Try to hack it via the user interface.
 ```
-docker run -it -p 8501:8501 \
+docker run -it -p 8501:8501 -p 5000:5000 \
   --rm \
   -e OPENAI_API_KEY=$OPENAI_API_KEY \
   --name demochatbox \
