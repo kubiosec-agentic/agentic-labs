@@ -18,14 +18,14 @@ export OPENAPI_API_KEY="xxxxxxxxx"
 ```
 source .lab05/bin/activate
 ```
-To avoide the LangSmith warnings
+To avoide the *_LangSmith_* warnings
 ```
 export LANGCHAIN_TRACING_V2" = "false"
 export LANGCHAIN_API_KEY"= ""
 ```
 In your code you can add:
 ```
-# Suppress *LangSmith* warnings (build, test, debug, and monitor framework developed LangChain)
+# Suppress LangSmith warnings (build, test, debug, and monitor framework developed LangChain)
 import warnings
 warnings.filterwarnings("ignore", category=UserWarning, module="langsmith")
 ```
