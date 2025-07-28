@@ -18,7 +18,7 @@ export OPENAPI_API_KEY="xxxxxxxxx"
 ```
 source .lab05/bin/activate
 ```
-To avoide the *_LangSmith_* warnings
+To avoide the **_LangSmith_** warnings
 ```
 export LANGCHAIN_TRACING_V2" = "false"
 export LANGCHAIN_API_KEY"= ""
