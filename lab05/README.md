@@ -18,6 +18,18 @@ export OPENAPI_API_KEY="xxxxxxxxx"
 ```
 source .lab05/bin/activate
 ```
+To avoide the LangSmith warnings
+```
+export LANGCHAIN_TRACING_V2" = "false"
+export LANGCHAIN_API_KEY"= ""
+```
+In your code you can add:
+```
+# Suppress LangSmith warnings
+import warnings
+warnings.filterwarnings("ignore", category=UserWarning, module="langsmith")
+```
+
 ## Lab instructions
 #### Example 1: Langchain agent without tool support
 This code sets up a minimal LangChain ReAct agent using the langchain framework and OpenAI's gpt-3.5-turbo model. The agent is specifically instructed to handle mathematical reasoning tasks without using external tools.
