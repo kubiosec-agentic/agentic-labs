@@ -1,4 +1,3 @@
-
 from langchain_openai import ChatOpenAI
 from pydantic import BaseModel
 from langchain.agents import create_react_agent, AgentExecutor, Tool
