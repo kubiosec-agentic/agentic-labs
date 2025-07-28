@@ -25,7 +25,7 @@ export LANGCHAIN_API_KEY"= ""
 ```
 In your code you can add:
 ```
-# Suppress **_LangSmith_** warnings (build, test, debug, and monitor framework developed LangChain)
+# Suppress _LangSmith_ warnings (build, test, debug, and monitor framework developed LangChain)
 import warnings
 warnings.filterwarnings("ignore", category=UserWarning, module="langsmith")
 ```
