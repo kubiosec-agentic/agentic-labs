@@ -1,3 +1,5 @@
+![OpenAI](https://img.shields.io/badge/OpenAI-grey) ![Evaluations](https://img.shields.io/badge/Evaluations-yellow) ![Curl](https://img.shields.io/badge/Curl-orange) 
+
 # LAB03: Prompt Evaluation
 ## Introduction
 This lab walks through setting up and running OpenAI Evals to test how well models perform on classification tasks. In this example we focus on IT ticket categorization.
