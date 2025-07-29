@@ -167,6 +167,8 @@ curl -XPOST https://api.openai.com/v1/chat/completions \
   -H "Authorization: Bearer $OPENAI_API_KEY" \
   -d @request.json
 ```
+#### Things to think about
+See [./ADDON.md](./ADDON.md)
 
 #### Image analysis
 This lab illustrates how to perform image analysis with the Chat Completions API by sending an image URL and requesting a specific extraction task, such as reading a license plate.
