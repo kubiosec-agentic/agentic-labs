@@ -32,7 +32,9 @@ warnings.filterwarnings("ignore", category=UserWarning, module="langsmith")
 
 ## Lab instructions
 #### Example 1: LangChain chain without tool support
-This next code uses LangChain abstractions to construct **_a processing chain_** that takes an English input string, formats it into a translation prompt, sends it to OpenAI's GPT-4 model for French translation, parses the model's output, and prints the result, demonstrating how LangChain's prompt templates, runnables, and output parsers can be orchestrated for LLM driven language tasks.
+This code uses LangChain abstractions to construct a processing chain that takes an English input string, formats it into a translation prompt, sends it to OpenAI’s GPT-4 model for French translation, parses the model’s output, and prints the result. It demonstrates how LangChain’s prompt templates, runnables, and output parsers can be orchestrated for LLM-driven language tasks.
+
+This is a low-level LangChain pattern that manually wires together the prompt, model call, and output parsing. While it may seem basic, it’s foundational—higher-level abstractions like LCEL chains and agents are built on top of this pattern. Mastering it helps you understand and customize more complex LangChain workflows.
 ```
 python3 LC_01_core.py
 ```
