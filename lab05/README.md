@@ -1,3 +1,6 @@
+![OpenAI](https://img.shields.io/badge/OpenAI-lightblue)
+![LangChain](https://img.shields.io/badge/LangChain-lightgrey)
+
 # LAB05: Tool Based Agents
 ## Introduction
 This lab explores tool-augmented agents and API call inspection using LangChain and OpenAI. You’ll experiment with:
