@@ -46,12 +46,12 @@ python3 LC_01.py
 #### Example 3: Langchain agent without tool support
 This is a simple example sets up a LangChain ReAct agent using GPT-4o with access  It uses a prompt template from LangChain Hub and executes queries with step-by-step reasoning and code execution.
 ```
-python3 Tools_01.py
+python3 LA_01.py
 ```
 #### Example 4: Langchain agent with tool support
 This next example sets up a LangChain ReAct agent using GPT-4o with access to a Python REPL tool for solving math problems. It uses a prompt template from LangChain Hub and executes queries with step-by-step reasoning and code execution.
 ```
-python3 Tools_02.py
+python3 LA_02.py
 ```
 #### Example 5: Small CTF
 Start the ChatBot. Try to hack it via the user interface.
@@ -68,7 +68,7 @@ You can connect to `http://127.0.0.1:8501/`<br>
 #### Example 6: Small CTF - Optional (middleware function only)
 Start the ChatBot. Try to hack it via the api (openai compatible).
 ```
-python3 ./Tools_03.py
+python3 ./LA_03.py
 ```
 ```
 curl -XPOST http://127.0.0.1:5000/v1/chat/completions  \
@@ -92,12 +92,12 @@ curl -XPOST http://127.0.0.1:5000/v1/chat/completions  \
 #### Example 5: Langchain agent with Wikipedia support
 This code sets up a LangChain ReAct agent powered by GPT-3.5-turbo, with access to the Wikipedia tool. It uses a custom prompt template to guide the agent through reasoning and action steps to answer complex questions using external knowledge sources.
 ```
-python3 Tools_04.py
+python3 LA_04.py
 ```
 #### Example 6: Openai with custom tools support
 This script sets up a tool-augmented OpenAI chat workflow using the chat.completions API with function calling. It defines a local SQL simulation tool (find_product), registers it in the OpenAI tool schema, and allows GPT (e.g., GPT-4o) to automatically call this function to answer product-related queries. The tool is executed locally, and the result is sent back to the model for final response generation.
 ```
-python3 Tools_05.py
+python3 LA_05.py
 ```
 #### Example 7: Openai with custom tools support DEEPDIVE
 This setup enables inspection of OpenAI API calls by routing them through a local MITM proxy (mitmproxy) in reverse mode. <br>
@@ -118,10 +118,10 @@ You can nw connect to `http://127.0.0.1:8081/?token=<see_your_terminal>`
 export OPENAI_BASE_URL="http://127.0.0.1:8080/v1"
 ```
 ```
-python3 Tools_05.py
+python3 LA_05.py
 ```
 #### Optional for hackers
-Modify `Tools_02.py` and `Tools_04.py`
+Modify `LA_02.py` and `LA_04.py`
 ```
 llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0, base_url="http://127.0.0.1:8080/v1")
 ```
