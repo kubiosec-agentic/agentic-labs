@@ -31,17 +31,27 @@ warnings.filterwarnings("ignore", category=UserWarning, module="langsmith")
 ```
 
 ## Lab instructions
-#### Example 1: Langchain agent without tool support
+#### Example 1: LangChain chain without tool support
 This next code uses LangChain abstractions to construct **_a processing chain_** that takes an English input string, formats it into a translation prompt, sends it to OpenAI's GPT-4 model for French translation, parses the model's output, and prints the result, demonstrating how LangChain's prompt templates, runnables, and output parsers can be orchestrated for LLM driven language tasks.
 ```
 python3 LC_01_core.py
 ```
-#### Example 2: Langchain agent with tool support
+#### Example 2: LangChain chain with tool integration and structured output example
+This script demonstrates how to use a LangChain chain with tool integration and structured output: it connects an LLM to a simple weather tool, handles tool invocation and result parsing, and feeds the result back into the chain for a final response.
+```
+python3 LC_01.py
+```
+#### Example 3: Langchain agent without tool support
+This is a simple example sets up a LangChain ReAct agent using GPT-4o with access  It uses a prompt template from LangChain Hub and executes queries with step-by-step reasoning and code execution.
+```
+python3 Tools_01.py
+```
+#### Example 4: Langchain agent with tool support
 This next example sets up a LangChain ReAct agent using GPT-4o with access to a Python REPL tool for solving math problems. It uses a prompt template from LangChain Hub and executes queries with step-by-step reasoning and code execution.
 ```
 python3 Tools_02.py
 ```
-#### Example 3: Small CTF
+#### Example 5: Small CTF
 Start the ChatBot. Try to hack it via the user interface.
 ```
 docker run -it -p 8501:8501 \
@@ -52,7 +62,8 @@ docker run -it -p 8501:8501 \
   /bin/bash -c "./start.sh & tail -f /dev/null"
 ```
 You can connect to `http://127.0.0.1:8501/`<br>
-#### Example 4: Small CTF - Optional (middleware function only)
+
+#### Example 6: Small CTF - Optional (middleware function only)
 Start the ChatBot. Try to hack it via the api (openai compatible).
 ```
 python3 ./Tools_03.py
