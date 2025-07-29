@@ -97,7 +97,7 @@ python3 LA_04.py
 #### Example 6: Openai with custom tools support
 This script sets up a tool-augmented OpenAI chat workflow using the chat.completions API with function calling. It defines a local SQL simulation tool (find_product), registers it in the OpenAI tool schema, and allows GPT (e.g., GPT-4o) to automatically call this function to answer product-related queries. The tool is executed locally, and the result is sent back to the model for final response generation.
 ```
-python3 LA_05.py
+python3 OA_01.py
 ```
 #### Example 7: Openai with custom tools support DEEPDIVE
 This setup enables inspection of OpenAI API calls by routing them through a local MITM proxy (mitmproxy) in reverse mode. <br>
@@ -112,13 +112,13 @@ docker run --rm -it \
         --web-host 0.0.0.0 \
         --mode reverse:https://api.openai.com:443
 ```
-You can nw connect to `http://127.0.0.1:8081/?token=<see_your_terminal>`
+You can now connect to `http://127.0.0.1:8081/?token=<see_your_terminal>`
 #### Continue in terminal_1
 ```
 export OPENAI_BASE_URL="http://127.0.0.1:8080/v1"
 ```
 ```
-python3 LA_05.py
+python3 OA_01.py
 ```
 #### Optional for hackers
 Modify `LA_02.py` and `LA_04.py`
