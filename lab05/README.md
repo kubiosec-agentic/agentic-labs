@@ -1,5 +1,9 @@
 ![OpenAI](https://img.shields.io/badge/OpenAI-lightblue)
 ![LangChain](https://img.shields.io/badge/LangChain-lightgrey)
+![Tools](https://img.shields.io/badge/Tools-purple)
+![Agents](https://img.shields.io/badge/Agents-orange)
+![Python](https://img.shields.io/badge/Python-blue) 
+
 
 # LAB05: Tool Based Agents
 ## Introduction
