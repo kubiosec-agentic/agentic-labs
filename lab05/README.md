@@ -32,9 +32,9 @@ warnings.filterwarnings("ignore", category=UserWarning, module="langsmith")
 
 ## Lab instructions
 #### Example 1: Langchain agent without tool support
-This code sets up a minimal LangChain ReAct agent using the langchain framework and OpenAI's gpt-3.5-turbo model. The agent is specifically instructed to handle mathematical reasoning tasks without using external tools.
+This next code uses LangChain abstractions to construct **_a processing chain_** that takes an English input string, formats it into a translation prompt, sends it to OpenAI's GPT-4 model for French translation, parses the model's output, and prints the result, demonstrating how LangChain's prompt templates, runnables, and output parsers can be orchestrated for LLM driven language tasks.
 ```
-python3 Tools_01.py
+python3 LC_01_core.py
 ```
 #### Example 2: Langchain agent with tool support
 This next example sets up a LangChain ReAct agent using GPT-4o with access to a Python REPL tool for solving math problems. It uses a prompt template from LangChain Hub and executes queries with step-by-step reasoning and code execution.
