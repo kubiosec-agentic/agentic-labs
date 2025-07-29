@@ -1,4 +1,4 @@
-![OpenAI](https://img.shields.io/badge/OpenAI-grey) ![Evaluations](https://img.shields.io/badge/Evaluations-yellow) ![Curl](https://img.shields.io/badge/Curl-orange) 
+![OpenAI](https://img.shields.io/badge/OpenAI-lightblue) ![Evaluations](https://img.shields.io/badge/Evaluations-yellow) ![Curl](https://img.shields.io/badge/Curl-orange) 
 
 # LAB03: Prompt Evaluation
 ## Introduction
