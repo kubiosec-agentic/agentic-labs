@@ -1,4 +1,4 @@
-![OpenAI](https://img.shields.io/badge/OpenAI-grey) ![ChatCompletion](https://img.shields.io/badge/Responses_API-brightgreen) ![Other](https://img.shields.io/badge/Other-LlamaIndex-pink)
+![OpenAI](https://img.shields.io/badge/OpenAI-grey) ![ChatCompletion](https://img.shields.io/badge/Responses_API-brightgreen) ![Other](https://img.shields.io/badge/Other-LlamaIndex-pink) ![Other](https://img.shields.io/badge/Other-Chroma-pink)
 
 # LAB04: Retrieval Augmented Generation (RAG) Based Agents
 ## Introduction
