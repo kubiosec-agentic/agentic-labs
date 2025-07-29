@@ -1,4 +1,4 @@
-![ChatCompletion](https://img.shields.io/badge/ChatCompetion-Green) ![Curl](https://img.shields.io/badge/Curl-Orange) ![Python](https://img.shields.io/badge/Python-LigthBlue)
+![ChatCompletion](https://img.shields.io/badge/ChatCompetion-green) ![Curl](https://img.shields.io/badge/Curl-orange) ![Python](https://img.shields.io/badge/Python-blue)
 
 # LAB01: Chat Completions 
 ## Introduction
