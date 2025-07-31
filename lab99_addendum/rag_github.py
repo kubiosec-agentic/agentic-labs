@@ -14,7 +14,7 @@ USAGE:
 FEATURES:
 - Loads documents from GitHub repositories
 - Creates semantic vector index for intelligent search
-- Uses OpenAI GPT-3.5-turbo for natural language querying
+- Uses OpenAI GPT-4o for natural language querying
 - Asks multiple analytical questions about the repository
 - Handles errors gracefully with fallback approaches
 """
