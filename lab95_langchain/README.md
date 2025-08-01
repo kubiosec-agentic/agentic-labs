@@ -3,7 +3,7 @@ This lab demonstrates how to build powerful language model workflows using LangC
 
 **LangChain** is a flexible framework for composing prompts, models, tools, and logic into modular pipelines called chains.<br>
 
-**LangGraph** builds on top of LangChain by allowing you to define stateful, multi-step graphs with branching logic, ideal for building agents and complex decision-making systems.
+**LangGraph** builds on top of LangChain by allowing you to define stateful, multi-step graphs with branching logic ideal for building agents and complex decision-making systems.
 
 With just a few lines of code, you can:
 - Create structured chains: connect prompts, language models, and output parsers
