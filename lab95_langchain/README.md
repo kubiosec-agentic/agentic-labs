@@ -24,7 +24,7 @@ print(response)
 ```
 
 ### Step 1:
-Read this as follows: 
+Read this as follows: <br>
 "From the langchain_openai package, import the classes ChatOpenAI and OpenAI."
 ```
 from langchain_openai import ChatOpenAI, OpenAI
@@ -51,8 +51,7 @@ chat = ChatOpenAI(model="gpt-3.5-turbo")
 It was created (instantiated) from the ChatOpenAI class, and it knows how to send messages to an OpenAI chat model (like GPT-4) and return the responses.
 
 ### Step 3:
-`invoke(...)` is a method call.
-You're calling the invoke method on the chat object.
+`invoke(...)` is a method call. You're calling the invoke method on the chat object.
 ```
 response = chat.invoke("Tell me a joke about light bulbs!")
 ```
