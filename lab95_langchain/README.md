@@ -25,7 +25,7 @@ print(response)
 
 ### Step 1:
 Read this as follows: <br>
-"From the langchain_openai package, import the classes ChatOpenAI and OpenAI." <br>
+_"From the langchain_openai package, import the classes ChatOpenAI and OpenAI."_ <br>
 You only need to import what you actually need.
 ```
 from langchain_openai import ChatOpenAI, OpenAI
