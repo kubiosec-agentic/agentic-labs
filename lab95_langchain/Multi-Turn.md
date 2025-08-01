@@ -1,23 +1,17 @@
 
-# 🔁 Multi-Turn Conversation with LangChain
+# Multi-Turn Conversation with LangChain
 
 ## Introduction
-
 This example demonstrates how to handle **multi-turn conversations** using LangChain without agents.  
 We simulate a dialogue between a user and a chat model across multiple turns while maintaining **context** using the `RunnableWithMessageHistory` utility.
 
----
-
-## 🧠 Why Multi-Turn?
-
+## Why Multi-Turn?
 LLMs are more effective when they understand what was said before. Multi-turn allows the model to:
 - Track the flow of conversation
 - Refer to previous questions/answers
 - Mimic real human-like dialogue
 
----
-
-## 🔧 Code Example
+## Code Example
 ```python
 from langchain_core.prompts import ChatPromptTemplate, SystemMessagePromptTemplate, HumanMessagePromptTemplate, MessagesPlaceholder
 from langchain_core.output_parsers import StrOutputParser
@@ -52,18 +46,23 @@ print(chat_chain.invoke({"input": "Hi, who won the World Cup in 2018?"}, config=
 print(chat_chain.invoke({"input": "Where was it held?"}, config={"configurable": {"session_id": session_id}}))
 print(chat_chain.invoke({"input": "Who was the top scorer?"}, config={"configurable": {"session_id": session_id}}))
 ```
+You may notice
+```
+lambda session_id: message_history
+```
+A lambda is a quick, nameless function, perfect for short, one-line logic.<br>
+This is a function that:
+- Accepts one argument (session_id)
+- Always returns the same thing: message_history
 
----
-
-## 💬 What’s Happening?
-
+## What’s Happening?
 - The conversation is split across **multiple invocations**, but the model remembers context using `ChatMessageHistory`.
 - The `RunnableWithMessageHistory` wraps the chain and feeds back prior messages on each turn.
 - `session_id` keeps track of which conversation the history belongs to.
 
 ---
 
-## ✅ Summary
+## Summary
 
 | Concept | Description |
 |--------|-------------|
