@@ -75,6 +75,7 @@ print("\nAnalysis:", story_analysis)
 ```
 This example shows how you can use LangChain to build modular chains that generate and analyze content using prompt templates and language models.
 
+---
 
 [← Back to README](../README.md)
 
