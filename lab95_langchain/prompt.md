@@ -3,10 +3,10 @@
 Let’s analyze the following Python code that uses LangChain to generate and analyze a story.
 ```
 from langchain_core.prompts import PromptTemplate
-from langchain_google_genai import GoogleGenerativeAI
+from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.output_parsers import StrOutputParser
 
-llm = GoogleGenerativeAI(model="gemini-1.5-pro")
+llm = ChatGoogleGenerativeAI(model="gemini-1.5-pro")
 
 # First chain generates a story
 story_prompt = PromptTemplate.from_template("Write a short story about {topic}")
@@ -30,7 +30,7 @@ print("\nAnalysis:", story_analysis)
 ###  Introducing package namespaces
 ```
 from langchain_core.prompts import PromptTemplate
-from langchain_google_genai import GoogleGenerativeAI
+from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.output_parsers import StrOutputParser
 ```
 `prompts` and `output_parsers` are submodules within the `langchain_core` package.  
@@ -38,9 +38,9 @@ They act like namespaces that group related functionality together, such as prom
 
 ## Step 2
 ### Instantiate the class
-This line creates an instance of the `GoogleGenerativeAI` class called `llm`. It will act as a client that will generate and process text.
+This line creates an instance of the `ChatGoogleGenerativeAI` class called `llm`. It will act as a client that will generate and process text.
 ```
-llm = GoogleGenerativeAI(model="gemini-1.5-pro")
+llm = ChatGoogleGenerativeAI(model="gemini-1.5-pro")
 ```
 ## Step 3
 ###  Introducing `prompts`
