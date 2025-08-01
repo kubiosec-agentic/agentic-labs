@@ -1,7 +1,7 @@
 # Analyzing `chat.py`
 ## Introduction
 Let's analyse the following code
-```
+```python
 from langchain_openai import ChatOpenAI, OpenAI
 # from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAI
 # from langchain_anthropic import ChatAnthropic
@@ -27,7 +27,7 @@ print(response)
 Read this as follows: <br>
 _"From the langchain_openai package, import the classes ChatOpenAI and OpenAI."_ <br>
 You only need to import what you actually need.
-```
+```python
 from langchain_openai import ChatOpenAI, OpenAI
 ```
 A subtle difference here to note is `ChatOpenAI` is interacting with the `/chat/completions` API endpoint, while `OpenAI` interacts with the older `/completions` endpoint. (_Note: We can actually omit OpenAI in this example_)
@@ -40,7 +40,7 @@ A class is like a blueprint in Python. It describes how to build something with 
 
 ### Step 2:
 You need to instantiate a class to use it.
-```
+```python
 # chat = ChatGoogleGenerativeAIGoogleGenerativeAI(model="gemini-2.0-flash")
 chat = ChatOpenAI(model="gpt-3.5-turbo")
 # chat = ChatAnthropic(model="claude-3-opus-20240229")
@@ -52,7 +52,7 @@ It was created (instantiated) from the ChatOpenAI class, and it knows how to sen
 
 ### Step 3:
 `invoke(...)` is a method call. You're calling the invoke method on the chat object.
-```
+```python
 response = chat.invoke("Tell me a joke about light bulbs!")
 ```
 response contains is the result of the `invoke()` method.
