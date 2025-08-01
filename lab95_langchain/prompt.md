@@ -41,23 +41,22 @@ Python packages and modules (like `langchain_core.prompts`) are used to organize
 llm = GoogleGenerativeAI(model="gemini-1.5-pro")
 ```
 ## Step 3
+###  Introducing `prompts`
+`PromptTemplate.from_template(...)` creates a prompt with a placeholder `{topic}`, <br>
+You define can `{topic}` can later fill in something like "robots" or "space".
 ```
 # First chain generates a story
 story_prompt = PromptTemplate.from_template("Write a short story about {topic}")
 ```
-###  Introducing `prompts`
-`PromptTemplate.from_template(...)` creates a prompt with a placeholder `{topic}`, <br>
-You define can `{topic}` can later fill in something like "robots" or "space".<br><br>
-`llm` refers to your language model that generates text based on the prompt.<br><br>
-`StrOutputParser()` converts the model's output into a simple string. <br>
-### LangChain Expression Language (LCE)
-The `|` (pipe operator) connects these steps into a chain: Prompt → Model → Output Parser. 
-This syntax is known LCE = LangChain Expression Language (or Expression Syntax) <br>
-It’s a new, simplified way introduced in LangChain to build and compose chains using the | (pipe) operator
-### Creating chains
+### Chains and LangChain Expression Language (LCE)
+Create a chain
 ```
 story_chain = story_prompt | llm | StrOutputParser()
 ```
+The `|` (pipe operator) connects these steps into a chain: Prompt → Model → Output Parser. <br>
+This syntax is known LCE = LangChain Expression Language <br>
+It’s a new, simplified way introduced in LangChain to build and compose chains using the | (pipe) operator <br>
+
 You can even combine chains
 ```
 story_with_analysis = story_chain | analysis_chain
