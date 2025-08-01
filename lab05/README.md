@@ -43,12 +43,12 @@ This code uses LangChain abstractions to construct a processing chain that takes
 
 This is a low-level LangChain pattern that manually wires together the prompt, model call, and output parsing. While it may seem basic, it's the foundation of higher-level abstractions like LCEL chains and agents that are built on top of this pattern. Mastering it helps you understand and customize more complex LangChain workflows.
 ```
-python3 LC_01_core.py
+python3 LC_01.py
 ```
 #### Example 2: LangChain chain with tool integration and structured output example
 This script demonstrates how to use a LangChain chain with tool integration and structured output: it connects an LLM to a simple weather tool, handles tool invocation and result parsing, and feeds the result back into the chain for a final response. It uses the `ChatOpenAI` from `langchain_openai` class that provides an interface for interacting with OpenAI's chat-based language models, like GPT-3.5 and GPT-4, within the LangChain framework. It simplifies the process of sending prompts to these models and receiving their responses, making it easier to build conversational AI applications.
 ```
-python3 LC_01.py
+python3 LC_02.py
 ```
 #### Example 3: Langchain agent without tool support
 This is a simple example sets up a LangChain ReAct agent using GPT-4o with access  It uses a prompt template from LangChain Hub and executes queries with step-by-step reasoning and code execution.
@@ -128,7 +128,7 @@ export OPENAI_BASE_URL="http://127.0.0.1:8080/v1"
 python3 OA_01.py
 ```
 #### Optional for hackers
-Modify `LA_02.py` and `LA_04.py`
+Modify `LA_03.py` and `LA_04.py`
 ```
 llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0, base_url="http://127.0.0.1:8080/v1")
 ```
