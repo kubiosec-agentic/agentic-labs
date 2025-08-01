@@ -47,15 +47,15 @@ print(chat_chain.invoke({"input": "Hi, who won the World Cup in 2018?"}, config=
 print(chat_chain.invoke({"input": "Where was it held?"}, config={"configurable": {"session_id": session_id}}))
 print(chat_chain.invoke({"input": "Who was the top scorer?"}, config={"configurable": {"session_id": session_id}}))
 ```
+## Whatis `lambda`
 You may notice
 ```
-lambda session_id: message_history
+lambda session_id: histories.setdefault(session_id, ChatMessageHistory()),   
 ```
-## Whatis `lambda`
 A lambda is a quick, nameless function, perfect for short, one-line logic.<br>
 This is a function that:
 - Accepts one argument (session_id)
-- Always returns the same thing: message_history
+- Always returns the same thing: histories.setdefault(session_id, ChatMessageHistory()) 
 
 ## RunnableWithMessageHistory is a wrapper that:
 - Wraps your existing chain (like prompt | llm | parser)
