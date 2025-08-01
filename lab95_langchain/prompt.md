@@ -55,7 +55,11 @@ story_chain = story_prompt | llm | StrOutputParser()
 ```
 You can even combine chains
 ```
-story_with_analysis = story_chain | analysis_chain
+# Second chain analyzes the story
+analysis_prompt = PromptTemplate.from_template(
+    "Analyze the following story's mood:\n{story}"
+)
+analysis_chain = analysis_prompt | llm | StrOutputParser()
 ```
 _Note: The output of `story_chain` becomes the input `analysis_chain`_
 
