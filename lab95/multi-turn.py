@@ -16,10 +16,11 @@ prompt = ChatPromptTemplate.from_messages([
 chain = prompt | llm | StrOutputParser()
 
 # 2. Add message history wrapper
+histories = {}
 message_history = ChatMessageHistory()
 chat_chain = RunnableWithMessageHistory(
     chain,
-    lambda session_id: message_history,
+    lambda session_id: histories.setdefault(session_id, ChatMessageHistory())    
     input_messages_key="input",
     history_messages_key="history",
 )
