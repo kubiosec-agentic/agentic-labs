@@ -1,5 +1,5 @@
 
-# 🧠 Advanced Prompting with LangChain
+# Advanced Prompting with LangChain
 
 ## Introduction
 
@@ -100,7 +100,7 @@ response = chain.invoke({"input": "Tell me a joke about light bulbs!"})
 
 ---
 
-## ✅ Summary
+## Summary
 
 | Concept | Description |
 |--------|-------------|
