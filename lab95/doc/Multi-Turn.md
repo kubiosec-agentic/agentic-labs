@@ -74,7 +74,7 @@ This is a function that:
 
 ---
 
-This setup is ideal for building chatbots or support systems with **context awareness** — no agents required!
+This setup is ideal for building chatbots or support systems with **context awareness**!
 
 ---
 
