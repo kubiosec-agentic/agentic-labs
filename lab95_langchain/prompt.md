@@ -1,8 +1,6 @@
 # Analyzing  `prompt.py`
 ## Introduction
-Let's analyse the following code.<br>
-Python packages and modules (like `langchain_core.prompts`) are used to organize code into logical groups.<br>
-`prompts` and `output_parsers` are called a namespace.
+Let's analyse the following code.
 ```
 from langchain_core.prompts import PromptTemplate
 from langchain_google_genai import GoogleGenerativeAI
@@ -28,14 +26,20 @@ story_analysis = story_with_analysis.invoke({"topic": "a rainy day"})
 print("\nAnalysis:", story_analysis)
 ```
 
+## Step 1
+Python packages and modules (like `langchain_core.prompts`) are used to organize code into logical groups.<br>
+`prompts` and `output_parsers` are called a namespace.
 
-## Introducing `prompts`
-`PromptTemplate.from_template(...)` creates a prompt with a placeholder `{topic}`, so you can later fill in something like "robots" or "space".<br>
+## Step 2
+###  Introducing `prompts`
+`PromptTemplate.from_template(...)` creates a prompt with a placeholder `{topic}`, <br>
+so you can later fill in something like "robots" or "space".<br>
 `llm` refers to your language model that generates text based on the prompt.<br>
-`StrOutputParser()` converts the model's output into a simple string. <br>
-The `|` (pipe operator) connects these steps into a chain: Prompt → Model → Output Parser. 
-This syntax is known LCE = LangChain Expression Language (or Expression Syntax)
+`StrOutputParser()` converts the model's output into a simple string. <br><br>
 
+### LangChain Expression Language (LCE)
+The `|` (pipe operator) connects these steps into a chain: Prompt → Model → Output Parser. 
+This syntax is known LCE = LangChain Expression Language (or Expression Syntax) <br>
 It’s a new, simplified way introduced in LangChain to build and compose chains using the | (pipe) operator
 ```
 # First chain generates a story
