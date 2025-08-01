@@ -65,6 +65,8 @@ _Note: The output of `story_chain` becomes the input `analysis_chain`_
 
 ## Step 4 
 ### Run the combined chain
+Finally run the chain and define `{topic}` 
+```
 story_analysis = story_with_analysis.invoke({"topic": "a rainy day"})
 print("\nAnalysis:", story_analysis)
 ```
