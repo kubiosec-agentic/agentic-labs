@@ -9,7 +9,7 @@ messages = [
     HumanMessage(content="What is the weather in SF?"),
 ]
 
-final_response = structured_llm.invoke(messages)
+final_response = llm.invoke(messages)
 print(f"\nFinal response: {final_response}")
 
 
