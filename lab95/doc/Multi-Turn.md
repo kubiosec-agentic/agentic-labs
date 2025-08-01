@@ -31,7 +31,7 @@ prompt = ChatPromptTemplate.from_messages([
 chain = prompt | llm | StrOutputParser()
 
 # 2. Add message history wrapper
-histories = {}
+histories = {} #histories is a dictionary (like {"user123": ChatMessageHistory(), ...})
 message_history = ChatMessageHistory()
 chat_chain = RunnableWithMessageHistory(
     chain,
