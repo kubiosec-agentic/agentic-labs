@@ -1,4 +1,4 @@
-# Analyzing Prompt and Chain Usage in prompt.py
+# Analyzing Prompt and Chain Usage in `prompt.py`
 ## Introduction
 Let’s analyze the following Python code that uses LangChain to generate and analyze a story.
 ```
