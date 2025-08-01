@@ -50,6 +50,7 @@ You may notice
 ```
 lambda session_id: message_history
 ```
+## Whatis `lambda`
 A lambda is a quick, nameless function, perfect for short, one-line logic.<br>
 This is a function that:
 - Accepts one argument (session_id)
