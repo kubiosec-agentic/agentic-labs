@@ -1,6 +1,6 @@
-# Analyzing  `prompt.py`
+# Analyzing Prompt and Chain Usage in prompt.py
 ## Introduction
-Let's analyse the following code.
+Let’s analyze the following Python code that uses LangChain to generate and analyze a story.
 ```
 from langchain_core.prompts import PromptTemplate
 from langchain_google_genai import GoogleGenerativeAI
