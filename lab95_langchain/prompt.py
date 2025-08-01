@@ -1,8 +1,8 @@
 from langchain_core.prompts import PromptTemplate
-from langchain_google_genai import GoogleGenerativeAI
+from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.output_parsers import StrOutputParser
 
-llm = GoogleGenerativeAI(model="gemini-1.5-pro")
+llm = ChatGoogleGenerativeAI(model="gemini-1.5-pro")
 
 # First chain generates a story
 story_prompt = PromptTemplate.from_template("Write a short story about {topic}")
