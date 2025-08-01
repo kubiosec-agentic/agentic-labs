@@ -31,7 +31,7 @@ prompt = ChatPromptTemplate.from_messages([
 chain = prompt | llm | StrOutputParser()
 
 # 2. Add message history wrapper
-histories = {} #histories is a dictionary (like {"user123": ChatMessageHistory(), ...})
+histories = {}
 message_history = ChatMessageHistory()
 chat_chain = RunnableWithMessageHistory(
     chain,
@@ -46,8 +46,17 @@ session_id = "my-convo"
 print(chat_chain.invoke({"input": "Hi, who won the World Cup in 2018?"}, config={"configurable": {"session_id": session_id}}))
 print(chat_chain.invoke({"input": "Where was it held?"}, config={"configurable": {"session_id": session_id}}))
 print(chat_chain.invoke({"input": "Who was the top scorer?"}, config={"configurable": {"session_id": session_id}}))
+
+
+# 4. Print message history
+print("\nMessage History:")
+message_history = histories[session_id]
+for message in message_history.messages:
+    print(f"{message.type}: {message.content}")
+
+
 ```
-## Whatis `lambda`
+## What is `lambda`
 You may notice
 ```
 lambda session_id: histories.setdefault(session_id, ChatMessageHistory()),   
