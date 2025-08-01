@@ -94,8 +94,7 @@ chain = prompt | chat | StrOutputParser()
 response = chain.invoke({"input": "Tell me a joke about light bulbs!"})
 ```
 
-- This uses **LangChain Expression Language (LCE)**:  
-  a clean way to link prompt → model → output.
+- This uses **LangChain Expression Language (LCE)**: a clean way to link prompt → model → output.
 - The final result is stored in the `response` variable.
 
 ---
