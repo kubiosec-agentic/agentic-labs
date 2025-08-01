@@ -1,7 +1,8 @@
 # Analyzing  `prompt.py`
 ## Introduction
 Let's analyse the following code.<br>
-As you may notice, `langchain_core` has multiple sub-modules, we use  `langchain_core.prompts` and `langchain_core.output_parsers` (this is purely organizational.
+Python packages and modules (like `langchain_core.prompts`) are used to organize code into logical groups.<br>
+`prompts` and `output_parsers` are called a namespace.
 ```
 from langchain_core.prompts import PromptTemplate
 from langchain_google_genai import GoogleGenerativeAI
