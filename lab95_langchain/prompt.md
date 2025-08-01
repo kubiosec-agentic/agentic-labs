@@ -38,7 +38,7 @@ They act like namespaces that group related functionality together, such as prom
 
 ## Step 2
 ### Instantiate the class
-This line creates an instance of the `GoogleGenerativeAI` class — your LLM (Language Model) client that will generate and process text.
+This line creates an instance of the `GoogleGenerativeAI` class called `llm`. It will act as a client that will generate and process text.
 ```
 llm = GoogleGenerativeAI(model="gemini-1.5-pro")
 ```
