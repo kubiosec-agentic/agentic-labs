@@ -1,5 +1,5 @@
 
-# Advanced Prompting with LangChain
+# Advanced Prompting with LangChain (`advanced_prompting.py`)
 
 ## Introduction
 This example demonstrates how to define **user prompts** using **LangChain best practices**, and run them with different **chat models** like `ChatOllama`, `ChatOpenAI`, or `ChatAnthropic`. We'll use a `ChatPromptTemplate` to structure the conversation and show how to build a full chain.
