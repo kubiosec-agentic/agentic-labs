@@ -29,7 +29,14 @@ print("\nAnalysis:", story_analysis)
 ```
 
 
-## Introducing `prompts
+## Introducing `prompts`
+`PromptTemplate.from_template(...)` creates a prompt with a placeholder `{topic}`, so you can later fill in something like "robots" or "space".<br>
+`llm` refers to your language model that generates text based on the prompt.<br>
+`StrOutputParser()` converts the model's output into a simple string. <br>
+The `|` (pipe operator) connects these steps into a chain: Prompt → Model → Output Parser. 
+This syntax is known LCE = LangChain Expression Language (or Expression Syntax)
+
+It’s a new, simplified way introduced in LangChain to build and compose chains using the | (pipe) operator
 ```
 # First chain generates a story
 story_prompt = PromptTemplate.from_template("Write a short story about {topic}")
