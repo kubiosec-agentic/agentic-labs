@@ -60,8 +60,6 @@ This is a function that:
 - The `RunnableWithMessageHistory` wraps the chain and feeds back prior messages on each turn.
 - `session_id` keeps track of which conversation the history belongs to.
 
----
-
 ## Summary
 This setup is ideal for building chatbots or support systems with **context awareness**!
 
