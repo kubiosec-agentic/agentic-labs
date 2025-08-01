@@ -44,7 +44,7 @@ This script demonstrates how to use a LangChain chain without any tool integrati
 python3 LC_01.py
 ```
 #### Example 2: LangChain chain with tool integration and structured output example
-This script demonstrates how to use a LangChain chain with tool integration and structured output: it connects an LLM to a simple weather tool, handles tool invocation and result parsing, and feeds the result back into the chain for a final response. It uses the `ChatOpenAI` from `langchain_openai` class that provides an interface for interacting with OpenAI's chat-based language models, like GPT-3.5 and GPT-4, within the LangChain framework. It simplifies the process of sending prompts to these models and receiving their responses, making it easier to build conversational AI applications.
+This script demonstrates how to use a LangChain chain **with tool integration and structured output**. It connects an LLM to a simple weather tool, handles tool invocation and result parsing and feeds the result back into the chain for a final response. It uses the `ChatOpenAI` from `langchain_openai` class that provides an interface for interacting with OpenAI's chat-based language models, like GPT-3.5 and GPT-4. It simplifies the process of sending prompts to these models and receiving their responses, making it easier to build conversational AI applications.
 ```
 python3 LC_02.py
 ```
