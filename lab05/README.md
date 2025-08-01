@@ -75,6 +75,7 @@ Start the ChatBot. Try to hack it via the api (openai compatible).
 ```
 python3 ./LA_03.py
 ```
+In anoter terminal:
 ```
 curl -XPOST http://127.0.0.1:5000/v1/chat/completions  \
   -H "Content-Type: application/json" \
