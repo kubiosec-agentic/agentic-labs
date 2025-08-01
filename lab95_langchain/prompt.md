@@ -43,7 +43,7 @@ llm = GoogleGenerativeAI(model="gemini-1.5-pro")
 ## Step 3
 ###  Introducing `prompts`
 `PromptTemplate.from_template(...)` creates a prompt with a placeholder `{topic}`, <br>
-You define can `{topic}` can later fill in something like "robots" or "space".
+You can define `{topic}` later and fill in something like "robots" or "space" when you invoke the prompt.
 ```
 # First chain generates a story
 story_prompt = PromptTemplate.from_template("Write a short story about {topic}")
