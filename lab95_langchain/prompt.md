@@ -34,7 +34,7 @@ from langchain_google_genai import GoogleGenerativeAI
 from langchain_core.output_parsers import StrOutputParser
 ```
 Python packages and modules (like `langchain_core.prompts`) are used to organize code into logical groups.<br>
-`prompts` and `output_parsers` are called namespaces.
+`prompts` and `output_parsers` are called a **namespace**.
 ## Step 2
 ### Instantiate the class
 ```
