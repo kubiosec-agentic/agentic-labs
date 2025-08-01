@@ -31,7 +31,7 @@ For detailed guidance and examples, check out the following documentation files:
 - [Chat Systems](./doc/chat.md) - Building conversational AI systems
 - [Prompt Engineering](./doc/prompt.md) - Best practices for prompt design and optimization
 - [Advanced Prompting](./doc/advanced_prompting.md) - Advanced techniques for crafting effective prompts
-- [Multi-Turn Conversations](./doc/multi-turm.md) - Handling complex multi-turn dialogues
+- [Multi-Turn Conversations](./doc/multi-turn.md) - Handling complex multi-turn dialogues
 
 ## Cleanup environment
 ```
