@@ -49,7 +49,7 @@ You can define `{topic}` later and fill in something like "robots" or "space" wh
 story_prompt = PromptTemplate.from_template("Write a short story about {topic}")
 ```
 ### Chains and LangChain Expression Language (LCE)
-Create a chain
+Create a chain. A chain is a sequence of steps (like prompt → model → output) that work together to turn input into meaningful output in LangChain.
 ```
 story_chain = story_prompt | llm | StrOutputParser()
 ```
