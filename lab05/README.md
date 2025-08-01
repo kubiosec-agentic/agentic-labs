@@ -39,7 +39,7 @@ warnings.filterwarnings("ignore", category=UserWarning, module="langsmith")
 
 ## Lab instructions
 #### Example 1: LangChain chain without tool support
-This script demonstrates how to use a LangChain chain without tool integration and structured output.
+This script demonstrates how to use a LangChain chain without any tool integration and structured output.
 ```
 python3 LC_01.py
 ```
