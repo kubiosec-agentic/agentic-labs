@@ -34,8 +34,8 @@ Python packages and modules (like `langchain_core.prompts`) are used to organize
 ## Step 2
 ###  Introducing `prompts`
 `PromptTemplate.from_template(...)` creates a prompt with a placeholder `{topic}`, <br>
-so you can later fill in something like "robots" or "space".<br>
-`llm` refers to your language model that generates text based on the prompt.<br>
+You define can `{topic}` can later fill in something like "robots" or "space".<br><br>
+`llm` refers to your language model that generates text based on the prompt.<br><br>
 `StrOutputParser()` converts the model's output into a simple string. <br><br>
 
 ### LangChain Expression Language (LCE)
