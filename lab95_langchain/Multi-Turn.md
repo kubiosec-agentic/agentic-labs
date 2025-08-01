@@ -18,20 +18,22 @@ LLMs are more effective when they understand what was said before. Multi-turn al
 ---
 
 ## 🔧 Code Example
-
 ```python
-from langchain_core.prompts import ChatPromptTemplate, SystemMessagePromptTemplate, HumanMessagePromptTemplate
+from langchain_core.prompts import ChatPromptTemplate, SystemMessagePromptTemplate, HumanMessagePromptTemplate, MessagesPlaceholder
 from langchain_core.output_parsers import StrOutputParser
 from langchain_community.chat_message_histories import ChatMessageHistory
 from langchain_core.runnables.history import RunnableWithMessageHistory
-from langchain_ollama import ChatOllama
+from langchain_openai import ChatOpenAI
 
 # 1. Set up model and prompt
-llm = ChatOllama(model="phi3:3.8b", temperature=0)
+llm = ChatOpenAI()
 
 system = SystemMessagePromptTemplate.from_template("You are a helpful assistant.")
-user = HumanMessagePromptTemplate.from_template("{input}")
-prompt = ChatPromptTemplate.from_messages([system, user])
+prompt = ChatPromptTemplate.from_messages([
+    system,
+    MessagesPlaceholder(variable_name="history"),
+    HumanMessagePromptTemplate.from_template("{input}")
+])
 chain = prompt | llm | StrOutputParser()
 
 # 2. Add message history wrapper
@@ -74,4 +76,3 @@ print(chat_chain.invoke({"input": "Who was the top scorer?"}, config={"configura
 ---
 
 This setup is ideal for building chatbots or support systems with **context awareness** — no agents required!
-
