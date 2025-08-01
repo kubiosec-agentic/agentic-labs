@@ -1,8 +1,8 @@
 from langchain_core.prompts import ChatPromptTemplate, SystemMessagePromptTemplate, HumanMessagePromptTemplate
-from langchain_ollama import ChatOllama
+from langchain_openai import ChatOpenAI
 
 # Initialize chat model
-chat = ChatOllama(model="phi3:3.8b", temperature=0)
+chat = ChatOpenAI(model="gpt-4o", temperature=0.7, max_tokens=100)
 
 # Define prompt using roles
 system_msg = SystemMessagePromptTemplate.from_template("You are a witty assistant who tells short and funny jokes.")
