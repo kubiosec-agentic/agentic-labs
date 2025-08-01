@@ -28,10 +28,19 @@ print("\nAnalysis:", story_analysis)
 
 ## Step 1
 ###  Introducing package namespaces
+```
+from langchain_core.prompts import PromptTemplate
+from langchain_google_genai import GoogleGenerativeAI
+from langchain_core.output_parsers import StrOutputParser
+```
 Python packages and modules (like `langchain_core.prompts`) are used to organize code into logical groups.<br>
 `prompts` and `output_parsers` are called a namespace.
-
 ## Step 2
+### Instantiate the class
+```
+llm = GoogleGenerativeAI(model="gemini-1.5-pro")
+```
+## Step 3
 ```
 # First chain generates a story
 story_prompt = PromptTemplate.from_template("Write a short story about {topic}")
