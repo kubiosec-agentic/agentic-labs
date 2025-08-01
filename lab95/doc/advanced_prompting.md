@@ -4,7 +4,7 @@
 ## Introduction
 This example demonstrates how to define **user prompts** using **LangChain best practices**, and run them with different **chat models** like `ChatOllama`, `ChatOpenAI`, or `ChatAnthropic`. We'll use a `ChatPromptTemplate` to structure the conversation and show how to build a full chain.
 
-## 🔧 Code Example
+## Code Example
 ```python
 from langchain_core.prompts import ChatPromptTemplate, SystemMessagePromptTemplate, HumanMessagePromptTemplate
 from langchain_ollama import ChatOllama
@@ -83,4 +83,7 @@ response = chain.invoke({"input": "Tell me a joke about light bulbs!"})
 - This uses **LangChain Expression Language (LCE)**: a clean way to link prompt → model → output.
 - The final result is stored in the `response` variable.
 
+---
+
+[← Back to README](../README.md)
 
