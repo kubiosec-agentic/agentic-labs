@@ -1,4 +1,18 @@
-# LangChain and LangGraph Quickstart
+
+# LAB95: LangChain and LangGraph Quickstart
+## Set up your environment
+```
+export OPENAPI_API_KEY="xxxxxxxxx"
+export ANTHROPIC_API_KEY="xxxxxxxxx"
+export GOOGLE_API_KEY="xxxxxxxxx"
+```
+```
+./lab_setup.sh
+```
+```
+source .lab95/bin/activate
+```
+## Lab instructions
 This lab demonstrates how to build powerful language model workflows using LangChain and LangGraph.<br>
 
 **LangChain** is a flexible framework for composing prompts, models, tools, and logic into modular pipelines called chains.<br>
@@ -11,3 +25,21 @@ With just a few lines of code, you can:
 - Use LangGraph to model flows as stateful graphs with memory and control
 
 This lab includes minimal examples to help you get started with each concept.
+
+## Documentation
+
+For detailed guidance and examples, check out the following documentation files:
+
+- [Chat Systems](./doc/chat.md) - Building conversational AI systems
+- [Prompt Engineering](./doc/prompt.md) - Best practices for prompt design and optimization
+- [Advanced Prompting](./doc/advanced_prompting.md) - Advanced techniques for crafting effective prompts
+- [Multi-Turn Conversations](./doc/Multi-Turn.md) - Handling complex multi-turn dialogues
+
+## Cleanup environment
+```
+deactivate
+```
+```
+./lab_cleanup.sh
+```
+Back to [Lab Overview](https://github.com/kubiosec-agentic/agentic-labs/blob/master/README.md#-lab-overview)
