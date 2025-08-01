@@ -31,3 +31,11 @@ session_id = "my-convo"
 print(chat_chain.invoke({"input": "Hi, who won the World Cup in 2018?"}, config={"configurable": {"session_id": session_id}}))
 print(chat_chain.invoke({"input": "Where was it held?"}, config={"configurable": {"session_id": session_id}}))
 print(chat_chain.invoke({"input": "Who was the top scorer?"}, config={"configurable": {"session_id": session_id}}))
+
+
+# 4. Print message history
+print("\nMessage History:")
+message_history = histories[session_id]
+for message in message_history.messages:
+    print(f"{message.type}: {message.content}")
+
