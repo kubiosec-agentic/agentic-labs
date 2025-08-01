@@ -27,6 +27,7 @@ print("\nAnalysis:", story_analysis)
 ```
 
 ## Step 1
+###  Introducing package namespaces
 Python packages and modules (like `langchain_core.prompts`) are used to organize code into logical groups.<br>
 `prompts` and `output_parsers` are called a namespace.
 
