@@ -49,14 +49,10 @@ You can define `{topic}` later and fill in something like "robots" or "space" wh
 story_prompt = PromptTemplate.from_template("Write a short story about {topic}")
 ```
 ### Chains and LangChain Expression Language (LCE)
-Create a chain. A chain is a sequence of steps (like prompt → model → output) that work together to turn input into meaningful output in LangChain.
+A chain is a sequence of steps (like prompt → model → output) that work together to turn input into meaningful output in LangChain and can be defined using LangChain Expression Language (LCE). It’s a new, simplified way introduced in LangChain to build and compose chains using the | (pipe) operator <br>
 ```
 story_chain = story_prompt | llm | StrOutputParser()
 ```
-The `|` (pipe operator) connects these steps into a chain: Prompt → Model → Output Parser. <br>
-This syntax is known LCE = LangChain Expression Language <br>
-It’s a new, simplified way introduced in LangChain to build and compose chains using the | (pipe) operator <br>
-
 You can even combine chains
 ```
 story_with_analysis = story_chain | analysis_chain
