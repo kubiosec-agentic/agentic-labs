@@ -60,9 +60,7 @@ story_with_analysis = story_chain | analysis_chain
 _Note: The output of `story_chain` becomes the input `analysis_chain`_
 
 ## Step 4 
-Chains in LangChain let you connect multiple steps together into one logical pipeline.
-They organize your prompt, model, parsing, and post-processing — so you don’t have to do everything manually.```
-# Run the combined chain
+### Run the combined chain
 story_analysis = story_with_analysis.invoke({"topic": "a rainy day"})
 print("\nAnalysis:", story_analysis)
 ```
