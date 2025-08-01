@@ -55,9 +55,20 @@ This is a function that:
 - Accepts one argument (session_id)
 - Always returns the same thing: message_history
 
+## RunnableWithMessageHistory is a wrapper that:
+- Wraps your existing chain (like prompt | llm | parser)
+- Manages message history (storing and retrieving messages)
+- Automates injecting history into prompts
+- Appends user and model messages to the history after each run
+
+Technically speaking:
+- It wraps any Runnable chain and adds:
+- Pre-processing: fetches previous messages and injects them into the prompt via a MessagesPlaceholder
+- Post-processing: saves the new input and output messages to the message history store (e.g., in-memory, Redis, etc.)
+Think of it as `You → [RunnableWithMessageHistory] → [prompt | model | parser] → Output`
+
 ## What’s Happening?
 - The conversation is split across **multiple invocations**, but the model remembers context using `ChatMessageHistory`.
-- The `RunnableWithMessageHistory` wraps the chain and feeds back prior messages on each turn.
 - `session_id` keeps track of which conversation the history belongs to.
 
 ## Summary
