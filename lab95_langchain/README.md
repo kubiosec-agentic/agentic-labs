@@ -30,8 +30,7 @@ You only need to import what you actually need.
 ```
 from langchain_openai import ChatOpenAI, OpenAI
 ```
-A subtle difference here to note is `ChatOpenAI` is interacting with the `/chat/completions` API endpoint, while `OpenAI` interacts with the older `/completions` endpoint.<br>
-(_Note: We can actually omit OpenAI in this example_)
+A subtle difference here to note is `ChatOpenAI` is interacting with the `/chat/completions` API endpoint, while `OpenAI` interacts with the older `/completions` endpoint.<br> (_Note: We can actually omit OpenAI in this example_)
 
 #### What is a Package
 It’s a collection of code (tools) that someone else wrote to help you do specific things, like talk to an AI model, work with images, or build a website—without writing everything from scratch.
