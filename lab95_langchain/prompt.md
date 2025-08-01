@@ -33,24 +33,27 @@ from langchain_core.prompts import PromptTemplate
 from langchain_google_genai import GoogleGenerativeAI
 from langchain_core.output_parsers import StrOutputParser
 ```
-Python packages and modules (like `langchain_core.prompts`) are used to organize code into logical groups.<br>
-`prompts` and `output_parsers` are called a **namespace**.
+`prompts` and `output_parsers` are submodules within the `langchain_core` package.  
+They act like namespaces that group related functionality together, such as prompt templates and output parsing.
+
 ## Step 2
 ### Instantiate the class
+This line creates an instance of the `GoogleGenerativeAI` class — your LLM (Language Model) client that will generate and process text.
 ```
 llm = GoogleGenerativeAI(model="gemini-1.5-pro")
 ```
 ## Step 3
 ###  Introducing `prompts`
 `PromptTemplate.from_template(...)` creates a prompt with a placeholder `{topic}`, <br>
-You can define `{topic}` later and fill in something like "robots" or "space" when you do the invokation.
+You can define `{topic}` later, for example by passing `"robots"` or `"space"`, when you invoke the chain.
 ```
 # First chain generates a story
 story_prompt = PromptTemplate.from_template("Write a short story about {topic}")
 ```
 ## Step 4
 ### Chains and LangChain Expression Language (LCE)
-A chain is a sequence of steps (like `prompt → model → output`) that work together to turn input into meaningful output in LangChain and can be defined using _**LangChain Expression Language (LCE)**_. It’s a new, simplified way to build and compose chains using the | (pipe) operator.
+A chain is a sequence of steps (like `prompt → model → output`) that work together to turn input into meaningful output in LangChain.<br>
+**_LangChain Expression Language (LCE)_ **is a simple and readable way to define pipelines using the `|` (pipe) operator.
 ```
 story_chain = story_prompt | llm | StrOutputParser()
 ```
@@ -62,12 +65,12 @@ analysis_prompt = PromptTemplate.from_template(
 )
 analysis_chain = analysis_prompt | llm | StrOutputParser()
 ```
-_Note: The output of `story_chain` becomes the input `analysis_chain`_
-
+_Note: The output of `story_chain` (the generated story) becomes the input for `analysis_chain`._
 ## Step 5
 ### Run the combined chain
-Finally run the chain and define `{topic}` 
+The `.invoke(...)` method runs the entire combined chain.  
 ```
 story_analysis = story_with_analysis.invoke({"topic": "a rainy day"})
 print("\nAnalysis:", story_analysis)
 ```
+This example shows how you can use LangChain to build modular chains that generate and analyze content using prompt templates and language models.
