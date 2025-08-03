@@ -9,22 +9,23 @@ logging.set_verbosity_error()
 
 # Create a pipeline with a small, reliable model (simple approach with minimal fixes):
 llm = HuggingFacePipeline.from_model_id(
-    model_id="Qwen/Qwen2-0.5B-Instruct",  
-    task="text-generation",
+    model_id="Qwen/Qwen2-0.5B-Instruct",  # Small instruction-tuned model for general tasks
+    task="text-generation",  # Use this pipeline for generating text completions
     model_kwargs={
-        "device_map": "cpu", # Use mps for Mac M series or auto for CUDO
-        "torch_dtype": "float16",  # Much more efficient on GPU
-        "low_cpu_mem_usage": True,  # Memory optimization
+        "device_map": "cpu",  # Use "cpu" to run on CPU; use "mps" for Apple Silicon or "auto" for GPU (e.g., CUDA)
+        "torch_dtype": "float16",  # Use half-precision to reduce memory usage (GPU only)
+        "low_cpu_mem_usage": True,  # Optimizes model loading by reducing RAM usage
     },
     pipeline_kwargs=dict(
-        max_new_tokens=512,  # Can handle much longer responses with GPU power
-        do_sample=True,
-        temperature=0.7,
-        repetition_penalty=1.1,
-        return_full_text=False,
-        clean_up_tokenization_spaces=True,
+        max_new_tokens=512,  # Limit the length of the generated output
+        do_sample=True,  # Enable sampling (instead of greedy decoding) for more diverse outputs
+        temperature=0.7,  # Controls randomness: higher = more random, lower = more focused
+        repetition_penalty=1.1,  # Penalizes repeated phrases to improve output quality
+        return_full_text=False,  # Only return the generated portion, not the original prompt
+        clean_up_tokenization_spaces=True,  # Remove extraneous spaces in output
     ),
 )
+
 
 
 chat_model = ChatHuggingFace(llm=llm)
