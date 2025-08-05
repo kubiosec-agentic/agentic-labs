@@ -1,49 +1,45 @@
 from langchain_openai import ChatOpenAI
 from langchain_core.messages import HumanMessage, ToolMessage
+from langchain_core.tools import tool
 from pydantic import BaseModel
-from langchain.tools import tool
 
-@tool
-# Define a simple weather tool
-def get_weather(location: str) -> None:
+# Define a tool with structured input
+class WeatherInput(BaseModel):
+    location: str
+
+@tool("get_weather", args_schema=WeatherInput)
+def get_weather(location: str) -> str:
     """Get weather at a location."""
-    return "It's sunny."
+    return f"It's sunny in {location}."
 
-# Define the output schema for the tool using pydantic
-class OutputSchema(BaseModel):
-    """Schema for response."""
-    answer: str
-    justification: str
+# Initialize LLM
+llm = ChatOpenAI(model="gpt-4o")
 
-# Initialize the LLM with a specific model
-llm = ChatOpenAI(model="gpt-4.1")
+# Bind tools
+llm_with_tools = llm.bind_tools([get_weather])
 
-# Bind the tool to the LLM with a structured response format
-structured_llm = llm.bind_tools(
-    [get_weather],
-    response_format=OutputSchema,
-    strict=True,
-)
+# User query
+query = "What is the weather in San Francisco?"
 
-# Response contains tool calls 
-tool_call_response = structured_llm.invoke("What is the weather in SF?")
-
-# Print the tool call response
+# Step 1: Let the LLM decide whether to call a tool
+tool_call_response = llm_with_tools.invoke(query)
+print("\nTool call response:")
 print(tool_call_response)
 
-# Execute the tool call
+# Step 2: Simulate tool execution
 tool_call = tool_call_response.tool_calls[0]
-tool_result = get_weather(tool_call["args"]["location"])
+tool_args = tool_call["args"]
+tool_result = get_weather.invoke(tool_args)
+
 print(f"\nTool executed: {tool_result}")
 
-# Pass the result back to the model
+# Step 3: Feed back tool result
 messages = [
-    HumanMessage(content="What is the weather in SF?"),
+    HumanMessage(content=query),
     tool_call_response,
     ToolMessage(content=tool_result, tool_call_id=tool_call["id"])
 ]
 
-final_response = structured_llm.invoke(messages)
-print(f"\nFinal response: {final_response}")
-
-
+# Step 4: Final answer from model
+final_response = llm_with_tools.invoke(messages)
+print(f"\nFinal response: {final_response.content}")
