@@ -49,32 +49,34 @@ class SearchPlugin:
             return f"Search failed for '{topic}' due to network or API error."
 
 class SummarizerPlugin:
-    @kernel_function(name="summarize", description="Summarize text into key points")
+    def __init__(self, kernel: Kernel):
+        self.kernel = kernel
+    
+    @kernel_function(name="summarize", description="Use AI to summarize text into key points")
     async def summarize(self, text: str) -> str:
-        """Create a structured summary of the provided text."""
-        # Simple keyword-based summarization for demonstration
-        if len(text) < 100:
+        """Create an AI-powered summary of the provided text."""
+        if len(text.strip()) < 50:
             return f"Summary: {text}"
         
-        # Create a basic summary by extracting key sentences and concepts
-        lines = text.split('.')
-        key_points = []
+        # Use AI to create a better summary
+        summary_prompt = f"""
+        Please create a concise summary of the following text in 3-4 bullet points:
         
-        # Look for sentences containing important keywords
-        important_keywords = ['quantum', 'computing', 'qubit', 'superposition', 'entanglement', 'algorithm', 'advantage']
+        {text}
         
-        for line in lines[:5]:  # Limit to first 5 sentences
-            line = line.strip()
-            if line and len(line) > 20:  # Skip very short fragments
-                if any(keyword in line.lower() for keyword in important_keywords):
-                    key_points.append(f"• {line}")
-                elif len(key_points) < 3:  # Ensure we have at least 3 points
-                    key_points.append(f"• {line}")
+        Format your response as bullet points starting with •
+        Focus on the most important information and key concepts.
+        """
         
-        if not key_points:
-            key_points = ["• Key information about the topic", "• Technical concepts and principles", "• Applications and significance"]
-        
-        return "Key Points:\n" + "\n".join(key_points[:3])
+        try:
+            summary_response = await self.kernel.invoke_prompt(
+                prompt=summary_prompt,
+                arguments=KernelArguments()
+            )
+            return str(summary_response)
+        except Exception as e:
+            print(f"AI summarization error: {e}")
+            return f"Summary: {text[:200]}..." if len(text) > 200 else f"Summary: {text}"
 
 async def main():
     api_key = os.getenv("OPENAI_API_KEY")
@@ -91,7 +93,7 @@ async def main():
         )
     )
     kernel.add_plugin(SearchPlugin(), "search")
-    kernel.add_plugin(SummarizerPlugin(), "summary")
+    kernel.add_plugin(SummarizerPlugin(kernel), "summary")
 
     # Allow searching for different topics
     topic = "quantum computing"  # Default topic, can be changed
