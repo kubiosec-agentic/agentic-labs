@@ -1,8 +1,9 @@
 from langchain_openai import ChatOpenAI
 from langchain_core.messages import HumanMessage, ToolMessage
-
 from pydantic import BaseModel
+from langchain.tools import tool
 
+@tool
 # Define a simple weather tool
 def get_weather(location: str) -> None:
     """Get weather at a location."""
