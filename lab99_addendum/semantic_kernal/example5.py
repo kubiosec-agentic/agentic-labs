@@ -121,29 +121,6 @@ async def main():
     print("🤖 Assistant Response:")
     print("=" * 50)
     print(response)
-    
-    # Demonstrate with another topic
-    print("\n" + "=" * 70)
-    topic2 = "artificial intelligence"
-    print(f"🔍 Now searching for: {topic2}")
-    print("=" * 50)
-    
-    prompt2 = f"""
-    Search for information about {topic2}: {{{{search.search_topic "{topic2}"}}}}
-    
-    Now create a summary: {{{{summary.summarize $search_results}}}}
-    
-    Based on the information found, provide a brief but informative explanation of {topic2}.
-    """
-    
-    response2 = await kernel.invoke_prompt(
-        prompt=prompt2,
-        arguments=KernelArguments(search_results=f"{topic2} overview")
-    )
-    
-    print("🤖 Assistant Response:")
-    print("=" * 50)
-    print(response2)
 
 if __name__ == "__main__":
     asyncio.run(main())
