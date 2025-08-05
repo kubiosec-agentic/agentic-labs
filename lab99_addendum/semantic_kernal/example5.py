@@ -41,30 +41,12 @@ class SearchPlugin:
                         elif answer:
                             return f"Information about '{topic}': {answer[:500]}..."
                         else:
-                            # Fallback to general knowledge for common topics
-                            return self._get_fallback_info(topic)
+                            return f"No detailed information found for '{topic}' from search API."
                     else:
-                        return self._get_fallback_info(topic)
+                        return f"Search API returned status {response.status} for '{topic}'."
         except Exception as e:
             print(f"Search error: {e}")
-            return self._get_fallback_info(topic)
-    
-    def _get_fallback_info(self, topic: str) -> str:
-        """Provide fallback information for common topics."""
-        fallback_info = {
-            "quantum computing": "Quantum computing is a type of computation that harnesses quantum mechanical phenomena like superposition and entanglement to process information. Unlike classical computers that use bits (0 or 1), quantum computers use quantum bits (qubits) that can exist in multiple states simultaneously, potentially solving certain complex problems exponentially faster than classical computers.",
-            "artificial intelligence": "Artificial Intelligence (AI) refers to the simulation of human intelligence in machines that are programmed to think and learn like humans. It includes machine learning, natural language processing, computer vision, and robotics.",
-            "machine learning": "Machine learning is a subset of artificial intelligence that enables computers to learn and improve from experience without being explicitly programmed. It uses algorithms to identify patterns in data and make predictions or decisions.",
-            "data science": "Data science is an interdisciplinary field that uses scientific methods, processes, algorithms and systems to extract knowledge and insights from structured and unstructured data.",
-            "blockchain": "Blockchain is a distributed ledger technology that maintains a continuously growing list of records (blocks) linked and secured using cryptography.",
-        }
-        
-        topic_lower = topic.lower()
-        for key, info in fallback_info.items():
-            if key in topic_lower:
-                return f"Information about '{topic}': {info}"
-        
-        return f"'{topic}' is an interesting and specialized topic. Due to search limitations, I recommend looking up more detailed information from authoritative sources."
+            return f"Search failed for '{topic}' due to network or API error."
 
 class SummarizerPlugin:
     @kernel_function(name="summarize", description="Summarize text into key points")
