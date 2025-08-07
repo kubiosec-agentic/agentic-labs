@@ -11,7 +11,7 @@ You’ll also learn how to upload documents (including PDFs), perform queries, a
 
 ## Set up your environment
 ```
-export OPENAPI_API_KEY="xxxxxxxxx"
+export OPENAI_API_KEY="xxxxxxxxx"
 ```
 ```
 ./lab_setup.sh
