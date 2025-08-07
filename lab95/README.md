@@ -15,7 +15,7 @@ This lab includes minimal examples to help you get started with each concept.
 
 ## Set up your environment
 ```
-export OPENAPI_API_KEY="xxxxxxxxx"
+export OPENAI_API_KEY="xxxxxxxxx"
 export ANTHROPIC_API_KEY="xxxxxxxxx"
 export GOOGLE_API_KEY="xxxxxxxxx"
 ```
