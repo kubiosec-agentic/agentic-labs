@@ -17,7 +17,7 @@ This lab explores tool-augmented agents and API call inspection using LangChain 
 Great for learning how to build, extend, and debug LLM agents with real tool support.
 ## Set up your environment
 ```
-export OPENAPI_API_KEY="xxxxxxxxx"
+export OPENAI_API_KEY="xxxxxxxxx"
 ```
 ```
 ./lab_setup.sh
