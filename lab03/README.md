@@ -13,7 +13,7 @@ You'll learn to:
 Perfect for validating prompt quality and measuring model accuracy with structured, repeatable tests.
 ## Set up your environment
 ```
-export OPENAPI_API_KEY="xxxxxxxxx"
+export OPENAI_API_KEY="xxxxxxxxx"
 ```
 ```
 ./lab_setup.sh
