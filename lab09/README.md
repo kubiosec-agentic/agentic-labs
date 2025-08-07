@@ -8,7 +8,7 @@ This lab explores key concepts in Authentication, Authorization, and Observabili
 Ideal for securing and debugging AI-powered applications in production environments.
 ## Set up your environment
 ```
-export OPENAPI_API_KEY="xxxxxxxxx"
+export OPENAI_API_KEY="xxxxxxxxx"
 ```
 ```
 ./lab_setup.sh
