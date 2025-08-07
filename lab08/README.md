@@ -10,7 +10,7 @@ This lab explores advanced AutoGen agents and teamwork, combining tool integrati
 Ideal for building powerful, tool-using, collaborative agents across a range of real-world tasks.
 ## Set up your environment
 ```
-export OPENAPI_API_KEY="xxxxxxxxx"
+export OPENAI_API_KEY="xxxxxxxxx"
 ```
 ```
 ./lab_setup.sh
