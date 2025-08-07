@@ -9,7 +9,7 @@ This lab introduces the **OpenAI agents framework** for building structured, too
 Perfect for understanding core concepts in building modular, controllable AI agents.
 ## Set up your environment
 ```
-export OPENAPI_API_KEY="xxxxxxxxx"
+export OPENAI_API_KEY="xxxxxxxxx"
 ```
 ```
 ./lab_setup.sh
