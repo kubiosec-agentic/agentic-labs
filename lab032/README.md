@@ -16,6 +16,7 @@ export OPENAI_API_KEY="xxxxxxxxx"
 source .lab032/bin/activate
 ```
 ## Lab instructions
+
 ##### From `curl` to Python Chat Completion
 This first very first Python example should help to understand how we can easily convert out curl examples into python code, but also how we can abstract away error prone details using SDKs.
 ```
