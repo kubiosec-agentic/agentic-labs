@@ -33,6 +33,7 @@ For detailed guidance and examples, check out the following documentation files:
 - [Prompt Engineering](./doc/prompt.md) - Best practices for prompt design and optimization
 - [Advanced Prompting](./doc/advanced_prompting.md) - Advanced techniques for crafting effective prompts
 - [Multi-Turn Conversations](./doc/multi-turn.md) - Handling complex multi-turn dialogues
+- [HuggingFace local model example](./doc/huggingface.md) - Handling complex multi-turn dialogues
 
 ## Cleanup environment
 ```
