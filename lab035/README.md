@@ -1,5 +1,5 @@
 
-![OpenAI](https://img.shields.io/badge/OpenAI-lightblue) ![LangChain](https://img.shields.io/badge/LangChain-lightgrey) ![ChatCompletion](https://img.shields.io/badge/Responses_API-brightgreen) 
+![OpenAI](https://img.shields.io/badge/OpenAI-lightblue) ![LangChain](https://img.shields.io/badge/LangChain-lightgrey) ![ChatCompletion](https://img.shields.io/badge/ChatCompetion-green)
 # LAB035: LangChain and LangGraph Quickstart
 This lab demonstrates how to build powerful language model workflows using LangChain and LangGraph.<br>
 
@@ -33,6 +33,7 @@ For detailed guidance and examples, check out the following documentation files:
 - [Prompt Engineering](./doc/prompt.md) - Best practices for prompt design and optimization
 - [Advanced Prompting](./doc/advanced_prompting.md) - Advanced techniques for crafting effective prompts
 - [Multi-Turn Conversations](./doc/multi-turn.md) - Handling complex multi-turn dialogues
+- [HuggingFace local model example](./doc/huggingface.md) - Handling complex multi-turn dialogues
 
 ## Cleanup environment
 ```
