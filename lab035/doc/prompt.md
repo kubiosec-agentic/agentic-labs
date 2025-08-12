@@ -78,5 +78,3 @@ This example shows how you can use LangChain to build modular chains that genera
 ---
 
 [← Back to README](../README.md)
-
-````

@@ -3,7 +3,6 @@ from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAI
 from langchain_anthropic import ChatAnthropic
 from langchain_ollama import ChatOllama
 
-
 # This script demonstrates how to use different LLMs with LangChain.
 # initialize a completion or chat model
 # Uncomment the one you want to use
@@ -17,3 +16,5 @@ chat = ChatOpenAI(model="gpt-3.5-turbo")
 
 response = chat.invoke("Tell me a joke about light bulbs!")
 print(response)
+# print(response.content)
+# print(response.response_metadata)

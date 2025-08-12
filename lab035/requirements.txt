@@ -4,3 +4,7 @@ langchain-anthropic
 langchain-ollama
 langchain-core
 langchain-community
+langchain_huggingface
+torch
+accelerate
+transformers
