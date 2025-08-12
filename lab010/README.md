@@ -253,36 +253,7 @@ curl -XPOST "https://api.openai.com/v1/chat/completions" \
     "stream": true
   }' | grep -oP '(?<="content":")[^"]*'
 ```
-#### Chat completion via Python
-This lab demonstrates how to make a Chat Completions API call using Python, and how to intercept and inspect the request using `mitmproxy` for debugging or learning purposes. **(Terminal_1)**
-```
-export OPENAI_BASE_URL="https://api.openai.com/v1"
-```
-```
-python3 chat_01.py
-```
-Inspect the Chat completion call with `mitmproxy` **(Terminal_2)**
-```
-docker run --rm -it \
-    -v ~/.mitmproxy:/home/mitmproxy/.mitmproxy \
-    -p 8080:8080 \
-    -p 127.0.0.1:8081:8081 \
-    mitmproxy/mitmproxy mitmweb \
-        --web-host 0.0.0.0 \
-        --mode reverse:https://api.openai.com:443
-```
-Open your browser at `http://127.0.0.1:8081/?token=xxxxxx`<br><br>
-In **Terminal_1**, update the base URL for you client application.
-```
-export OPENAI_BASE_URL="http://127.0.0.1:8080/v1"
-```
-```
-python3 chat_01.py
-```
-Don't forget to unset the environment variable !
-```
-unset OPENAI_BASE_URL
-```
+
 ## Cleanup environment
 ```
 deactivate

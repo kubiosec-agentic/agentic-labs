@@ -122,22 +122,6 @@ curl "https://api.openai.com/v1/responses/resp_<id>" \
     -H "Authorization: Bearer $OPENAI_API_KEY"
 ```
 
-#### Message callback python
-This lab shows how to build a multi-turn conversation using the `previous_response_id`, allowing the model to maintain context and respond more naturally across messages.
-```
-python3 ./resp_01.py
-```
-Also check out.
-```
-python3 ./resp_02.py
-```
-#### Code Executor
-The Code Interpreter tool requires a container object. A container is a fully sandboxed virtual machine that the model can run Python code in. 
-This container can contain files that you upload, or that it generates.
-```
-python3 ./resp03.py
-```
-
 #### Structured Ouptput
 See [./ADDON.md](./ADDON.md)
 
