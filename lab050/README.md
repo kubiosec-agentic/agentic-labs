@@ -49,7 +49,7 @@ This script demonstrates how to use a LangChain chain **with tool integration an
 python3 LC_02.py
 ```
 #### Example 3: Langchain agent without tool support
-This is a simple example setting up a ** LangChain ReAct agent** using GPT-4o without access to any tooling.  It uses a prompt template from _LangChain Hub_ and executes queries with step-by-step reasoning and code execution.
+This is a simple example setting up a **LangChain ReAct agent** using GPT-4o without access to any tooling.  It uses a prompt template from _LangChain Hub_ and executes queries with step-by-step reasoning and code execution.
 ```
 python3 LA_01.py
 ```
