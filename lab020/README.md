@@ -18,9 +18,7 @@ export OPENAI_API_KEY="xxxxxxxxx"
 ```
 ./lab_setup.sh
 ```
-```
-source .lab020/bin/activate
-```
+
 ## Lab instructions
 ### OpenAI Resonses API
 https://platform.openai.com/docs/api-reference/responses
@@ -102,6 +100,14 @@ curl "https://api.openai.com/v1/responses" \
     }' | jq -r '.output[].content[0].text'
 ```
 
+#### Message recall
+This lab shows how to recall a previous response using its unique ID, handy for reviewing or debugging past interactions without re-running the entire request. Also asynchronous workflows will benefit from this concept, where you send a request, do other tasks, and fetch the result later when it's ready. (Modify and run previous command to find the response ID.)
+```
+curl "https://api.openai.com/v1/responses/resp_<id>" \
+    -H "Content-Type: application/json" \
+    -H "Authorization: Bearer $OPENAI_API_KEY"
+```
+
 #### Streaming
 This lab introduces streaming responses, allowing you to receive the model’s output token by token as it generates—great for faster feedback and interactive experiences.
 ```
@@ -114,14 +120,6 @@ curl -XPOST "https://api.openai.com/v1/responses" \
         "stream": true
     }' 
 ```
-#### Message recall
-This lab shows how to recall a previous response using its unique ID, handy for reviewing or debugging past interactions without re-running the entire request. Also asynchronous workflows will benefit from this concept, where you send a request, do other tasks, and fetch the result later when it's ready.
-```
-curl "https://api.openai.com/v1/responses/resp_<id>" \
-    -H "Content-Type: application/json" \
-    -H "Authorization: Bearer $OPENAI_API_KEY"
-```
-
 #### Structured Ouptput
 See [./ADDON.md](./ADDON.md)
 
