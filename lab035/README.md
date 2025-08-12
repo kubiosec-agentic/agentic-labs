@@ -1,5 +1,5 @@
 
-![OpenAI](https://img.shields.io/badge/OpenAI-lightblue) ![LangChain](https://img.shields.io/badge/LangChain-lightgrey) ![ChatCompletion](https://img.shields.io/badge/ChatCompetion-green)
+![LangChain](https://img.shields.io/badge/LangChain-lightgrey) ![ChatCompletion](https://img.shields.io/badge/ChatCompetion-green)
 # LAB035: LangChain and LangGraph Quickstart
 This lab demonstrates how to build powerful language model workflows using LangChain and LangGraph.<br>
 
