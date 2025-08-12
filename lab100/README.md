@@ -7,7 +7,7 @@ export OPENAI_API_KEY="xxxxxxxxx"
 ./lab_setup.sh
 ```
 ```
-source .lab10/bin/activate
+source .lab100/bin/activate
 ```
 ## Lab instructions
 ### xxxxxxxx

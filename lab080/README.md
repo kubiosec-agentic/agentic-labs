@@ -16,7 +16,7 @@ export OPENAI_API_KEY="xxxxxxxxx"
 ./lab_setup.sh
 ```
 ```
-source .lab08/bin/activate
+source .lab080/bin/activate
 ```
 ## Lab instructions
 #### Agent using MCP

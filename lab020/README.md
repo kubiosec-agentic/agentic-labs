@@ -19,7 +19,7 @@ export OPENAI_API_KEY="xxxxxxxxx"
 ./lab_setup.sh
 ```
 ```
-source .lab02/bin/activate
+source .lab020/bin/activate
 ```
 ## Lab instructions
 ### OpenAI Resonses API

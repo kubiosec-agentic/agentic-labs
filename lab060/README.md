@@ -15,7 +15,7 @@ export OPENAI_API_KEY="xxxxxxxxx"
 ./lab_setup.sh
 ```
 ```
-source .lab06/bin/activate
+source .lab060/bin/activate
 ```
 ## Lab instructions
 #### Simple OpenAI Agent

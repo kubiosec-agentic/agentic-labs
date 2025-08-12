@@ -17,7 +17,7 @@ export OPENAI_API_KEY="xxxxxxxxx"
 ./lab_setup.sh
 ```
 ```
-source .lab04/bin/activate
+source .lab040/bin/activate
 ```
 ## Lab instructions
 #### Example 1: RAG based search using Llama-index and OpenAI synthesis

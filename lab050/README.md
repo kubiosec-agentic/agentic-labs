@@ -23,7 +23,7 @@ export OPENAI_API_KEY="xxxxxxxxx"
 ./lab_setup.sh
 ```
 ```
-source .lab05/bin/activate
+source .lab050/bin/activate
 ```
 To avoide the **_LangSmith_** warnings (build, test, debug, and monitor framework developed **_LangChain_**)
 ```

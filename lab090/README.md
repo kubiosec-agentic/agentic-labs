@@ -14,7 +14,7 @@ export OPENAI_API_KEY="xxxxxxxxx"
 ./lab_setup.sh
 ```
 ```
-source .lab09/bin/activate
+source .lab090/bin/activate
 ```
 ## Lab instructions
 ### OAuth 2.0

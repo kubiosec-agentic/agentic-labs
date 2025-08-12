@@ -11,7 +11,7 @@ export OPENAI_API_KEY="xxxxxxxxx"
 ./lab_setup.sh
 ```
 ```
-source .lab01/bin/activate
+source .lab010/bin/activate
 ```
 ## Lab instructions
 ### OpenAI Chat Commpletion
