@@ -1,15 +1,13 @@
 
-![OpenAI](https://img.shields.io/badge/OpenAI-lightblue) ![Responses_API](https://img.shields.io/badge/Responses_API-brightgreen) ![Curl](https://img.shields.io/badge/Curl-orange) ![Python](https://img.shields.io/badge/Python-blue) ![Tools](https://img.shields.io/badge/Tools-purple)
+![OpenAI](https://img.shields.io/badge/OpenAI-lightblue) ![Responses_API](https://img.shields.io/badge/Responses_API-brightgreen) ![Python](https://img.shields.io/badge/Python-blue) ![Tools](https://img.shields.io/badge/Tools-purple)
 
 # LAB32: Python Frameworks
-This lab demonstrates how to build powerful language model workflows using LangChain and LangGraph.<br>
+This lab demonstrates how to build powerful language model workflows using Python OpenAI SDK.<br>
 
 
 ## Set up your environment
 ```
 export OPENAI_API_KEY="xxxxxxxxx"
-export ANTHROPIC_API_KEY="xxxxxxxxx"
-export GOOGLE_API_KEY="xxxxxxxxx"
 ```
 ```
 ./lab_setup.sh
