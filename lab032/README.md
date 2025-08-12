@@ -16,7 +16,7 @@ export OPENAI_API_KEY="xxxxxxxxx"
 source .lab032/bin/activate
 ```
 ## Lab instructions
-#### Chat completion via Python
+#### Chat completion via OpenAI Python SDK
 This lab demonstrates how to make a Chat Completions API call using Python, and how to intercept and inspect the request using `mitmproxy` for debugging or learning purposes. **(Terminal_1)**
 ```
 export OPENAI_BASE_URL="https://api.openai.com/v1"
@@ -32,6 +32,7 @@ docker run --rm -it \
     -p 127.0.0.1:8081:8081 \
     mitmproxy/mitmproxy mitmweb \
         --web-host 0.0.0.0 \
+        --set block_global=false \
         --mode reverse:https://api.openai.com:443
 ```
 Open your browser at `http://127.0.0.1:8081/?token=xxxxxx`<br><br>
@@ -47,12 +48,12 @@ Don't forget to unset the environment variable !
 unset OPENAI_BASE_URL
 ```
 
-#### Message callback python
+#### Responses API via OpenAI Python SDK and message callback
 This lab shows how to build a multi-turn conversation using the `previous_response_id`, allowing the model to maintain context and respond more naturally across messages.
 ```
 python3 ./resp_01.py
 ```
-Also check out.
+Also check out the next sample. What do you notice?
 ```
 python3 ./resp_02.py
 ```
@@ -62,6 +63,8 @@ This container can contain files that you upload, or that it generates.
 ```
 python3 ./resp03.py
 ```
+Apply the previous technique using `mitmproxy` to analyse what is happening under the hood.
+
 #### Structured output using Pydantic
 Pydantic is a Python library for data validation and data parsing using Python type hints. <br>
 It allows you to define data models with expected fields and types, and it will:
