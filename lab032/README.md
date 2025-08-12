@@ -18,7 +18,7 @@ source .lab032/bin/activate
 ## Lab instructions
 
 ##### From `curl` to Python Chat Completion
-This very first Python example should help to understand how we can easily convert out `curl` examples into Python code, but also how we can abstract away error prone details using SDKs.
+This very first example should help to understand how we can easily convert our previous `curl` examples into code and how to start abstracting away error-prone details using SDKs.
 ```
 python3 ./requests_01.py
 ```
