@@ -1,4 +1,4 @@
-![OpenAI](https://img.shields.io/badge/OpenAI-lightblue) ![Responses_API](https://img.shields.io/badge/Responses_API-brightgreen) ![Curl](https://img.shields.io/badge/Curl-orange) ![Python](https://img.shields.io/badge/Python-blue) ![Tools](https://img.shields.io/badge/Tools-purple)
+![OpenAI](https://img.shields.io/badge/OpenAI-lightblue) ![Responses_API](https://img.shields.io/badge/Responses_API-brightgreen) ![Curl](https://img.shields.io/badge/Curl-orange) ![Tools](https://img.shields.io/badge/Tools-purple)
 # LAB02: OpenAI responses API
 ## Introduction
 This lab explores the new OpenAI responses API, covering essential capabilities like basic prompting, real-time web search, file analysis, streaming, and message recall. You'll use curl and jq to inspect responses and learn how to build context-aware conversations in Python.

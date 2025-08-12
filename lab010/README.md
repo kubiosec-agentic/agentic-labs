@@ -1,4 +1,4 @@
-![OpenAI](https://img.shields.io/badge/OpenAI-lightblue) ![ChatCompletion](https://img.shields.io/badge/ChatCompetion-green) ![Curl](https://img.shields.io/badge/Curl-orange) ![Python](https://img.shields.io/badge/Python-blue)
+![OpenAI](https://img.shields.io/badge/OpenAI-lightblue) ![ChatCompletion](https://img.shields.io/badge/ChatCompetion-green) ![Curl](https://img.shields.io/badge/Curl-orange)
 
 # LAB01: Chat Completions 
 ## Introduction
@@ -10,9 +10,7 @@ export OPENAI_API_KEY="xxxxxxxxx"
 ```
 ./lab_setup.sh
 ```
-```
-source .lab010/bin/activate
-```
+
 ## Lab instructions
 ### OpenAI Chat Commpletion
 https://platform.openai.com/docs/api-reference/chat
@@ -23,7 +21,7 @@ curl -XPOST https://api.openai.com/v1/chat/completions \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $OPENAI_API_KEY" \
   -d '{
-    "model": "gpt-4o",
+    "model": "gpt-5",
     "messages": [
       {
         "role": "user",
