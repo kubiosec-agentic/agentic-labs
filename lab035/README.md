@@ -13,7 +13,7 @@ export GOOGLE_API_KEY="xxxxxxxxx"
 ./lab_setup.sh
 ```
 ```
-source .lab032/bin/activate
+source .lab035/bin/activate
 ```
 ## Lab instructions
 xxxxxxxxxx
