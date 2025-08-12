@@ -12,7 +12,7 @@ llm = HuggingFacePipeline.from_model_id(
     model_id="Qwen/Qwen2-0.5B-Instruct",  # Small instruction-tuned model for general tasks
     task="text-generation",  # Use this pipeline for generating text completions
     model_kwargs={
-        "device_map": "mps",  # Use "cpu" to run on CPU; use "mps" for Apple Silicon or "auto" for GPU (e.g., CUDA)
+        "device_map": "cpu",  # Use "cpu" to run on CPU; use "mps" for Apple Silicon or "auto" for GPU (e.g., CUDA)
         "torch_dtype": "float16",  # Use half-precision to reduce memory usage (GPU only)
         "low_cpu_mem_usage": True,  # Optimizes model loading by reducing RAM usage
     },
