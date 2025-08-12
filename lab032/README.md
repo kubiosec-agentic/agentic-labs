@@ -57,7 +57,7 @@ Also check out the next sample. What do you notice?
 ```
 python3 ./resp_02.py
 ```
-#### Code Executor
+#### Responses API and Code Executor
 The Code Interpreter tool requires a container object. A container is a fully sandboxed virtual machine that the model can run Python code in. 
 This container can contain files that you upload, or that it generates.
 ```
@@ -65,7 +65,7 @@ python3 ./resp03.py
 ```
 Apply the previous technique using `mitmproxy` to analyse what is happening under the hood.
 
-#### Structured output using Pydantic
+#### Responses API and Structured output using Pydantic
 Pydantic is a Python library for data validation and data parsing using Python type hints. <br>
 It allows you to define data models with expected fields and types, and it will:
 - validate incoming data
