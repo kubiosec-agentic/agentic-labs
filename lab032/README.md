@@ -16,6 +16,11 @@ export OPENAI_API_KEY="xxxxxxxxx"
 source .lab032/bin/activate
 ```
 ## Lab instructions
+##### From `curl` to Python Chat Completion
+This first very first Python example should help to understand how we can easily convert out curl examples into python code, but also how we can abstract away error prone details using SDKs.
+```
+python3 ./chat_requests.py
+```
 #### Chat completion via OpenAI Python SDK
 This lab demonstrates how to make a Chat Completions API call using Python, and how to intercept and inspect the request using `mitmproxy` for debugging or learning purposes. **(Terminal_1)**
 ```
