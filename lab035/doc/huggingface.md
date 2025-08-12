@@ -283,53 +283,6 @@ Enable verbose logging for troubleshooting:
 from transformers import logging
 logging.set_verbosity_info()  # Enable detailed logs
 ```
-
-## Integration with LangChain Ecosystem
-
-### Chains and Prompts
-
-```python
-from langchain.prompts import ChatPromptTemplate
-from langchain.schema.runnable import RunnablePassthrough
-
-# Create a prompt template
-prompt = ChatPromptTemplate.from_messages([
-    ("system", "You're an expert in {domain}"),
-    ("human", "{question}")
-])
-
-# Create a chain
-chain = prompt | chat_model
-
-# Use the chain
-result = chain.invoke({
-    "domain": "machine learning",
-    "question": "What's the difference between supervised and unsupervised learning?"
-})
-```
-
-### RAG Integration
-
-```python
-from langchain.vectorstores import FAISS
-from langchain.embeddings import HuggingFaceEmbeddings
-from langchain.schema.runnable import RunnableParallel
-
-# Set up embeddings and vector store
-embeddings = HuggingFaceEmbeddings()
-vectorstore = FAISS.from_texts(["Document content..."], embeddings)
-
-# Create RAG chain
-rag_chain = (
-    RunnableParallel({
-        "context": vectorstore.as_retriever(),
-        "question": RunnablePassthrough()
-    })
-    | prompt
-    | chat_model
-)
-```
-
 ## Best Practices
 
 ### 1. Model Selection
