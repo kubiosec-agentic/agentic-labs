@@ -2,144 +2,117 @@
 ![LangChain](https://img.shields.io/badge/LangChain-lightgrey)
 ![Tools](https://img.shields.io/badge/Tools-purple)
 ![Agents](https://img.shields.io/badge/Agents-orange)
-![Python](https://img.shields.io/badge/Python-blue) 
+![Python](https://img.shields.io/badge/Python-blue)
+![Experimental](https://img.shields.io/badge/Experimental-red)
 
+# LAB053: LangChain ReAct Agents (Experimental)
 
-# LAB05: Tool Based Agents
+> ⚠️ **EXPERIMENTAL LAB WARNING**  
+> This lab uses `langchain_experimental` which contains potentially dangerous code.  
+> While still supported (as of 2025), it's designed for research and experimental use.  
+> **DO NOT** deploy experimental code to production without proper security review.
+
 ## Introduction
-This lab explores tool-augmented agents and API call inspection using LangChain and OpenAI. You’ll experiment with:
-- LangChain ReAct agents (with and without tools)
-- Tool calling via OpenAI’s function schema (e.g., custom SQL simulation)
-- Wikipedia integration for real-world queries
-- A small CTF-style challenge (via UI or API)
-- Deep inspection of API behavior using mitmproxy
+This lab focuses specifically on LangChain ReAct agents using experimental features. You'll explore:
+- LangChain ReAct agents with and without tools
+- Python REPL tool integration (potentially unsafe)
+- Wikipedia integration for research queries  
+- CTF-style agent challenges
+- Agent execution patterns and debugging
 
-Great for learning how to build, extend, and debug LLM agents with real tool support.
+Perfect for understanding LangChain's agent capabilities while learning about experimental framework risks.
 ## Set up your environment
-```
+### Prerequisites  
+- Python 3.8+ with pip
+- OpenAI API key
+- **Security Warning**: This lab uses experimental LangChain features
+
+### Setup Commands
+```bash
 export OPENAI_API_KEY="xxxxxxxxx"
 ```
-```
+```bash
 ./lab_setup.sh
 ```
+```bash
+source .lab053/bin/activate
 ```
-source .lab050/bin/activate
+```bash
+pip install -r requirements.txt
 ```
-To avoide the **_LangSmith_** warnings (build, test, debug, and monitor framework developed **_LangChain_**)
-```
-export LANGCHAIN_TRACING_V2" = "false"
-export LANGCHAIN_API_KEY"= ""
-```
-In your code you can add:
-```
-# Suppress LangSmith warnings 
-import warnings
-warnings.filterwarnings("ignore", category=UserWarning, module="langsmith")
+
+### Suppress LangSmith Warnings (Optional)
+To avoid **LangSmith** warnings from LangChain's monitoring framework:
+```bash
+export LANGCHAIN_TRACING_V2="false"
+export LANGCHAIN_API_KEY=""
 ```
 
 ## Lab instructions
-#### Example 1: LangChain chain without tool support
-This script demonstrates how to use a LangChain chain without any tool integration or structured output.
-```
-python3 LC_01.py
-```
-#### Example 2: LangChain chain with tool integration and structured output example
-This script demonstrates how to use a LangChain chain **with tool integration and structured output**. It connects an LLM to a simple weather tool, handles tool invocation and result parsing and feeds the result back into the chain for a final response. It uses the `ChatOpenAI` from `langchain_openai` class that provides an interface for interacting with OpenAI's chat-based language models, like GPT-3.5 and GPT-4. It simplifies the process of sending prompts to these models and receiving their responses, making it easier to build conversational AI applications.
-```
-python3 LC_02.py
-```
-#### Example 3: Langchain agent without tool support
-This is a simple example setting up a **LangChain ReAct agent** using GPT-4o without access to any tooling.  It uses a prompt template from _LangChain Hub_ and executes queries with step-by-step reasoning and code execution.
-```
+
+#### Example 1: ReAct Agent without Tools
+Basic LangChain ReAct agent using GPT-3.5-turbo without any tool access. Demonstrates pure reasoning workflow.
+```bash
 python3 LA_01.py
 ```
-#### Example 4: Langchain agent with tool support
-This next example sets up a LangChain ReAct agent using GPT-4o with access to a Python REPL tool for solving math problems. It uses a prompt template from LangChain Hub and executes queries with step-by-step reasoning and code execution.
-```
+
+#### Example 2: ReAct Agent with Python REPL Tool  
+> ⚠️ **SECURITY WARNING**: Uses PythonREPLTool which can execute arbitrary Python code
+
+LangChain ReAct agent with access to Python REPL for mathematical computations. Uses experimental tools.
+```bash
 python3 LA_02.py
 ```
-#### Example 5: Small CTF
-Start the ChatBot. Try to hack it via the user interface.
-```
-docker run -it -p 8501:8501 \
-  --rm \
-  -e OPENAI_API_KEY=$OPENAI_API_KEY \
-  --name demochatbox \
-  xxradar/mymadchatbox:v2  \
-  /bin/bash -c "./start.sh & tail -f /dev/null"
-```
-You can connect to `http://127.0.0.1:8501/`<br>
 
-#### Example 6: Small CTF - Optional (middleware function only)
-Start the ChatBot. Try to hack it via the api (openai compatible).
+#### Example 3: CTF Challenge Agent (API Mode)
+Agent-based CTF middleware exposing OpenAI-compatible API. Test agent security and prompt injection.
+```bash
+python3 LA_03.py
 ```
-python3 ./LA_03.py
-```
-In **terminal_2**:
-```
-curl -XPOST http://127.0.0.1:5000/v1/chat/completions  \
+
+Test in **terminal_2**:
+```bash
+curl -XPOST http://127.0.0.1:5000/v1/chat/completions \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer xxxxxxxxxx" \
+  -H "Authorization: Bearer test_key" \
   -d '{
     "model": "gpt-4o",
-    "messages": [
-      {
-        "role": "user",
-        "content": [
-          {
-            "type": "text",
-            "text": "What is the SQRT of 12345"
-          }
-        ]
-      }
-    ]
+    "messages": [{"role": "user", "content": "What is the SQRT of 12345"}]
   }'
 ```
-#### Example 5: Langchain agent with Wikipedia support
-This code sets up a LangChain ReAct agent powered by GPT-3.5-turbo, with access to the Wikipedia tool. It uses a custom prompt template to guide the agent through reasoning and action steps to answer complex questions using external knowledge sources.
-```
-python3 LA_04.py
-```
-#### Example 6: Openai with custom tools support
-This script sets up a tool-augmented OpenAI chat workflow using the chat.completions API with function calling. It defines a local SQL simulation tool (find_product), registers it in the OpenAI tool schema, and allows GPT (e.g., GPT-4o) to automatically call this function to answer product-related queries. The tool is executed locally, and the result is sent back to the model for final response generation.
-```
-python3 OA_01.py
-```
-#### Example 7: Openai with custom tools support DEEPDIVE
-This setup enables inspection of OpenAI API calls by routing them through a local MITM proxy (mitmproxy) in reverse mode. <br>
-You’ll launch the proxy in `terminal_2`, then set the `OPENAI_BASE_URL` to point to it in `terminal_1`, allowing you to run scripts like `Tools_05.py` while capturing and viewing requests/responses in the mitmweb dashboard at http://127.0.0.1:8081.
-#### Open a new terminal_2
-```
-docker run --rm -it \
-    -v ~/.mitmproxy:/home/mitmproxy/.mitmproxy \
-    -p 8080:8080 \
-    -p 127.0.0.1:8081:8081 \
-    mitmproxy/mitmproxy mitmweb \
-        --web-host 0.0.0.0 \
-        --mode reverse:https://api.openai.com:443
-```
-You can now connect to `http://127.0.0.1:8081/?token=<see_your_terminal>`
-#### Continue in terminal_1
-```
-export OPENAI_BASE_URL="http://127.0.0.1:8080/v1"
-```
-```
-python3 OA_01.py
-```
-#### Optional for hackers
-Modify `LA_03.py` and `LA_04.py`
-```
-llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0, base_url="http://127.0.0.1:8080/v1")
+
+#### Example 4: Wikipedia Research Agent
+LangChain ReAct agent with Wikipedia integration for research queries. Demonstrates external knowledge source integration.
+```bash
+python3 LA_04.py  
 ```
 
+#### Example 5: LangChain Chain (Advanced)
+Advanced LangChain chain example (purpose depends on LC_04.py implementation).
+```bash
+python3 LC_04.py
+```
+
+## Security Notes for Experimental Features
+
+**🔒 LangChain Experimental Security Considerations:**
+- **PythonREPLTool**: Can execute arbitrary Python code - sandbox recommended
+- **Agent Execution**: May follow unexpected reasoning paths
+- **External Tools**: Wikipedia and web access may leak information
+- **Prompt Injection**: Agents vulnerable to malicious prompts
+
+**✅ Safe Usage Guidelines:**
+- Run in isolated/sandboxed environments only
+- Never expose experimental agents to untrusted input
+- Monitor agent actions and tool usage
+- Review security team before production use
+
 ## Cleanup environment
-```
-unset OPENAI_BASE_URL
-```
-```
+```bash
 deactivate
 ```
-```
+```bash
 ./lab_cleanup.sh
 ```
+
 Back to [Lab Overview](https://github.com/kubiosec-agentic/agentic-labs/blob/master/README.md#-lab-overview)
