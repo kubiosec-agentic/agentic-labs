@@ -33,7 +33,7 @@ response = client.responses.create(
     {
       "type": "file_search",
       "vector_store_ids": [
-        "vs_686ed51e3c548191ab313b20504a268a"
+        "vs_689bb74f20388191a7a26b548f72ccd3"
       ]
     }
   ],

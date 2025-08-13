@@ -1,6 +1,7 @@
 lab*/.lab*
 lab*/lab_cleanup.sh
 lab*/lab_setup.sh
+lab*/storage
 
 
 # Byte-compiled / optimized / DLL files
