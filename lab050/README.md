@@ -5,7 +5,7 @@
 ![Python](https://img.shields.io/badge/Python-blue) 
 
 
-# LAB050: Tool Based Workflows
+# LAB050: Tool Based Workflows (LangChain)
 ## Introduction
 This lab explores tool-augmented agents and API call inspection using LangChain and OpenAI. You’ll experiment with:
 - Wikipedia integration for real-world queries
