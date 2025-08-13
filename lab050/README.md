@@ -5,13 +5,10 @@
 ![Python](https://img.shields.io/badge/Python-blue) 
 
 
-# LAB05: Tool Based Agents
+# LAB050: Tool Based Workflows
 ## Introduction
 This lab explores tool-augmented agents and API call inspection using LangChain and OpenAI. You’ll experiment with:
-- LangChain ReAct agents (with and without tools)
-- Tool calling via OpenAI’s function schema (e.g., custom SQL simulation)
 - Wikipedia integration for real-world queries
-- A small CTF-style challenge (via UI or API)
 - Deep inspection of API behavior using mitmproxy
 
 Great for learning how to build, extend, and debug LLM agents with real tool support.
