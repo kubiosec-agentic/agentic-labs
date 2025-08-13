@@ -67,7 +67,16 @@ The script is pre-configured to scan `requirements-vulnerable.txt` which contain
 
 **💡 DevSecOps Tip**: pip-audit sends summary messages to stderr while JSON data goes to `stdout`. This is normal behavior, the tool handles both streams correctly to extract vulnerability details.
 
-#### Example 4: API Call Inspection with Mitmproxy
+#### Example 4: Security Innovators Wikipedia Research
+This example demonstrates Wikipedia integration for researching cybersecurity pioneers and innovators. It showcases:
+- Wikipedia API integration with function calling
+- Information retrieval and summarization
+- Educational research workflow
+```bash
+python3 OA_04.py
+```
+
+#### Example 5: API Call Inspection with Mitmproxy
 This setup enables deep inspection of OpenAI API calls by routing them through a local MITM proxy in reverse mode.
 
 #### Open a new terminal_2
