@@ -1,8 +1,12 @@
 from openai import OpenAI
 client = OpenAI()
 
+# TODO: Replace with your actual Vector Store ID from Example 4 (the $VS_ID value)
+# You can find this by running the curl commands in Example 4 of the README
+VECTOR_STORE_ID = "vs_689bb74f20388191a7a26b548f72ccd3"  # Update this!
+
 response = client.responses.create(
-  model="gpt-4.1",
+  model="gpt-4o",
   input=[
     {
       "role": "user",
@@ -33,7 +37,7 @@ response = client.responses.create(
     {
       "type": "file_search",
       "vector_store_ids": [
-        "vs_689bb74f20388191a7a26b548f72ccd3"
+        VECTOR_STORE_ID
       ]
     }
   ],
