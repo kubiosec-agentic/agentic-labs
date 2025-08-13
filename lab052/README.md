@@ -29,9 +29,6 @@ export OPENAI_API_KEY="xxxxxxxxx"
 ```bash
 source .lab052/bin/activate
 ```
-```bash
-pip install -r requirements.txt
-```
 
 ## Lab instructions
 #### Example 1: Directory Analysis Tool
@@ -66,9 +63,9 @@ python3 OA_03.py
 ```
 
 **Test with vulnerable packages:**
-The script is pre-configured to scan `requirements-vulnerable.txt` which contains pillow==6.2.0 with 41 known vulnerabilities.
+The script is pre-configured to scan `requirements-vulnerable.txt` which contains `pillow==6.2.0` with 41 known vulnerabilities.
 
-**💡 DevSecOps Tip**: pip-audit sends summary messages to stderr while JSON data goes to stdout. This is normal behavior - the tool handles both streams correctly to extract vulnerability details.
+**💡 DevSecOps Tip**: pip-audit sends summary messages to stderr while JSON data goes to `stdout`. This is normal behavior, the tool handles both streams correctly to extract vulnerability details.
 
 #### Example 4: API Call Inspection with Mitmproxy
 This setup enables deep inspection of OpenAI API calls by routing them through a local MITM proxy in reverse mode.
