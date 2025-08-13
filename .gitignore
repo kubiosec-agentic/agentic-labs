@@ -3,6 +3,8 @@ lab*/lab_cleanup.sh
 lab*/lab_setup.sh
 lab*/storage
 
+# PDF files
+*.pdf
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
