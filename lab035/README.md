@@ -16,7 +16,7 @@ This lab includes minimal examples to help you get started with each concept.
 
 ## Set up your environment
 ```
-export OPENAPI_API_KEY="xxxxxxxxx"
+export OPENAI_API_KEY="xxxxxxxxx"
 export ANTHROPIC_API_KEY="xxxxxxxxx"
 export GOOGLE_API_KEY="xxxxxxxxx"
 ```
@@ -27,13 +27,44 @@ export GOOGLE_API_KEY="xxxxxxxxx"
 source .lab035/bin/activate
 ```
 ## Lab instructions
+
+#### Basic Chat Example
+Demonstrates using different LLM providers with LangChain:
+```
+python3 ./chat.py
+```
+
+#### Prompt Engineering and Chaining
+Shows how to create chains with prompt templates:
+```
+python3 ./prompt.py
+```
+
+#### Advanced Prompting Techniques
+Demonstrates system messages and structured prompts:
+```
+python3 ./advanced_prompting.py
+```
+
+#### Multi-Turn Conversations
+Implements conversation history and memory:
+```
+python3 ./multi-turn.py
+```
+
+#### HuggingFace Local Model
+Runs models locally using HuggingFace transformers:
+```
+python3 ./hf_local.py
+```
+
 For detailed guidance and examples, check out the following documentation files:
 
 - [Chat Systems](./doc/chat.md) - Building conversational AI systems
 - [Prompt Engineering](./doc/prompt.md) - Best practices for prompt design and optimization
 - [Advanced Prompting](./doc/advanced_prompting.md) - Advanced techniques for crafting effective prompts
 - [Multi-Turn Conversations](./doc/multi-turn.md) - Handling complex multi-turn dialogues
-- [HuggingFace local model example](./doc/huggingface.md) - Handling complex multi-turn dialogues
+- [HuggingFace local model example](./doc/huggingface.md) - Working with local models
 
 ## Cleanup environment
 ```
