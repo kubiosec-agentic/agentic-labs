@@ -5,9 +5,10 @@ This lab explores both the **OpenAI agents framework** and **OpenAI Responses AP
 - Implement agent handoff based on input language detection
 - Attach custom tools to agents for function calling  
 - Enforce output guardrails to filter or block certain content
-- Use OpenAI Responses API for security document analysis
+- Compare OpenAI Responses API vs Agents SDK approaches
+- Build security analysis agents with specialized tools
 
-Perfect for understanding agent orchestration patterns and OpenAI's latest API capabilities.
+Perfect for understanding different agent orchestration patterns and OpenAI's API capabilities.
 ## Set up your environment
 ### Prerequisites
 - Python 3.8+ with pip  
@@ -54,9 +55,15 @@ python3 agent_04.py
 ```
 
 #### Example 5: OpenAI Responses API for Security Analysis
-Uses OpenAI's Responses API (different from agents framework) to analyze security traces and network captures.
+Uses OpenAI's Responses API (direct client approach) to analyze security traces and network captures.
 ```bash
 python3 agent_05.py
+```
+
+#### Example 6: Security Analysis with Agents SDK
+Same security analysis functionality but implemented using OpenAI Agents SDK with custom tools. Demonstrates the difference between direct API calls and agent-based approaches.
+```bash
+python3 agent_06.py
 ```
 ## Additional Resources
 
