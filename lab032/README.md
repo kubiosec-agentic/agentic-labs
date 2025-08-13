@@ -63,11 +63,17 @@ Also check out the next sample. What do you notice?
 ```
 python3 ./resp_02.py
 ```
+#### Interactive Chatbot with Chat Completions
+This example demonstrates building an interactive chatbot that maintains conversation history across multiple turns.
+```
+python3 ./chat_02.py
+```
+
 #### Responses API and Code Executor
 The Code Interpreter tool requires a container object. A container is a fully sandboxed virtual machine that the model can run Python code in. 
-This container can contain files that you upload, or that it generates.
+This container can contain files that you upload, or that it generates. Note: Uses gpt-4.1 model which may need to be updated to a valid model like gpt-4o.
 ```
-python3 ./resp03.py
+python3 ./resp_03.py
 ```
 Apply the previous technique using `mitmproxy` to analyse what is happening under the hood.
 
@@ -77,6 +83,7 @@ It allows you to define data models with expected fields and types, and it will:
 - validate incoming data
 - parse it into structured objects
 - raise clear errors if the data doesn't match
+
 ```
 python3 ./resp_04.py
 ```

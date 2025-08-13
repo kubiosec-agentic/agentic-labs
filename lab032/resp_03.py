@@ -4,7 +4,7 @@ client = OpenAI()
 container = client.containers.create(name="test-container")
 
 response = client.responses.create(
-    model="gpt-4.1",
+    model="gpt-4o",
     tools=[{
         "type": "code_interpreter",
         "container": container.id

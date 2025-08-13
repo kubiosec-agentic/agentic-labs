@@ -13,7 +13,7 @@ class MathReasoning(BaseModel):
     final_answer: str
 
 response = client.responses.parse(
-    model="gpt-4o-2024-08-06",
+    model="gpt-4o",
     input=[
         {
             "role": "system",
@@ -25,6 +25,6 @@ response = client.responses.parse(
 )
 
 # Convert parsed output to JSON string
-json_blob = json.dumps(response.output_parsed.dict(), indent=2)
+json_blob = json.dumps(response.output_parsed.model_dump(), indent=2)
 
 print(json_blob)
