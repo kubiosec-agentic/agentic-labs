@@ -1,0 +1,14 @@
+# Core dependencies
+langchain-openai
+langchain-core
+pydantic
+
+# Weather API dependencies
+openmeteo-requests
+pandas
+requests-cache
+retry-requests
+geopy
+
+# Optional: for better data handling
+numpy

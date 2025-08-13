@@ -2,7 +2,7 @@ from langchain_openai import ChatOpenAI
 from langchain_core.messages import HumanMessage, ToolMessage
 
 # Initialize the LLM with a specific model
-llm = ChatOpenAI(model="gpt-4.1")
+llm = ChatOpenAI(model="gpt-4o")
 
 # Pass the result back to the model
 messages = [
