@@ -5,7 +5,7 @@
 ![Python](https://img.shields.io/badge/Python-blue) 
 
 
-# LAB05: Tool Based Agents
+# LAB052: Tool Based Workflows (OpenAI and Chat Completion)
 ## Introduction
 This lab explores tool-augmented agents and API call inspection using LangChain and OpenAI. You’ll experiment with:
 - LangChain ReAct agents (with and without tools)
@@ -24,17 +24,6 @@ export OPENAI_API_KEY="xxxxxxxxx"
 ```
 ```
 source .lab050/bin/activate
-```
-To avoide the **_LangSmith_** warnings (build, test, debug, and monitor framework developed **_LangChain_**)
-```
-export LANGCHAIN_TRACING_V2" = "false"
-export LANGCHAIN_API_KEY"= ""
-```
-In your code you can add:
-```
-# Suppress LangSmith warnings 
-import warnings
-warnings.filterwarnings("ignore", category=UserWarning, module="langsmith")
 ```
 
 ## Lab instructions

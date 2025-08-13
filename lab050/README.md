@@ -5,13 +5,19 @@
 ![Python](https://img.shields.io/badge/Python-blue) 
 
 
-# LAB050: Tool Based Workflows (LangChain)
+# LAB050: Introduction to LangChain and Tool Based Workflows
 ## Introduction
-This lab explores tool-augmented agents and API call inspection using LangChain and OpenAI. You’ll experiment with:
-- Wikipedia integration for real-world queries
-- Deep inspection of API behavior using mitmproxy
+In this lab, you will learn how to build and extend tool-augmented LLM workflows using LangChain and OpenAI. We’ll start with simple, standalone chains and later progress toward agents that can call tools, process their outputs, and reason about the next step. You will also learn how to inspect and debug API calls using mitmproxy.
 
-Great for learning how to build, extend, and debug LLM agents with real tool support.
+By completing this lab, you will:
+- Understand the basics of creating LangChain chains with and without tools
+- Learn how to integrate external APIs (e.g., Wikipedia, weather services)
+- Explore structured output handling for tool responses
+- Experiment with OpenAI’s Responses API in a LangChain context
+- Inspect model–tool interactions for debugging and transparency
+
+This lab is ideal for developers who want practical, hands-on experience with building, extending, and debugging LLM agents that can interact with real-world data sources.
+
 ## Set up your environment
 ```
 export OPENAI_API_KEY="xxxxxxxxx"
@@ -52,7 +58,7 @@ In this lab, we explore how to extend a language model with tool integration usi
 ```
 python3 LC_03.py
 ```
-#### Example 4: Building a Custom Translation Pipeline with LangChain and OpenAI
+#### Example 4: Building a Custom Translation Pipeline with LangChain and OpenAI (Advanced)
 In this lab, we demonstrate how to create a custom LangChain pipeline that integrates directly with the OpenAI API. We start by defining a ChatPromptTemplate for translating text into French, then implement a RunnableLambda to send messages to OpenAI’s gpt-4 model. By combining the prompt, the LLM call, and a StrOutputParser into a runnable chain, we create a simple yet flexible translation workflow. Finally, we test the chain by translating a sample English phrase into French and printing the result.
 ```
 python3 LC_core.py
