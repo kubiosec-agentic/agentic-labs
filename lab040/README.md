@@ -113,7 +113,7 @@ curl https://api.openai.com/v1/responses \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $OPENAI_API_KEY" \
   -d '{
-    "model": "gpt-4.1",
+    "model": "gpt-4o",
     "tools": [{
       "type": "file_search",
       "vector_store_ids": ["'$VS_ID'"]
@@ -311,9 +311,15 @@ Try another prompt, like "How can MCP influence attention in LLM reasoning?"
 </details>
 
 #### Example 5: RAG based search using OpenAI VectorStore and Response API (Python)
-**Note:** Update the code with your VectorStore ID from the previous lab.
+**Important:** You must update the vector store ID in `RAG_04.py` with your VectorStore ID from Example 4 above (the `$VS_ID` value).
 ```
-python3 RAG_04.py
+python3 ./RAG_04.py
+```
+
+#### Example 6: Agentic RAG with Tool Calling
+This demonstrates an advanced agentic RAG system where the LLM autonomously decides when to search for information using tool calls and reasoning.
+```
+python3 ./ARAG/AgenticRAG.py
 ```
 
 ## Cleanup environment
