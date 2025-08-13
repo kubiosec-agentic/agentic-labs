@@ -1,8 +1,8 @@
 ![OpenAI](https://img.shields.io/badge/OpenAI-lightblue) ![ChatCompletion](https://img.shields.io/badge/ChatCompetion-green) ![Curl](https://img.shields.io/badge/Curl-orange)
 
-# LAB01: Chat Completions 
+# LAB010: Chat Completions 
 ## Introduction
-LAB01 introduces the foundational steps for interacting with the OpenAI Chat Completions API. You’ll set up a working development environment, learn how to send requests using curl, structure conversations with system prompts, extract responses using jq, and even perform image-based tasks. The lab also covers Python-based API usage and debugging tools like mitmproxy to deepen your understanding of how requests flow. This lab is ideal for anyone looking to build a solid grasp of OpenAI API mechanics through hands-on practice.
+LAB010 introduces the foundational steps for interacting with the OpenAI Chat Completions API. You’ll set up a working development environment, learn how to send requests using curl, structure conversations with system prompts, extract responses using jq, and even perform image-based tasks. The lab also covers Python-based API usage and debugging tools like mitmproxy to deepen your understanding of how requests flow. This lab is ideal for anyone looking to build a solid grasp of OpenAI API mechanics through hands-on practice.
 ## Set up your environment
 ```
 export OPENAI_API_KEY="xxxxxxxxx"
@@ -12,7 +12,7 @@ export OPENAI_API_KEY="xxxxxxxxx"
 ```
 
 ## Lab instructions
-### OpenAI Chat Commpletion
+### OpenAI Chat Completion
 https://platform.openai.com/docs/api-reference/chat
 #### Simple textbook example
 This lab demonstrates a simple textbook example of how to call the OpenAI Chat Completions API using `curl`.

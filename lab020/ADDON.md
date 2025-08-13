@@ -1,4 +1,4 @@
-#### Structered output (Response API)
+#### Structured output (Response API)
 This lab demonstrates how to request structured output using the Response API by passing a predefined JSON payload, ideal for extracting consistent, machine-readable responses from the model.
 ```
 curl https://api.openai.com/v1/responses \
@@ -132,4 +132,49 @@ curl https://api.openai.com/v1/responses \
   "final_answer": "x = -15/4 or x = -3.75"
 }
 ```
+
+#### Data Extraction Example
+This example demonstrates extracting structured data from unstructured text, useful for parsing documents, emails, or articles.
+
+```
+curl -sS https://api.openai.com/v1/responses \
+  -H "Authorization: Bearer $OPENAI_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "gpt-4o-2024-08-06",
+    "input": "Extract contact information: John Smith works at Acme Corp as a Senior Developer. His email is john.smith@acme.com.",
+    "text": {
+      "format": {
+        "type": "json_schema",
+        "name": "contact_extraction",
+        "strict": true,
+        "schema": {
+          "type": "object",
+          "properties": {
+            "name": { "type": "string", "default": "" },
+            "company": { "type": "string", "default": "" },
+            "position": { "type": "string", "default": "" },
+            "email": { "type": "string", "default": "" },
+            "phone": { "type": "string", "default": "" },
+            "skills": { "type": "array", "items": { "type": "string" }, "default": [] },
+            "years_experience": { "type": "number", "default": 0 }
+          },
+          "required": [
+            "name",
+            "company",
+            "position",
+            "email",
+            "phone",
+            "skills",
+            "years_experience"
+          ],
+          "additionalProperties": false
+        }
+      }
+    }
+  }' | jq -r '.output[0].content[0].text | fromjson'
+
+```
+
+**Note:** The `"strict": true` parameter enforces strict schema compliance, ensuring the response matches the defined structure exactly.
 
