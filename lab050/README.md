@@ -45,6 +45,7 @@ This script demonstrates how to use a LangChain chain **with tool integration an
 ```
 python3 LC_02.py
 ```
+There is a real weather app example to try out, see [lab990_addendum](../lab990_addendum/)
 
 #### Example 3: LangChain chain with using OpenAI responses API
 In this lab, we explore how to extend a language model with tool integration using LangChain and **OpenAI’s Responses API**. We initialize a ChatOpenAI instance with the lightweight `gpt-4.1-mini` model, then bind it to a preview web search tool. This allows the model to augment its responses with live information from the web. Finally, we invoke the tool-enabled LLM to retrieve a positive news story from the current day and display the result.

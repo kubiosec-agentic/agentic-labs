@@ -118,7 +118,7 @@ llm = ChatOpenAI(model="gpt-4o")
 llm_with_tools = llm.bind_tools([get_weather])
 
 # User query - try different locations like "Brussels, Belgium" or "New York, USA"
-query = "What is the weather in Linter, Belgium?"
+query = "What is the weather in Paris, France?"
 
 # Step 1: Let the LLM decide whether to call a tool
 tool_call_response = llm_with_tools.invoke(query)
