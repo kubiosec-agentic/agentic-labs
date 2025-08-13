@@ -55,6 +55,12 @@ python3 ./multi-turn.py
 #### HuggingFace Local Model
 Runs models locally using HuggingFace transformers:
 ```
+export HF_TOKEN="xxxxxxxxx"
+```
+```
+pip install torch accelerate transformers
+```
+```
 python3 ./hf_local.py
 ```
 
