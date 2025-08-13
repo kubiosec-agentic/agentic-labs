@@ -1,0 +1,5 @@
+# Test file with known vulnerable packages - FOR TESTING ONLY
+# DO NOT use these versions in production!
+
+pillow==6.2.0       # Multiple CVEs - Buffer overflow vulnerabilities
+

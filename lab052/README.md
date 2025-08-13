@@ -14,14 +14,23 @@ This lab demonstrates OpenAI's function calling capabilities with custom tools. 
 Perfect for understanding how to integrate custom tools with OpenAI's chat completion API.
 
 ## Set up your environment
-```
+### Prerequisites
+- Python 3.7+ with pip
+- OpenAI API key (for LLM integration)
+- pip-audit (automatically installed via requirements.txt)
+
+### Setup Commands
+```bash
 export OPENAI_API_KEY="xxxxxxxxx"
 ```
-```
+```bash
 ./lab_setup.sh
 ```
-```
+```bash
 source .lab052/bin/activate
+```
+```bash
+pip install -r requirements.txt
 ```
 
 ## Lab instructions
@@ -44,12 +53,22 @@ python3 OA_02.py
 #### Example 3: DevSecOps Dependency Vulnerability Scanner
 This example demonstrates a security-focused tool that scans Python dependencies for known vulnerabilities. It showcases:
 - Integration with security scanning tools (pip-audit)
-- Fallback manual vulnerability checking
 - Security-focused system prompts
 - DevSecOps workflow automation
-```
+- Dual mode operation (with/without OpenAI API key)
+
+**Features:**
+- **With API Key**: Full LLM-powered vulnerability analysis and remediation advice
+- **Without API Key**: Direct vulnerability scanning with detailed CVE information
+
+```bash
 python3 OA_03.py
 ```
+
+**Test with vulnerable packages:**
+The script is pre-configured to scan `requirements-vulnerable.txt` which contains pillow==6.2.0 with 41 known vulnerabilities.
+
+**💡 DevSecOps Tip**: pip-audit sends summary messages to stderr while JSON data goes to stdout. This is normal behavior - the tool handles both streams correctly to extract vulnerability details.
 
 #### Example 4: API Call Inspection with Mitmproxy
 This setup enables deep inspection of OpenAI API calls by routing them through a local MITM proxy in reverse mode.
