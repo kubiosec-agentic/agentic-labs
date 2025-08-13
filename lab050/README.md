@@ -48,88 +48,11 @@ This script demonstrates how to use a LangChain chain **with tool integration an
 ```
 python3 LC_02.py
 ```
-#### Example 3: Langchain agent without tool support
-This is a simple example setting up a **LangChain ReAct agent** using GPT-4o without access to any tooling.  It uses a prompt template from _LangChain Hub_ and executes queries with step-by-step reasoning and code execution.
-```
-python3 LA_01.py
-```
-#### Example 4: Langchain agent with tool support
-This next example sets up a LangChain ReAct agent using GPT-4o with access to a Python REPL tool for solving math problems. It uses a prompt template from LangChain Hub and executes queries with step-by-step reasoning and code execution.
-```
-python3 LA_02.py
-```
-#### Example 5: Small CTF
-Start the ChatBot. Try to hack it via the user interface.
-```
-docker run -it -p 8501:8501 \
-  --rm \
-  -e OPENAI_API_KEY=$OPENAI_API_KEY \
-  --name demochatbox \
-  xxradar/mymadchatbox:v2  \
-  /bin/bash -c "./start.sh & tail -f /dev/null"
-```
-You can connect to `http://127.0.0.1:8501/`<br>
 
-#### Example 6: Small CTF - Optional (middleware function only)
-Start the ChatBot. Try to hack it via the api (openai compatible).
+#### Example 3: LangChain chain with using OpenAI responses API
+In this lab, we explore how to extend a language model with tool integration using LangChain and **OpenAI’s Responses API**. We initialize a ChatOpenAI instance with the lightweight `gpt-4.1-mini` model, then bind it to a preview web search tool. This allows the model to augment its responses with live information from the web. Finally, we invoke the tool-enabled LLM to retrieve a positive news story from the current day and display the result.
 ```
-python3 ./LA_03.py
-```
-In **terminal_2**:
-```
-curl -XPOST http://127.0.0.1:5000/v1/chat/completions  \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer xxxxxxxxxx" \
-  -d '{
-    "model": "gpt-4o",
-    "messages": [
-      {
-        "role": "user",
-        "content": [
-          {
-            "type": "text",
-            "text": "What is the SQRT of 12345"
-          }
-        ]
-      }
-    ]
-  }'
-```
-#### Example 5: Langchain agent with Wikipedia support
-This code sets up a LangChain ReAct agent powered by GPT-3.5-turbo, with access to the Wikipedia tool. It uses a custom prompt template to guide the agent through reasoning and action steps to answer complex questions using external knowledge sources.
-```
-python3 LA_04.py
-```
-#### Example 6: Openai with custom tools support
-This script sets up a tool-augmented OpenAI chat workflow using the chat.completions API with function calling. It defines a local SQL simulation tool (find_product), registers it in the OpenAI tool schema, and allows GPT (e.g., GPT-4o) to automatically call this function to answer product-related queries. The tool is executed locally, and the result is sent back to the model for final response generation.
-```
-python3 OA_01.py
-```
-#### Example 7: Openai with custom tools support DEEPDIVE
-This setup enables inspection of OpenAI API calls by routing them through a local MITM proxy (mitmproxy) in reverse mode. <br>
-You’ll launch the proxy in `terminal_2`, then set the `OPENAI_BASE_URL` to point to it in `terminal_1`, allowing you to run scripts like `Tools_05.py` while capturing and viewing requests/responses in the mitmweb dashboard at http://127.0.0.1:8081.
-#### Open a new terminal_2
-```
-docker run --rm -it \
-    -v ~/.mitmproxy:/home/mitmproxy/.mitmproxy \
-    -p 8080:8080 \
-    -p 127.0.0.1:8081:8081 \
-    mitmproxy/mitmproxy mitmweb \
-        --web-host 0.0.0.0 \
-        --mode reverse:https://api.openai.com:443
-```
-You can now connect to `http://127.0.0.1:8081/?token=<see_your_terminal>`
-#### Continue in terminal_1
-```
-export OPENAI_BASE_URL="http://127.0.0.1:8080/v1"
-```
-```
-python3 OA_01.py
-```
-#### Optional for hackers
-Modify `LA_03.py` and `LA_04.py`
-```
-llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0, base_url="http://127.0.0.1:8080/v1")
+python3 LC_02.py
 ```
 
 ## Cleanup environment
