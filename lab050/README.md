@@ -54,7 +54,7 @@ In this lab, we explore how to extend a language model with tool integration usi
 ```
 python3 LC_03.py
 ```
-#### Example 4:
+#### Example 4: Building a Custom Translation Pipeline with LangChain and OpenAI
 In this lab, we demonstrate how to create a custom LangChain pipeline that integrates directly with the OpenAI API. We start by defining a ChatPromptTemplate for translating text into French, then implement a RunnableLambda to send messages to OpenAI’s gpt-4 model. By combining the prompt, the LLM call, and a StrOutputParser into a runnable chain, we create a simple yet flexible translation workflow. Finally, we test the chain by translating a sample English phrase into French and printing the result.
 ```
 python3 LC_core.py
