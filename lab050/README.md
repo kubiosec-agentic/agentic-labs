@@ -52,7 +52,12 @@ python3 LC_02.py
 #### Example 3: LangChain chain with using OpenAI responses API
 In this lab, we explore how to extend a language model with tool integration using LangChain and **OpenAI’s Responses API**. We initialize a ChatOpenAI instance with the lightweight `gpt-4.1-mini` model, then bind it to a preview web search tool. This allows the model to augment its responses with live information from the web. Finally, we invoke the tool-enabled LLM to retrieve a positive news story from the current day and display the result.
 ```
-python3 LC_02.py
+python3 LC_03.py
+```
+#### Example 4:
+In this lab, we demonstrate how to create a custom LangChain pipeline that integrates directly with the OpenAI API. We start by defining a ChatPromptTemplate for translating text into French, then implement a RunnableLambda to send messages to OpenAI’s gpt-4 model. By combining the prompt, the LLM call, and a StrOutputParser into a runnable chain, we create a simple yet flexible translation workflow. Finally, we test the chain by translating a sample English phrase into French and printing the result.
+```
+python3 LC_core.py
 ```
 
 ## Cleanup environment
