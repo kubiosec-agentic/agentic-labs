@@ -1,53 +1,91 @@
-# LAB06: Multi Agent Orchestration
+# LAB060: Multi-Agent Orchestration & OpenAI APIs
 ## Introduction
-This lab introduces the **OpenAI agents framework** for building structured, tool-using AI agents. You’ll learn to:
-- Create basic agents and run them synchronously
-- Implement agent handoff based on input language
-- Attach custom tools to agents for function calling
-- Enforce guardrails to filter or block certain outputs
+This lab explores both the **OpenAI agents framework** and **OpenAI Responses API** for building structured AI agents. You'll learn to:
+- Create basic agents with synchronous and asynchronous execution
+- Implement agent handoff based on input language detection
+- Attach custom tools to agents for function calling  
+- Enforce output guardrails to filter or block certain content
+- Use OpenAI Responses API for security document analysis
 
-Perfect for understanding core concepts in building modular, controllable AI agents.
+Perfect for understanding agent orchestration patterns and OpenAI's latest API capabilities.
 ## Set up your environment
-```
+### Prerequisites
+- Python 3.8+ with pip  
+- OpenAI API key with access to agents framework and Responses API
+
+### Setup Commands
+```bash
 export OPENAI_API_KEY="xxxxxxxxx"
 ```
-```
+```bash
 ./lab_setup.sh
 ```
-```
+```bash
 source .lab060/bin/activate
 ```
+```bash
+pip install -r requirements.txt
+```
+
 ## Lab instructions
-#### Simple OpenAI Agent
-This simple script runs a synchronous AI agent using the agents framework. It defines an Agent with the role of a helpful assistant.
+
+#### Example 1: Simple Synchronous Agent
+Basic agent using the OpenAI agents framework with synchronous execution.
+```bash
+python3 agent_01.py
 ```
-python3 ./agent_01.py
+
+#### Example 2: Multi-Agent Language Handoff  
+Demonstrates agent orchestration with language detection. The triage agent routes Spanish/English requests to specialized agents.
+```bash
+python3 agent_02.py
 ```
-#### Agent handoff
-This script demonstrates multi-agent handoff using the agents framework. It sets up three agents. 
-The `triage agent` detects the input language and delegates the task to the appropriate agent.
+
+#### Example 3: Agent with Function Tools
+Tool-enabled agent that can call custom functions. Includes a weather lookup tool with async execution.
+```bash
+python3 agent_03.py
 ```
-python3 ./agent_02.py
+
+#### Example 4: Agent Output Guardrails
+Shows how to implement content filtering using output guardrails. Detects and blocks mathematical content.
+```bash
+python3 agent_04.py
 ```
-#### Agent and tools
-This script shows how to create a simple tool-using AI agent with the agents framework. It defines a `get_weather` function as a tool, registers it with the agent, and uses it to process a user query. 
+
+#### Example 5: OpenAI Responses API for Security Analysis
+Uses OpenAI's Responses API (different from agents framework) to analyze security traces and network captures.
+```bash
+python3 agent_05.py
 ```
-python3 ./agent_03.py
+## Additional Resources
+
+### Google Agent Development Kit (ADK)
+This lab also includes Google's Agent Development Kit examples in the `adk/` directory:
+- **Flight Assistant**: AI agent for flight booking and scheduling  
+- **Google Search Agent**: Web search integration with Google APIs
+- **MCP Agent**: Model Context Protocol implementation
+- **Multi-Tool Agent**: Agent with multiple tool integrations
+
+**Setup ADK (Optional):**
+```bash
+cd adk
+pip install -r requirements.txt
+export GOOGLE_API_KEY="xxxxxxxxx"
+export SERP_API_KEY="xxxxxxxxx"  # From https://serpapi.com/
+adk web
 ```
-#### Agent and Guardrails
-This script demonstrates how to enforce output guardrails on an AI agent using the agents framework.
-```
-python3 ./agent_04.py
-```
-### Google Agent Development Kit
-Optionally, check out [Agent Development Kit](https://google.github.io/adk-docs/get-started/quickstart/)<br>
-[ADK Sample agents](https://github.com/google/adk-samples) can be found.
+
+**Resources:**
+- [ADK Documentation](https://google.github.io/adk-docs/get-started/quickstart/)
+- [ADK Sample Agents](https://github.com/google/adk-samples)
 
 ## Cleanup environment
-```
+```bash
 deactivate
 ```
-```
+```bash
 ./lab_cleanup.sh
 ```
+
 Back to [Lab Overview](https://github.com/kubiosec-agentic/agentic-labs/blob/master/README.md#-lab-overview)
