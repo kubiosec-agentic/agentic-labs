@@ -28,10 +28,10 @@ export OPENAI_API_KEY="xxxxxxxxx"
 ```
 source .lab050/bin/activate
 ```
-To avoide the **_LangSmith_** warnings (build, test, debug, and monitor framework developed **_LangChain_**)
+To avoid the **_LangSmith_** warnings (build, test, debug, and monitor framework developed by **_LangChain_**)
 ```
-export LANGCHAIN_TRACING_V2" = "false"
-export LANGCHAIN_API_KEY"= ""
+export LANGCHAIN_TRACING_V2="false"
+export LANGCHAIN_API_KEY=""
 ```
 In your code you can add:
 ```
@@ -41,8 +41,8 @@ warnings.filterwarnings("ignore", category=UserWarning, module="langsmith")
 ```
 
 ## Lab instructions
-#### Example 1: LangChain chain without tool support
-This script demonstrates how to use a LangChain chain without any tool integration or structured output.
+#### Example 1: Basic LangChain LLM Query (No Tools)
+This minimal example demonstrates a simple LangChain LLM query without any tool integration or structured output. It shows the basic pattern of invoking an LLM with a user message.
 ```
 python3 LC_01.py
 ```
@@ -53,8 +53,8 @@ python3 LC_02.py
 ```
 There is a real weather app example to try out, see [lab990_addendum](../lab990_addendum/)
 
-#### Example 3: LangChain chain with using OpenAI responses API
-In this lab, we explore how to extend a language model with tool integration using LangChain and **OpenAI’s Responses API**. We initialize a ChatOpenAI instance with the lightweight `gpt-4.1-mini` model, then bind it to a preview web search tool. This allows the model to augment its responses with live information from the web. Finally, we invoke the tool-enabled LLM to retrieve a positive news story from the current day and display the result.
+#### Example 3: LangChain with OpenAI Responses API and Web Search
+In this example, we explore how to extend a language model with tool integration using LangChain and **OpenAI's Responses API**. We initialize a ChatOpenAI instance with the `gpt-4.1-mini` model using the `output_version="responses/v1"` parameter to use the Responses API format, then bind it to a preview web search tool. This allows the model to augment its responses with live information from the web.
 ```
 python3 LC_03.py
 ```
@@ -66,7 +66,10 @@ python3 LC_core.py
 
 ## Cleanup environment
 ```
-unset OPENAI_BASE_URL
+unset LANGCHAIN_TRACING_V2
+```
+```
+unset LANGCHAIN_API_KEY
 ```
 ```
 deactivate
