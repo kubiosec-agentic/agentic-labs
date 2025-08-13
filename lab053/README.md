@@ -12,6 +12,11 @@
 > While still supported (as of 2025), it's designed for research and experimental use.  
 > **DO NOT** deploy experimental code to production without proper security review.
 
+> 📚 **MIGRATION GUIDANCE**  
+> LangChain is transitioning experimental features toward [LangGraph](https://python.langchain.com/docs/langgraph/) and newer agent patterns.  
+> See [LangChain Migration Guide](https://github.com/langchain-ai/langchain/blob/master/MIGRATE.md) and [Deprecations](https://python.langchain.com/docs/versions/v0_2/deprecations/) for migration paths.  
+> Use `langchain-cli migrate` to update deprecated imports automatically.
+
 ## Introduction
 This lab focuses specifically on LangChain ReAct agents using experimental features. You'll explore:
 - LangChain ReAct agents with and without tools
@@ -106,6 +111,36 @@ python3 LC_04.py
 - Never expose experimental agents to untrusted input
 - Monitor agent actions and tool usage
 - Review security team before production use
+
+## Deprecation Timeline & Migration Path
+
+**📅 LangChain Experimental Status (2025):**
+- **Current Status**: Active but experimental (version 0.3.x)
+- **Migration Target**: [LangGraph](https://python.langchain.com/docs/langgraph/) for complex agent orchestration
+- **Legacy Support**: Maintained until LangChain 1.0.0 release
+- **Security Concerns**: Features with CVEs moved to experimental package in 2023
+
+**🔄 Migration Strategy:**
+1. **Immediate**: Use this lab for learning experimental patterns
+2. **Near-term**: Migrate to `create_react_agent()` from core LangChain
+3. **Long-term**: Transition to LangGraph for production agent workflows
+
+**📖 Key Resources:**
+- [LangChain v0.3 Migration Guide](https://python.langchain.com/docs/versions/v0_3/)
+- [Deprecations List](https://python.langchain.com/docs/versions/v0_2/deprecations/)
+- [GitHub Migration Discussion](https://github.com/langchain-ai/langchain/discussions/18547)
+
+**⚙️ Migration Tools:**
+```bash
+# Install migration CLI
+pip install langchain-cli
+
+# Preview migration changes
+langchain-cli migrate --diff /path/to/your/code
+
+# Interactive migration
+langchain-cli migrate --interactive /path/to/your/code
+```
 
 ## Cleanup environment
 ```bash
