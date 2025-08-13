@@ -1,20 +1,18 @@
 ![OpenAI](https://img.shields.io/badge/OpenAI-lightblue)
-![LangChain](https://img.shields.io/badge/LangChain-lightgrey)
 ![Tools](https://img.shields.io/badge/Tools-purple)
-![Agents](https://img.shields.io/badge/Agents-orange)
 ![Python](https://img.shields.io/badge/Python-blue) 
 
 
-# LAB052: Tool Based Workflows (OpenAI and Chat Completion)
+# LAB052: OpenAI Function Calling and Tool Integration
 ## Introduction
-This lab explores tool-augmented agents and API call inspection using LangChain and OpenAI. You’ll experiment with:
-- LangChain ReAct agents (with and without tools)
-- Tool calling via OpenAI’s function schema (e.g., custom SQL simulation)
-- Wikipedia integration for real-world queries
-- A small CTF-style challenge (via UI or API)
-- Deep inspection of API behavior using mitmproxy
+This lab demonstrates OpenAI's function calling capabilities with custom tools. You'll learn:
+- Directory analysis with function calling
+- SQL simulation with tool integration
+- Advanced tool execution patterns
+- API call inspection using mitmproxy
 
-Great for learning how to build, extend, and debug LLM agents with real tool support.
+Perfect for understanding how to integrate custom tools with OpenAI's chat completion API.
+
 ## Set up your environment
 ```
 export OPENAI_API_KEY="xxxxxxxxx"
@@ -23,80 +21,39 @@ export OPENAI_API_KEY="xxxxxxxxx"
 ./lab_setup.sh
 ```
 ```
-source .lab050/bin/activate
+source .lab052/bin/activate
 ```
 
 ## Lab instructions
-#### Example 1: LangChain chain without tool support
-This script demonstrates how to use a LangChain chain without any tool integration or structured output.
-```
-python3 LC_01.py
-```
-#### Example 2: LangChain chain with tool integration and structured output example
-This script demonstrates how to use a LangChain chain **with tool integration and structured output**. It connects an LLM to a simple weather tool, handles tool invocation and result parsing and feeds the result back into the chain for a final response. It uses the `ChatOpenAI` from `langchain_openai` class that provides an interface for interacting with OpenAI's chat-based language models, like GPT-3.5 and GPT-4. It simplifies the process of sending prompts to these models and receiving their responses, making it easier to build conversational AI applications.
-```
-python3 LC_02.py
-```
-#### Example 3: Langchain agent without tool support
-This is a simple example setting up a **LangChain ReAct agent** using GPT-4o without access to any tooling.  It uses a prompt template from _LangChain Hub_ and executes queries with step-by-step reasoning and code execution.
-```
-python3 LA_01.py
-```
-#### Example 4: Langchain agent with tool support
-This next example sets up a LangChain ReAct agent using GPT-4o with access to a Python REPL tool for solving math problems. It uses a prompt template from LangChain Hub and executes queries with step-by-step reasoning and code execution.
-```
-python3 LA_02.py
-```
-#### Example 5: Small CTF
-Start the ChatBot. Try to hack it via the user interface.
-```
-docker run -it -p 8501:8501 \
-  --rm \
-  -e OPENAI_API_KEY=$OPENAI_API_KEY \
-  --name demochatbox \
-  xxradar/mymadchatbox:v2  \
-  /bin/bash -c "./start.sh & tail -f /dev/null"
-```
-You can connect to `http://127.0.0.1:8501/`<br>
-
-#### Example 6: Small CTF - Optional (middleware function only)
-Start the ChatBot. Try to hack it via the api (openai compatible).
-```
-python3 ./LA_03.py
-```
-In **terminal_2**:
-```
-curl -XPOST http://127.0.0.1:5000/v1/chat/completions  \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer xxxxxxxxxx" \
-  -d '{
-    "model": "gpt-4o",
-    "messages": [
-      {
-        "role": "user",
-        "content": [
-          {
-            "type": "text",
-            "text": "What is the SQRT of 12345"
-          }
-        ]
-      }
-    ]
-  }'
-```
-#### Example 5: Langchain agent with Wikipedia support
-This code sets up a LangChain ReAct agent powered by GPT-3.5-turbo, with access to the Wikipedia tool. It uses a custom prompt template to guide the agent through reasoning and action steps to answer complex questions using external knowledge sources.
-```
-python3 LA_04.py
-```
-#### Example 6: Openai with custom tools support
-This script sets up a tool-augmented OpenAI chat workflow using the chat.completions API with function calling. It defines a local SQL simulation tool (find_product), registers it in the OpenAI tool schema, and allows GPT (e.g., GPT-4o) to automatically call this function to answer product-related queries. The tool is executed locally, and the result is sent back to the model for final response generation.
+#### Example 1: Directory Analysis Tool
+This script demonstrates OpenAI function calling with a directory analysis tool. The model can automatically call the `summarize_directory` function to analyze file types in any directory path.
 ```
 python3 OA_01.py
 ```
-#### Example 7: Openai with custom tools support DEEPDIVE
-This setup enables inspection of OpenAI API calls by routing them through a local MITM proxy (mitmproxy) in reverse mode. <br>
-You’ll launch the proxy in `terminal_2`, then set the `OPENAI_BASE_URL` to point to it in `terminal_1`, allowing you to run scripts like `Tools_05.py` while capturing and viewing requests/responses in the mitmweb dashboard at http://127.0.0.1:8081.
+
+#### Example 2: SQL Simulation with Custom Tools
+This example shows advanced tool integration with a simulated SQL database. It demonstrates:
+- Custom tool schema definition
+- Local function execution
+- Tool result processing
+- Multi-step conversation flow
+```
+python3 OA_02.py
+```
+
+#### Example 3: DevSecOps Dependency Vulnerability Scanner
+This example demonstrates a security-focused tool that scans Python dependencies for known vulnerabilities. It showcases:
+- Integration with security scanning tools (pip-audit)
+- Fallback manual vulnerability checking
+- Security-focused system prompts
+- DevSecOps workflow automation
+```
+python3 OA_03.py
+```
+
+#### Example 4: API Call Inspection with Mitmproxy
+This setup enables deep inspection of OpenAI API calls by routing them through a local MITM proxy in reverse mode.
+
 #### Open a new terminal_2
 ```
 docker run --rm -it \
@@ -108,17 +65,13 @@ docker run --rm -it \
         --mode reverse:https://api.openai.com:443
 ```
 You can now connect to `http://127.0.0.1:8081/?token=<see_your_terminal>`
+
 #### Continue in terminal_1
 ```
 export OPENAI_BASE_URL="http://127.0.0.1:8080/v1"
 ```
 ```
-python3 OA_01.py
-```
-#### Optional for hackers
-Modify `LA_03.py` and `LA_04.py`
-```
-llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0, base_url="http://127.0.0.1:8080/v1")
+python3 OA_02.py
 ```
 
 ## Cleanup environment
