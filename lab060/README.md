@@ -61,9 +61,44 @@ python3 agent_05.py
 ```
 
 #### Example 6: Security Analysis with Agents SDK
-Same security analysis functionality but implemented using OpenAI Agents SDK with custom tools. Demonstrates the difference between direct API calls and agent-based approaches.
+Same security analysis functionality but implemented using OpenAI Agents SDK with JSON output and line number references.
 ```bash
 python3 agent_06.py
+```
+
+#### Example 7: Multi-Agent Security Analysis Pipeline
+Advanced multi-agent orchestration demonstrating sophisticated agent workflows with three specialized agents:
+
+**🔄 Agent Architecture:**
+- **Analyzer Agent**: Performs detailed sysdig trace analysis with line number extraction
+- **Summary Agent**: Converts technical analysis into markdown documentation (summary.md)
+- **JSON Agent**: Structures findings into comprehensive JSON format (details.json)
+
+**📊 Key Capabilities:**
+- Agent handoff and result passing between specialized agents
+- Automatic file generation with error handling
+- Multi-format output (human-readable + machine-readable)
+- Progress tracking through complex workflows
+- Line number referencing for forensic review
+
+**💾 Generated Artifacts:**
+- `summary.md`: Executive summary and key findings in markdown format
+- `details.json`: Structured analysis with metadata, line references, and evidence
+
+```bash
+python3 agent_07.py
+```
+
+**Expected Output Structure:**
+```json
+{
+  "metadata": {"analysis_timestamp": "...", "trace_file": "..."},
+  "summary": "Brief process overview",
+  "process_info": {"command": "curl", "pid": "108261", "line_numbers": [1051]},
+  "phases": [{"phase": "Library Loading", "line_range": {"start": 1051, "end": 1200}}],
+  "network_activity": {"dns_queries": "...", "line_references": [2500, 2501]},
+  "security_observations": [{"observation": "...", "line_number": 1234, "evidence": "..."}]
+}
 ```
 ## Additional Resources
 
