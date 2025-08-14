@@ -62,58 +62,34 @@ SERP_API_KEY=your_serp_api_key_here
 **Model**: Gemini 2.5 Flash  
 **Tools**: Google Search API
 
-```bash
-cd google_search_agent
-adk web
-```
-
 ### 2. Flight Assistant (`flight_assistant/`)  
 **Purpose**: Search for flights and travel information  
 **Model**: Gemini 2.0 Flash  
 **Tools**: MCP Flight Search server (requires SERP API)
-
-```bash
-cd flight_assistant  
-adk web
-```
 
 ### 3. MCP Agent (`mcp_agent/`)
 **Purpose**: File system management using MCP  
 **Model**: Gemini 2.0 Flash  
 **Tools**: Model Context Protocol filesystem server
 
-```bash
-cd mcp_agent
-adk web
-```
-
 ### 4. Multi-Tool Agent (`multi_tool_agent/`)
 **Purpose**: Agent with multiple tool integrations
 **Model**: Gemini 2.0 Flash  
 **Tools**: Multiple integrated tools
-
-```bash
-cd multi_tool_agent
-adk web  
-```
 
 ### 5. Standalone Flight Schedule (`standalone/flight_schedule/`)
 **Purpose**: Standalone flight scheduling agent
 **Model**: Gemini 2.0 Flash
 **Requirements**: Separate requirements.txt
 
-```bash
-cd standalone/flight_schedule
-pip install -r requirements.txt
-adk web
-```
+**Note**: All agents are accessed by running `adk web` from the main `adk/` directory. The web interface will present all available agents for selection.
 
 ## Running the Examples
 
 ### Method 1: Web Interface (Recommended)
-1. Navigate to the agent directory:
+1. Navigate to the main ADK directory:
    ```bash
-   cd google_search_agent
+   cd adk
    ```
 
 2. Start the web interface:
@@ -123,16 +99,17 @@ adk web
 
 3. Open your browser to `http://localhost:8080`
 
-4. Interact with the agent through the web UI
+4. The web interface will show all available agents - select the one you want to interact with
+
+5. Interact with the selected agent through the web UI
 
 ### Method 2: Command Line
 ```bash
-# Navigate to agent directory
-cd flight_assistant
-
-# Run directly
+# From the adk directory
 adk run "Find flights from San Francisco to New York"
 ```
+
+**Important Note**: Always run `adk web` from the main `adk/` directory, not from individual agent subdirectories. The ADK CLI will automatically discover all agents in the subdirectories.
 
 ## Troubleshooting
 
