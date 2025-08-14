@@ -86,7 +86,7 @@ SERP_API_KEY=your_serp_api_key_here
 
 ## Running the Examples
 
-### Method 1: Web Interface (Recommended)
+### Primary Method: Web Interface (Recommended & Tested)
 1. Navigate to the main ADK directory:
    ```bash
    cd adk
@@ -103,10 +103,13 @@ SERP_API_KEY=your_serp_api_key_here
 
 5. Interact with the selected agent through the web UI
 
-### Method 2: Command Line
+### Method 2: Command Line (Optional)
+**Note**: Command line execution may have different syntax or may not be available for all agent types. The web interface (`adk web`) is the recommended and most reliable method.
+
 ```bash
-# From the adk directory
-adk run "Find flights from San Francisco to New York"
+# From the adk directory - syntax may vary
+# Check ADK documentation for current CLI commands
+adk --help
 ```
 
 **Important Note**: Always run `adk web` from the main `adk/` directory, not from individual agent subdirectories. The ADK CLI will automatically discover all agents in the subdirectories.
@@ -140,6 +143,18 @@ pip install --upgrade google-adk
 ```bash
 # Use different port
 adk web --port 8081
+```
+
+**6. Command line (`adk run`) not working**
+- The `adk run` command may not be available or may have different syntax
+- Use `adk --help` to see available commands
+- **Recommendation**: Use `adk web` interface which is known to work reliably
+
+### Available Commands
+Check what commands are available:
+```bash
+adk --help
+adk web --help
 ```
 
 ### Debug Mode
