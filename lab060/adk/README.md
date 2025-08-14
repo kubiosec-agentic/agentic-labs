@@ -150,17 +150,19 @@ adk run mcp_agent
 ### Method 3: API Server
 Run the API server
 ```
-adk apiserver
+adk api_server
 ```
 **Explore the Swagger docs** as explained before.<br>
-Now you can interact using API calls.
+Now you can interact using API calls.<br>
+Create a `session`
 ```
 curl -X POST http://localhost:8000/apps/mcp_agent/users/u_123/sessions/s_123 \
   -H "Content-Type: application/json" \
-  -d '{"state": {"key1": "value1", "key2": 42}}'
-  ```
-  ```
-  curl -X POST http://localhost:8000/run \
+  -d '{"state": {"name": "demo"}}'
+```
+
+```
+curl -X POST http://localhost:8000/run \
 -H "Content-Type: application/json" \
 -d '{
 "app_name": "mcp_agent",
