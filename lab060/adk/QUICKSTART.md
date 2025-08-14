@@ -142,16 +142,40 @@ SERP_API_KEY=your_serp_api_key_here
 
 > 🚀 **Developer Power-up**: The API server runs automatically alongside the web interface - no separate setup needed!
 
+**Important Note**: Always run `adk web` from the main `adk/` directory, not from individual agent subdirectories. The ADK CLI will automatically discover all agents in the subdirectories.
+
 ### Method 2: Command Line (Optional)
 **Note**: Command line execution may have different syntax or may not be available for all agent types. The web interface (`adk web`) is the recommended and most reliable method.
 
 ```bash
 # From the adk directory - syntax may vary
 # Check ADK documentation for current CLI commands
-adk --help
+adk run mcp_agent
 ```
-
-**Important Note**: Always run `adk web` from the main `adk/` directory, not from individual agent subdirectories. The ADK CLI will automatically discover all agents in the subdirectories.
+### Method 3: API Server
+```
+adk apiserver
+```
+```
+curl -X POST http://localhost:8000/apps/mcp_agent/users/u_123/sessions/s_123 \
+  -H "Content-Type: application/json" \
+  -d '{"state": {"key1": "value1", "key2": 42}}'
+  ```
+  ```
+  curl -X POST http://localhost:8000/run \
+-H "Content-Type: application/json" \
+-d '{
+"app_name": "mcp_agent",
+"user_id": "u_123",
+"session_id": "s_123",
+"new_message": {
+    "role": "user",
+    "parts": [{
+    "text": "what is the current allowed list"
+    }]
+    }
+}'
+  ```
 
 ## Troubleshooting
 
@@ -240,77 +264,10 @@ tools=[
 ]
 ```
 
-## 💬 Example Interactions
-
-Get inspired by these conversation starters:
-
-### 🔍 Google Search Agent
-```
-You: "What's the latest breakthrough in quantum computing?"
-Agent: *Searches the web and finds recent research papers and news articles*
-"Based on my search, IBM recently announced a major breakthrough..."
-
-You: "How do I cook the perfect risotto?"
-Agent: *Finds cooking tutorials and expert tips*
-"Here are the key techniques from top chefs..."
-```
-
-### ✈️ Flight Assistant  
-```
-You: "Find flights from New York to Paris for next month under $800"
-Agent: *Uses SERP API to search flight comparison sites*
-"I found several options for you. Air France has flights starting at $720..."
-
-You: "What's the best time to book flights to Japan?"
-Agent: "Based on travel data, booking 6-8 weeks in advance typically offers..."
-```
-
-### 📁 MCP File Agent
-```
-You: "What Python files are in my current directory?"
-Agent: *Scans filesystem using MCP*
-"I found 12 Python files: agent.py, config.py, utils.py..."
-
-You: "Show me the largest files in my Downloads folder"
-Agent: "Here are your largest downloads: movie.mp4 (2.3GB), dataset.zip (1.8GB)..."
-```
-
-### 🔧 API Integration Examples
-
-**📋 First, explore the Swagger docs:**
-1. Ensure `adk web` is running
+**Explore the Swagger docs:**
+1. Ensure `adk web` or `adl apiserver`is running
 2. Open `http://127.0.0.1:8000/docs#/` in your browser
 3. Browse available endpoints and test them interactively
-
-**💻 Example API calls:**
-```bash
-# Example 1: Call the Google Search agent via API
-curl -X POST "http://127.0.0.1:8000/agents/google_search_agent/chat" \
-  -H "Content-Type: application/json" \
-  -d '{"message": "What is the latest news about AI?"}'
-
-# Example 2: List all available agents
-curl -X GET "http://127.0.0.1:8000/agents"
-
-# Example 3: Get agent information
-curl -X GET "http://127.0.0.1:8000/agents/flight_assistant"
-```
-
-**🐍 Python example:**
-```python
-import requests
-
-# Chat with an agent
-response = requests.post(
-    "http://127.0.0.1:8000/agents/google_search_agent/chat",
-    json={"message": "What's the weather like today?"}
-)
-print(response.json())
-```
-
-> 🎭 **Each Agent Has Personality**: Notice how each agent responds differently based on their specialized training and tools!
-> 
-> 🔌 **API Integration**: Use the Swagger docs to integrate agents into your own applications programmatically!
 
 ## Additional Resources
 
@@ -318,40 +275,3 @@ print(response.json())
 - [ADK Sample Agents](https://github.com/google/adk-samples)
 - [Model Context Protocol](https://modelcontextprotocol.io/)
 - [Google AI Studio](https://aistudio.google.com/)
-
-## 🎯 Next Steps - Your Agent Journey
-
-### 🚀 **Level 1: First Contact**
-1. **Start with the basics**: Fire up `google_search_agent` (no extra setup!)
-2. **Chat away**: Ask it about current events, recipes, or technical topics
-3. **Marvel at the magic**: Watch it search the web and synthesize information
-
-### 🔑 **Level 2: Power User** 
-1. **Get your API keys**: Set up your `.env` file with Google AI Studio key
-2. **Try the Flight Assistant**: Add SERP API key and search for real flights
-3. **File management**: Use MCP Agent to explore your filesystem
-
-### 🎨 **Level 3: Customization Master**
-1. **Tweak the agents**: Modify instructions in `agent.py` files
-2. **Experiment with prompts**: Try different conversation styles
-3. **Mix and match tools**: See how agents combine different capabilities
-
-### 🏗️ **Level 4: Agent Architect**
-1. **Study the patterns**: Learn how agents are structured
-2. **API integration**: Use `http://127.0.0.1:8000/docs#/` to integrate agents into apps
-3. **Build your own**: Create custom agents for your specific needs
-4. **Share your creations**: Contribute back to the community!
-
----
-
-## 🎉 Ready to Start Building?
-
-```bash
-cd adk
-adk web
-# Open http://localhost:8080 and let the conversations begin!
-```
-
-**Happy building with Google ADK!** 🤖✨
-
-> 💌 **Need Help?** Check the troubleshooting section above or dive into the [official documentation](https://google.github.io/adk-docs/)
