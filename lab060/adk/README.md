@@ -91,11 +91,6 @@ SERP_API_KEY=your_serp_api_key_here
 **Special abilities**: Combines several tools for complex tasks
 > 🎯 **Try asking**: Mix of search, file management, and analysis tasks
 
-### 5. 🛩️ Standalone Flight Schedule (`standalone/flight_schedule/`)
-**What it does**: Specialized flight scheduling and booking assistant
-**Powered by**: Gemini 2.0 Flash
-**Special setup**: Has its own requirements.txt file
-> 📅 **Try asking**: "Help me plan a multi-city trip for next summer"
 
 > 🎨 **One Interface, Many Agents**: All agents are accessed through a single `adk web` command - the interface lets you switch between them!
 
@@ -153,9 +148,16 @@ SERP_API_KEY=your_serp_api_key_here
 adk run mcp_agent
 ```
 ### Method 3: API Server
+Run the API server
 ```
 adk apiserver
 ```
+**Explore the Swagger docs:**
+1. Ensure `adk web` or `adl apiserver`is running
+2. Open `http://127.0.0.1:8000/docs#/` in your browser
+3. Browse available endpoints and test them interactively
+
+Now you can interact using API calls.
 ```
 curl -X POST http://localhost:8000/apps/mcp_agent/users/u_123/sessions/s_123 \
   -H "Content-Type: application/json" \
@@ -177,97 +179,8 @@ curl -X POST http://localhost:8000/apps/mcp_agent/users/u_123/sessions/s_123 \
 }'
   ```
 
-## Troubleshooting
 
-### Common Issues
 
-**1. "google-adk not found"**
-```bash
-pip install google-adk
-# or
-pip install --upgrade google-adk
-```
-
-**2. "GOOGLE_API_KEY not set"**
-- Ensure `.env` file exists in the `adk/` directory
-- Verify API key is correct and has necessary permissions
-
-**3. "MCP server failed to start"**
-- Ensure Node.js is installed: `node --version`  
-- Check if MCP packages are accessible
-- Verify absolute paths in agent configuration
-
-**4. "SERP_API_KEY missing"**
-- Required only for flight_assistant example
-- Get free API key from [serpapi.com](https://serpapi.com/)
-- Add to `.env` file
-
-**5. Port conflicts**
-```bash
-# Use different port for web interface
-adk web --port 8081
-
-# Note: API server typically runs on port 8000
-# Check http://127.0.0.1:8000/docs#/ for API documentation
-```
-
-**6. Command line (`adk run`) not working**
-- The `adk run` command may not be available or may have different syntax
-- Use `adk --help` to see available commands
-- **Recommendation**: Use `adk web` interface which is known to work reliably
-
-**7. API Server not accessible**
-- Ensure `adk web` is running and shows both servers started
-- Check if port 8000 is blocked by firewall
-- Try accessing `http://127.0.0.1:8000/docs` (without the #/)
-- Look for startup messages mentioning API server port
-
-### Available Commands
-Check what commands are available:
-```bash
-adk --help
-adk web --help
-```
-
-### Debug Mode
-Run with debug information:
-```bash
-adk web --debug
-```
-
-## Agent Configuration
-
-### Basic Agent Structure
-```python
-from google.adk.agents import LlmAgent
-from google.adk.tools import google_search
-
-root_agent = LlmAgent(
-    model='gemini-2.0-flash',
-    name='my_agent',
-    instruction='Agent instructions here',
-    tools=[google_search]  # Add tools
-)
-```
-
-### MCP Integration
-```python
-from google.adk.tools.mcp_tool.mcp_toolset import MCPToolset, StdioServerParameters
-
-tools=[
-    MCPToolset(
-        connection_params=StdioServerParameters(
-            command='npx',
-            args=["-y", "@modelcontextprotocol/server-filesystem", "/path/to/folder"]
-        )
-    )
-]
-```
-
-**Explore the Swagger docs:**
-1. Ensure `adk web` or `adl apiserver`is running
-2. Open `http://127.0.0.1:8000/docs#/` in your browser
-3. Browse available endpoints and test them interactively
 
 ## Additional Resources
 
