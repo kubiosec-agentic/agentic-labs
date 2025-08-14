@@ -152,11 +152,7 @@ Run the API server
 ```
 adk apiserver
 ```
-**Explore the Swagger docs:**
-1. Ensure `adk web` or `adl apiserver`is running
-2. Open `http://127.0.0.1:8000/docs#/` in your browser
-3. Browse available endpoints and test them interactively
-
+**Explore the Swagger docs** as explained before.<br>
 Now you can interact using API calls.
 ```
 curl -X POST http://localhost:8000/apps/mcp_agent/users/u_123/sessions/s_123 \
