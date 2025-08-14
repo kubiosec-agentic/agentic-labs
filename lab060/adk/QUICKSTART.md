@@ -124,15 +124,23 @@ SERP_API_KEY=your_serp_api_key_here
 5. **Start chatting!** Type your questions and watch the magic happen
    > 💡 **Pro tip**: Each agent has different personalities and capabilities
 
-### 📚 API Documentation & Advanced Access
+### 📚 API Server & Documentation
 
-**For developers who want programmatic access:**
+**ADK provides two interfaces when you run `adk web`:**
 
 - **🌐 Web Chat Interface**: `http://localhost:8080` (main user interface)
-- **📖 API Documentation**: `http://127.0.0.1:8000/docs#/` (Swagger/OpenAPI docs)
-- **🔧 API Server**: Access agents programmatically via REST API endpoints
+- **📖 API Server**: `http://127.0.0.1:8000` (REST API endpoints)
+- **📋 API Documentation**: `http://127.0.0.1:8000/docs#/` (Swagger/OpenAPI docs)
 
-> 🚀 **Developer Power-up**: The API docs show you how to integrate these agents into your own applications via HTTP requests!
+**🔧 How to Access the API Server:**
+1. **Start ADK**: Run `adk web` from the `adk/` directory
+2. **Two servers start automatically**:
+   - Web interface on port 8080
+   - API server on port 8000
+3. **Access API docs**: Open `http://127.0.0.1:8000/docs#/` in your browser
+4. **Interactive testing**: Use the Swagger UI to test API calls directly
+
+> 🚀 **Developer Power-up**: The API server runs automatically alongside the web interface - no separate setup needed!
 
 ### Method 2: Command Line (Optional)
 **Note**: Command line execution may have different syntax or may not be available for all agent types. The web interface (`adk web`) is the recommended and most reliable method.
@@ -183,6 +191,12 @@ adk web --port 8081
 - The `adk run` command may not be available or may have different syntax
 - Use `adk --help` to see available commands
 - **Recommendation**: Use `adk web` interface which is known to work reliably
+
+**7. API Server not accessible**
+- Ensure `adk web` is running and shows both servers started
+- Check if port 8000 is blocked by firewall
+- Try accessing `http://127.0.0.1:8000/docs` (without the #/)
+- Look for startup messages mentioning API server port
 
 ### Available Commands
 Check what commands are available:
@@ -261,15 +275,37 @@ You: "Show me the largest files in my Downloads folder"
 Agent: "Here are your largest downloads: movie.mp4 (2.3GB), dataset.zip (1.8GB)..."
 ```
 
-### 🔧 API Integration Example
+### 🔧 API Integration Examples
+
+**📋 First, explore the Swagger docs:**
+1. Ensure `adk web` is running
+2. Open `http://127.0.0.1:8000/docs#/` in your browser
+3. Browse available endpoints and test them interactively
+
+**💻 Example API calls:**
 ```bash
-# Example: Call the Google Search agent via API
+# Example 1: Call the Google Search agent via API
 curl -X POST "http://127.0.0.1:8000/agents/google_search_agent/chat" \
   -H "Content-Type: application/json" \
   -d '{"message": "What is the latest news about AI?"}'
 
-# Check the Swagger docs for complete API reference:
-# http://127.0.0.1:8000/docs#/
+# Example 2: List all available agents
+curl -X GET "http://127.0.0.1:8000/agents"
+
+# Example 3: Get agent information
+curl -X GET "http://127.0.0.1:8000/agents/flight_assistant"
+```
+
+**🐍 Python example:**
+```python
+import requests
+
+# Chat with an agent
+response = requests.post(
+    "http://127.0.0.1:8000/agents/google_search_agent/chat",
+    json={"message": "What's the weather like today?"}
+)
+print(response.json())
 ```
 
 > 🎭 **Each Agent Has Personality**: Notice how each agent responds differently based on their specialized training and tools!
