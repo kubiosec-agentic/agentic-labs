@@ -1,116 +1,126 @@
-# FastAgent Configuration
+# Example 4: Agent Chaining
 
-This directory contains a configured FastAgent application with MCP (Model Context Protocol) servers.
+This example demonstrates FastAgent's powerful agent chaining capabilities, showing how to create multi-step workflows where the output of one agent becomes the input for another.
 
-## Configuration Files
+## Code Overview
+
+**Files**: `agent.py:1-32`, `main.py:1-6`
+
+The main agent demonstrates a two-step pipeline for content processing:
+
+```python
+MyFastAgent = FastAgent("Agent Chaining")
+
+@MyFastAgent.agent(
+    "url_fetcher",
+    instruction="Given a URL, provide a complete and comprehensive summary",
+    servers=["fetch"],
+)
+@MyFastAgent.agent(
+    "social_media", 
+    instruction="Write a 280 character social media post for any given text. Respond only with the post, never use hashtags.",
+)
+@MyFastAgent.chain(
+    name="post_writer",
+    sequence=["url_fetcher", "social_media"],
+)
+async def main():
+    async with MyFastAgent.run() as agent:
+        result = await agent.post_writer.send("https://www.radarhack.com")
+        print(result)
+```
+
+### Key Components
+
+1. **URL Fetcher Agent** (`agent.py:9-13`)
+   - Uses the "fetch" MCP server
+   - Retrieves and summarizes web content
+   - Provides comprehensive analysis of URLs
+
+2. **Social Media Agent** (`agent.py:14-20`)
+   - Processes text into social media format
+   - Creates 280-character posts
+   - Follows specific formatting rules (no hashtags)
+
+3. **Agent Chain** (`agent.py:22-25`)
+   - Links agents in sequence: url_fetcher → social_media
+   - Named "post_writer" for easy access
+   - Passes output automatically between agents
+
+4. **Simple Main** (`main.py:1-6`)
+   - Basic Python entry point
+   - Demonstrates non-async usage patterns
+
+### Workflow Process
+
+1. **Input**: User provides a URL (e.g., "https://www.radarhack.com")
+2. **Step 1**: `url_fetcher` agent retrieves and summarizes the webpage content  
+3. **Step 2**: `social_media` agent converts the summary into a 280-character social media post
+4. **Output**: Final social media post ready for publishing
+
+## Configuration
+
+This example includes comprehensive configuration files:
 
 ### `fastagent.config.yaml`
-Main configuration file containing:
-- Default model settings
-- MCP server configurations  
-- Provider settings (with placeholder environment variables)
+- Default model settings (GPT-4o, Claude models, etc.)
+- MCP server configurations for multiple services
+- Provider settings with environment variable placeholders
 - Elicitation settings for user interaction
 
 ### `fastagent.secrets.yaml`
-Sensitive configuration file containing:
-- API keys and tokens
-- Authentication credentials
-- Private endpoints
-
-**⚠️ Important:** This file is gitignored and should never be committed to version control.
-
-## Quick Start
-
-1. **Update secrets file**: Edit `fastagent.secrets.yaml` and add your actual API keys:
-   ```yaml
-   OPENAI_API_KEY: "sk-your-actual-openai-key"
-   ANTHROPIC_API_KEY: "sk-ant-your-actual-anthropic-key"
-   ```
-
-2. **Install dependencies** (if not already installed):
-   ```bash
-   uv pip install fast-agent-mcp
-   ```
-
-3. **Test configuration**:
-   ```bash
-   fast-agent check
-   ```
+- API keys and authentication tokens
+- Private endpoint configurations
+- **⚠️ Important**: Gitignored, never commit to version control
 
 ## Available MCP Servers
 
-- **youtube_transcribe**: Remote SSE server for YouTube transcription
-- **exa_search**: Remote SSE server for web search
-- **fetch**: Local STDIO server for web content fetching  
-- **filesystem**: Local STDIO server for file system access
-- **prompts**: Local server for loading saved conversations
-- **brave_search**: Local STDIO server for Brave search (requires API key)
+- **fetch**: Web content retrieval (used by url_fetcher)
+- **youtube_transcribe**: YouTube transcription
+- **exa_search**: Web search capabilities
+- **filesystem**: File system access
+- **brave_search**: Brave search engine
+- **prompts**: Saved conversation loading
 
-## Model Providers
+## Setup
 
-The configuration supports multiple LLM providers:
-- **OpenAI**: GPT-4o (default), GPT-4, GPT-3.5, o1 series
-- **Anthropic**: Claude models (Sonnet, Haiku, Opus)
-- **Azure OpenAI**: Enterprise Azure deployment
-- **Google**: Gemini models
-- **DeepSeek**: DeepSeek v3
-- **Groq**: Fast inference models
-- **Others**: XAI Grok, OpenRouter, AWS Bedrock, local Ollama
-
-## Usage Examples
-
-### Basic Agent
-```python
-import asyncio
-from mcp_agent.core.fastagent import FastAgent
-
-fast = FastAgent("My Agent")
-
-@fast.agent(
-    instruction="You are a helpful assistant",
-    servers=["fetch", "filesystem"]  # Use specific MCP servers
-)
-async def main():
-    async with fast.run() as agent:
-        response = await agent.send("Help me analyze a file")
-        print(response)
-
-if __name__ == "__main__":
-    asyncio.run(main())
-```
-
-### Interactive Mode
-```python
-@fast.agent(instruction="You are a helpful assistant")
-async def main():
-    async with fast.run() as agent:
-        await agent.interactive()  # Start chat session
-```
-
-### Command Line Usage
 ```bash
-# Run with specific model
-fast-agent --model anthropic.claude-3-5-sonnet-latest --message "Hello"
+# Create virtual environment
+uv venv
 
-# Interactive mode
-fast-agent --interactive
+# Install dependencies from pyproject.toml
+uv sync
 
-# Use specific servers
-fast-agent --servers fetch,filesystem --message "List files"
+# Update secrets file with your API keys
+cp fastagent.secrets.yaml.template fastagent.secrets.yaml
+# Edit fastagent.secrets.yaml with actual keys
+
+# Test configuration
+fast-agent check
+
+# Run the chaining example
+uv run agent.py
+
+# Or run the simple main
+uv run main.py
 ```
 
-## Security Notes
+## What It Does
 
-- Keep `fastagent.secrets.yaml` secure and never commit it
-- Use environment variables in production
-- Rotate API keys regularly
-- Consider using Azure Key Vault or similar for production deployments
+This example shows how to:
+- **Chain Multiple Agents**: Create sequential processing workflows
+- **Use MCP Servers**: Integrate external tools (web fetching)
+- **Configure Complex Setups**: Handle multiple models and providers
+- **Build Content Pipelines**: Transform web content into social media posts
+- **Manage State**: Pass data between different specialized agents
 
-## Troubleshooting
+The result is a powerful content processing pipeline that can turn any webpage into a social media-ready post automatically.
 
-1. **API Key Issues**: Run `fast-agent check` to validate configuration
-2. **Server Connection**: Check MCP server URLs and authentication
-3. **Model Access**: Verify you have access to the specified models
-4. **Dependencies**: Ensure all required packages are installed
+## Advanced Features
+
+- **Multiple Model Support**: OpenAI, Anthropic, Google, Azure, and more
+- **Flexible Configuration**: YAML-based setup with environment variables
+- **Security Best Practices**: Separate secrets management
+- **Production Ready**: Includes troubleshooting and deployment guidance
 
 For more information, visit: https://fast-agent.ai/
