@@ -4,8 +4,6 @@ This example demonstrates FastAgent's powerful agent chaining capabilities, show
 
 ## Code Overview
 
-**Files**: `agent.py:1-32`, `main.py:1-6`
-
 The main agent demonstrates a two-step pipeline for content processing:
 
 ```python
@@ -81,21 +79,6 @@ This example includes comprehensive configuration files:
 - **filesystem**: File system access
 - **brave_search**: Brave search engine
 - **prompts**: Saved conversation loading
-
-## Setup
-
-```bash
-# Create virtual environment
-uv venv
-
-# Acticate the virtual environment
-source .venv/bin/activate 
-
-uv pip install fast-agent-mcp
-
-# Run the agent
-uv run agent.py
-```
 
 ## What It Does
 
