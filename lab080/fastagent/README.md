@@ -59,7 +59,7 @@ uv run agent.py
 ## Configuration
 Some examples include configuration files:
 - `fastagent.config.yaml`: Main configuration with server and model settings
-Sensitive configuration (API keys, tokens) keys can be stored in
+<br>Sensitive configuration (API keys, tokens) keys can be stored in
 - `fastagent.secrets.yaml`
 <br>Both files are merged upon running the agent
 
