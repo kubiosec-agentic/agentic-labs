@@ -12,14 +12,17 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 # Create virtual environment
 uv venv
 
+# Create a bare `pyproject.toml`
+uv init --bare
+
 # Install FastAgent
-uv pip install fast-agent-mcp
+uv add fast-agent-mcp
 ```
 
 ### Running Examples
 Each example directory contains its own setup instructions. Generally:
 ```bash
-cd example<N>/
+cd exampleX
 uv venv
 uv sync  # or uv pip install <dependencies>
 uv run agent.py
