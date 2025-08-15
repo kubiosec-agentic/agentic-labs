@@ -3,6 +3,18 @@ lab*/lab_cleanup.sh
 lab*/lab_setup.sh
 lab*/storage
 
+# Secrets and API keys - FastAgentMCP
+fastagent.secrets.yaml
+*.secrets.yaml
+*.secrets.yml
+.env
+.env.local
+.env.production
+uv.lock
+pyproject.toml
+
+
+
 # PDF files
 *.pdf
 
