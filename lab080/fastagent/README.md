@@ -55,24 +55,13 @@ uv run agent.py
 - **Features**: Multi-step agent pipeline, URL fetching and social media post generation
 - **Use Case**: Content processing pipelines
 
-### Example 5: Prompt Server Integration
-- **File**: `example5/agent.py`
-- **Purpose**: Demonstrates conversation persistence using the prompt server
-- **Features**: Save/load conversation history, prompt management, MCP format
-- **Use Case**: Session continuity and conversation templates
-
-### Example 6: Memory & State Transfer
-- **File**: `example6/agent.py`, `example6/memory_demo.py`
-- **Purpose**: Advanced memory management and state transfer between agents
-- **Features**: Persistent memory, cross-agent state transfer, multi-model collaboration
-- **Use Case**: Long-running sessions and multi-agent workflows
 
 ## Configuration
-
 Some examples include configuration files:
 - `fastagent.config.yaml`: Main configuration with server and model settings
-- `fastagent.secrets.yaml`: Sensitive configuration (API keys, tokens)
-- `fastagent.secrets.yaml.template`: Template for secrets file
+Sensitive configuration (API keys, tokens) keys can be stored in
+- `fastagent.secrets.yaml`
+Both files are merged upon running the agent
 
 ## Resources
 
