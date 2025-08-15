@@ -4,8 +4,6 @@ This example demonstrates how to use FastAgent with external MCP servers for You
 
 ## Code Overview
 
-**File**: `agent.py:1-11`
-
 The agent integrates with multiple MCP servers to provide comprehensive video analysis:
 
 ```python
@@ -45,21 +43,6 @@ The agent relies on configuration files for MCP server setup:
 
 ### Server Configuration
 The MCP servers are configured as remote SSE (Server-Sent Events) endpoints that provide real-time access to transcription and search services.
-
-## Setup
-
-```bash
-# Create virtual environment
-uv venv
-
-# Acticate the virtual environment
-source .venv/bin/activate 
-
-uv pip install fast-agent-mcp
-
-# Run the agent
-uv run agent.py
-```
 
 ## What It Does
 
