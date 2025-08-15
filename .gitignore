@@ -187,3 +187,4 @@ cython_debug/
 lab990_addendum/langchain/.cache.sqlite
 lab050/.cache.sqlite
 lab080/fastagent/example3/logs/fastagent.jsonl
+lab080/fastagent/example5/short_story.md
