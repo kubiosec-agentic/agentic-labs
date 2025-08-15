@@ -51,6 +51,18 @@ uv run agent.py
 - **Features**: Multi-step agent pipeline, URL fetching and social media post generation
 - **Use Case**: Content processing pipelines
 
+### Example 5: Prompt Server Integration
+- **File**: `example5/agent.py`
+- **Purpose**: Demonstrates conversation persistence using the prompt server
+- **Features**: Save/load conversation history, prompt management, MCP format
+- **Use Case**: Session continuity and conversation templates
+
+### Example 6: Memory & State Transfer
+- **File**: `example6/agent.py`, `example6/memory_demo.py`
+- **Purpose**: Advanced memory management and state transfer between agents
+- **Features**: Persistent memory, cross-agent state transfer, multi-model collaboration
+- **Use Case**: Long-running sessions and multi-agent workflows
+
 ## Configuration
 
 Some examples include configuration files:
