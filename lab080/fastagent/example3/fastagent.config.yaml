@@ -53,18 +53,3 @@ mcp:
       elicitation:
         mode: "forms"
     
-    # Prompt server for loading saved conversations
-    prompts:
-      command: "prompt-server"
-      args: ["history.json"]
-      transport: "stdio"
-    
-    # Brave search server (example additional server)
-    brave_search:
-      command: "npx"
-      args: ["@modelcontextprotocol/server-brave-search"]
-      transport: "stdio"
-      env:
-        BRAVE_API_KEY: "${BRAVE_API_KEY}"
-      elicitation:
-        mode: "forms"   
