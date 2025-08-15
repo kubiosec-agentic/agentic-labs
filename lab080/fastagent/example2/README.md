@@ -35,20 +35,6 @@ This agent is designed for:
 - Practicing with SVG-based XSS vectors
 - Security research and education
 
-## Setup & Usage
-
-```bash
-# Create virtual environment
-uv venv
-
-# Install dependencies (note: fixed typo from 'inti' to 'init')
-uv init
-uv pip install pydantic fast-agent-mcp
-
-# Run the agent
-uv run agent.py
-```
-
 ## What It Does
 
 1. Loads instruction set from remote URL
