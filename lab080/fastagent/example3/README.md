@@ -52,8 +52,10 @@ The MCP servers are configured as remote SSE (Server-Sent Events) endpoints that
 # Create virtual environment
 uv venv
 
-# Install dependencies from pyproject.toml
-uv sync
+# Acticate the virtual environment
+source .venv/bin/activate 
+
+uv pip install fast-agent-mcp
 
 # Run the agent
 uv run agent.py

@@ -88,21 +88,13 @@ This example includes comprehensive configuration files:
 # Create virtual environment
 uv venv
 
-# Install dependencies from pyproject.toml
-uv sync
+# Acticate the virtual environment
+source .venv/bin/activate 
 
-# Update secrets file with your API keys
-cp fastagent.secrets.yaml.template fastagent.secrets.yaml
-# Edit fastagent.secrets.yaml with actual keys
+uv pip install fast-agent-mcp
 
-# Test configuration
-fast-agent check
-
-# Run the chaining example
+# Run the agent
 uv run agent.py
-
-# Or run the simple main
-uv run main.py
 ```
 
 ## What It Does

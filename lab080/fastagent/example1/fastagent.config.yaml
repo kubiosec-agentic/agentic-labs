@@ -1,0 +1,5 @@
+default_model: "anthropic.claude-3-5-haiku-20241022"
+
+anthropic: 
+  api_key: ${ANTHROPIC_API_KEY}
+  base_url: "https://api.anthropic.com/v1" 

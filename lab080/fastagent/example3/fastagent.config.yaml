@@ -1,14 +1,15 @@
-# Default model configuration
 default_model: "openai.gpt-4o"
+execution_engine: "asyncio"
 
-# Model provider configurations
 openai:
-  api_key: "${OPENAI_API_KEY}"  # Will be loaded from environment or secrets file
-  base_url: "https://api.openai.com/v1"
+  reasoning_effort: "medium"
+  api_key: ${OPENAI_API_KEY}
 
-anthropic:
-  api_key: "${ANTHROPIC_API_KEY}"  # Will be loaded from environment or secrets file
-  base_url: "https://api.anthropic.com/v1"
+# Logging configuration
+logger:
+  type: "file"
+  level: "info"
+  path: "logs/fastagent.jsonl"
 
 # MCP Server configurations
 mcp:

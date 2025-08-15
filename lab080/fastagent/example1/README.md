@@ -31,12 +31,56 @@ async def main():
 # Create virtual environment
 uv venv
 
-# Install dependencies  
+# Acticate the virtual environment
+source .venv/bin/activate 
+
 uv pip install fast-agent-mcp
 
 # Run the agent
 uv run agent.py
 ```
+
+### API Key Configuration
+
+1. **Get API Keys**: 
+   - OpenAI: https://platform.openai.com/api-keys
+   - Anthropic: https://console.anthropic.com/
+
+2. **Update Configuration**:
+   ```bash
+   # Edit the secrets file
+   nano fastagent.secrets.yaml
+   ```
+   
+   Replace `"xxxxxxx"` with your actual API keys:
+   ```yaml
+   OPENAI_API_KEY: "sk-your-openai-key-here"
+   ANTHROPIC_API_KEY: "sk-ant-your-anthropic-key-here"
+   ```
+
+3. **Choose Your Model** in `fastagent.config.yaml`:
+   ```yaml
+   # For OpenAI (recommended for beginners)
+   default_model: "openai.gpt-4o"
+   
+   # For Anthropic
+   default_model: "anthropic.claude-3-5-haiku-20241022"
+   ```
+
+### Troubleshooting
+
+**Error: `invalid x-api-key`**
+- Check that your API key is valid and not expired
+- Ensure the key is correctly formatted in `fastagent.secrets.yaml`
+- Verify you have credits/usage available in your account
+
+**Error: `authentication_error`**  
+- Double-check the API key is copied correctly (no extra spaces)
+- Try generating a new API key from the provider's dashboard
+
+**No API Keys Available**
+- The configuration defaults to `playbook` model for testing without keys
+- Add real API keys to use actual AI models
 
 ## What It Does
 
