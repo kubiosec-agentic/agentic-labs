@@ -4,8 +4,6 @@ This example demonstrates how to create an educational security testing agent fo
 
 ## Code Overview
 
-**File**: `agent.py:1-13`
-
 The agent loads its instruction from a remote URL and focuses on security education:
 
 ```python
