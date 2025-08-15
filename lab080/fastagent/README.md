@@ -31,6 +31,14 @@ uv run agent.py
 
 ## Examples Overview
 
+### Setup your API keys
+```
+export OPENAI_API_KEY="xxxx"
+export ANTHROPIC_API_KEY="xxxx"
+export YOUTUBE_TRANSCRIBE_TOKEN="xxxx"
+export EXA_SEARCH_TOKEN="xxxx"
+```
+
 ### Example 1: Interactive Agent
 - **File**: `example1/agent.py`
 - **Purpose**: Basic interactive agent with chat interface
