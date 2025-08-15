@@ -186,3 +186,4 @@ cython_debug/
 .DS_Store
 lab990_addendum/langchain/.cache.sqlite
 lab050/.cache.sqlite
+lab080/fastagent/example3/logs/fastagent.jsonl
