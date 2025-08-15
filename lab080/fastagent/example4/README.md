@@ -30,22 +30,22 @@ async def main():
 
 ### Key Components
 
-1. **URL Fetcher Agent** (`agent.py:9-13`)
+1. **URL Fetcher Agent**
    - Uses the "fetch" MCP server
    - Retrieves and summarizes web content
    - Provides comprehensive analysis of URLs
 
-2. **Social Media Agent** (`agent.py:14-20`)
+2. **Social Media Agent**
    - Processes text into social media format
    - Creates 280-character posts
    - Follows specific formatting rules (no hashtags)
 
-3. **Agent Chain** (`agent.py:22-25`)
+3. **Agent Chain**
    - Links agents in sequence: url_fetcher → social_media
    - Named "post_writer" for easy access
    - Passes output automatically between agents
 
-4. **Simple Main** (`main.py:1-6`)
+4. **Simple Main** 
    - Basic Python entry point
    - Demonstrates non-async usage patterns
 
