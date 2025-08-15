@@ -24,7 +24,8 @@ Each example directory contains its own setup instructions. Generally:
 ```bash
 cd exampleX
 uv venv
-uv sync  # or uv pip install <dependencies>
+uv sync
+# uv pip install <dependencies>
 uv run agent.py
 ```
 
