@@ -49,11 +49,6 @@ export OPENAI_BASE_URL="http://127.0.0.1:8080/v1"
 ```
 python3 chat_01.py
 ```
-Don't forget to unset the environment variable !
-```
-unset OPENAI_BASE_URL
-```
-
 #### Responses API via OpenAI Python SDK and message callback
 This lab shows how to build a multi-turn conversation using the `previous_response_id`, allowing the model to maintain context and respond more naturally across messages.
 ```
@@ -89,6 +84,10 @@ python3 ./resp_04.py
 ```
 
 ## Cleanup environment
+Don't forget to **unset** the environment variable !
+```
+unset OPENAI_BASE_URL
+```
 ```
 deactivate
 ```
