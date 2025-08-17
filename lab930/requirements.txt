@@ -1,0 +1,3 @@
+openai-agents 
+mem0ai 
+requests

@@ -3,6 +3,9 @@ lab*/lab_cleanup.sh
 lab*/lab_setup.sh
 lab*/storage
 
+
+qdrant_storage
+
 # Secrets and API keys - FastAgentMCP
 fastagent.secrets.yaml
 *.secrets.yaml
