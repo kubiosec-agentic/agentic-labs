@@ -3,7 +3,7 @@
 
 # LAB32: Python Frameworks
 This lab is our first step in our Python journey and introduces the concept of using SDKs such as the OpenAI Python SDK to build powerful language model workflows. To bridge the gap between raw `curl` commands and specialized libraries, we quickly examine the `requests` library.<br> 
-The lab also covers the use of `mitmproxy` to deepen your understanding and visualize the requests, including tool calls and reasoning patterns.<br> Continuously practicing this kind of inspection will help you gain crucial insights, building the expert-level knowledge needed for effective debugging and security analysis.
+The lab also covers the use of `mitmproxy` to deepen your understanding and visualize the requests, including tool calls and reasoning patterns. Continuously practicing this kind of inspection will help you gain crucial insights, developing the expert-level skills needed for effective debugging and security analysis.
 
 ## Set up your environment
 ```
