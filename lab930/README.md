@@ -26,6 +26,9 @@ docker run -d --name qdrant \
 
 ## Cleanup environment
 ```
+docker stop qdrant
+```
+```
 deactivate
 ```
 ```
