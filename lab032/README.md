@@ -2,9 +2,8 @@
 ![OpenAI](https://img.shields.io/badge/OpenAI-lightblue) ![Responses_API](https://img.shields.io/badge/Responses_API-brightgreen) ![Python](https://img.shields.io/badge/Python-blue) ![Tools](https://img.shields.io/badge/Tools-purple)
 
 # LAB32: Python Frameworks
-This lab demonstrates how to build powerful language model workflows using Python OpenAI SDK.<br>
-
-
+This lab introduces frameworks, demonstrating how to build powerful language model workflows using Python and the OpenAI SDK.<br>
+The lab also covers the use of `mitmproxy` to deepen your understanding and visualize the requests, including tool calls and reasoning patterns.
 ## Set up your environment
 ```
 export OPENAI_API_KEY="xxxxxxxxx"

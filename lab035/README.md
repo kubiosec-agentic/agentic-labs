@@ -1,6 +1,6 @@
 
 ![LangChain](https://img.shields.io/badge/LangChain-lightgrey) ![ChatCompletion](https://img.shields.io/badge/ChatCompetion-green)
-# LAB035: LangChain and LangGraph Quickstart
+# LAB035: LangChain Quickstart
 This lab demonstrates how to build powerful language model workflows using LangChain and LangGraph.<br>
 
 **LangChain** is a flexible framework for composing prompts, models, tools, and logic into modular pipelines called chains.<br>

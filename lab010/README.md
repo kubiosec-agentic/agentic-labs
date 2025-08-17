@@ -2,7 +2,8 @@
 
 # LAB010: Chat Completions 
 ## Introduction
-LAB010 introduces the foundational steps for interacting with the OpenAI Chat Completions API. You’ll set up a working development environment, learn how to send requests using curl, structure conversations with system prompts, extract responses using jq, and even perform image-based tasks. The lab also covers Python-based API usage and debugging tools like mitmproxy to deepen your understanding of how requests flow. This lab is ideal for anyone looking to build a solid grasp of OpenAI API mechanics through hands-on practice.
+LAB010 introduces the foundational steps for interacting with the OpenAI Chat Completions API. You’ll set up a working development environment, learn how to send requests using `curl`, structure conversations with system prompts, extract responses using `jq`, and even perform image-based tasks.  This lab is ideal for anyone seeking to develop a solid understanding of OpenAI API mechanics through hands-on practice. Mastering these techniques is a valuable penetration testing skill, particularly when low-level interactions are required or when only basic tooling is available. It can also serve as a quick win for integrating AI feedback into scripts or automation pipelines, such as GitHub Actions.
+
 ## Set up your environment
 ```
 export OPENAI_API_KEY="xxxxxxxxx"
