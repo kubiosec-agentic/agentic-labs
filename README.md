@@ -1,6 +1,6 @@
 # Welcome to Agentic-Labs Training
 
-**Agentics-Labs** is an advanced, hands-on training experience for those who want to go beyond the hype and dive deep into the **foundations of agentic AI**. Whether you're a **DevOps engineer**, **ethical hacker**, **network specialist**, **pen-tester**, or **developer**, this course is your gateway to mastering the **low-level internals** of the OpenAI ecosystem.
+**Agentic-Labs** is an advanced, hands-on training experience for those who want to go beyond the hype and dive deep into the **foundations of agentic AI**. Whether you're a **DevOps engineer**, **ethical hacker**, **network specialist**, **pen-tester**, or **developer**, this course is your gateway to mastering the **low-level internals** of the OpenAI ecosystem.
 
 ## 🔍 What You'll Learn
 
@@ -32,7 +32,7 @@ ssh -i agentics-key.pem -L 8080:localhost:8080 \
 git clone https://github.com/kubiosec-agentic/agentic-labs.git
 ```
 ```
-cd agentic-labs/lab00_setup/
+cd agentic-labs/lab000_setup/
 ```
 ```
 ./setup.sh
@@ -57,17 +57,25 @@ Each lab is structured to gradually build your understanding and capabilities, f
 
 | Lab | Focus Area                                      | Tools & Topics                              |
 |-----|-------------------------------------------------|---------------------------------------------|
-| [lab01](./lab01) | OpenAI - Chat completions basics              | curl, few-shot prompts, image analysis     |
-| [lab02](./lab02) | OpenAI - Responses API basics                     | curl, tools, structured output                     |
-| [lab03](./lab03) | Model evaluation                                | curl       |
-| [lab04](./lab04) | RAG                                             | python, RAG, chroma, llama-index, OpenAI VectorStore                |
-| [lab05](./lab05) | Tools                                           | python, langchain                       |
-| [lab06](./lab06) | Multi-agent orchestration                         | python, OpenAI Agent SDK|
-| [lab07](./lab07) | MCP                 | python           |
-| [lab08](./lab08) | Agentic Fun      |python Autogen, CrewAI, A2A             |
-| [lab09](./lab09) | Enterprise graded Agents            | python, OAUTH           |
-| [lab10](./lab10) | xxxxxxx               | xxxxxxx             |
-| [lab11](./lab11) | xxxxxxx      | xxxxxxx  |
+| [lab000_setup](./lab000_setup) | Lab environment setup                        | bash scripts, environment preparation       |
+| [lab010](./lab010) | OpenAI - Chat completions basics              | curl, few-shot prompts, image analysis     |
+| [lab020](./lab020) | OpenAI - Responses API basics                 | curl, tools, structured output              |
+| [lab032](./lab032) | Advanced OpenAI features                      | python, chat, responses, structured output  |
+| [lab035](./lab035) | Advanced prompting techniques                 | python, multi-turn conversations, HuggingFace |
+| [lab040](./lab040) | RAG (Retrieval Augmented Generation)         | python, RAG, chroma, llama-index, OpenAI VectorStore |
+| [lab050](./lab050) | LangChain tools and agents                    | python, langchain, tool integration        |
+| [lab052](./lab052) | OpenAI Agent SDK                              | python, OpenAI Agent SDK, vulnerability analysis |
+| [lab053](./lab053) | LangChain advanced features                   | python, langchain, advanced agent patterns |
+| [lab060](./lab060) | Multi-agent orchestration                     | python, OpenAI Agent SDK, MCP integration  |
+| [lab070](./lab070) | MCP (Model Context Protocol)                 | python, MCP, SSE, streamable responses     |
+| [lab080](./lab080) | Multi-agent frameworks                       | python, Autogen, CrewAI, PydanticAI, FastAgent |
+| [lab082_langgraph](./lab082_langgraph) | LangGraph workflows                | python, LangGraph, workflow orchestration  |
+| [lab090](./lab090) | Enterprise-grade agents with tracing         | python, OpenAI tracing, metadata, persistence |
+| [lab093](./lab093) | Memory management for agents                 | python, Mem0, Qdrant, persistent memory    |
+| [lab100](./lab100) | Advanced agent patterns                      | TBD                                         |
+| [lab105_evaluations](./lab105_evaluations) | Agent evaluation and testing       | python, evaluation frameworks              |
+| [lab110](./lab110) | Production deployment                        | TBD                                         |
+| [lab990_addendum](./lab990_addendum) | Additional examples and patterns    | python, various frameworks, specialized use cases |
 
-Each labs has a different environment, feel free to fork, hack, and explore beyond the tasks!
+Each lab has a different environment, feel free to fork, hack, and explore beyond the tasks!
 
