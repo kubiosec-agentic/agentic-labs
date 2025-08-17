@@ -1,4 +1,4 @@
-# LAB930
+# LAB082
 ## Set up your environment
 ```
 export OPENAI_API_KEY="xxxxxxxxx"
@@ -7,27 +7,13 @@ export OPENAI_API_KEY="xxxxxxxxx"
 ./lab_setup.sh
 ```
 ```
-source .lab930/bin/activate
+source .lab082/bin/activate
 ```
 ## Lab instructions
-### MemO SAAS
-```
-export MEM0_API_KEY="xxxxxxx"
-
-```
-### Qdrant Storage for Mem0
-```
-docker run -d --name qdrant \
-   -p 6333:6333 -p 6334:6334 \
-   -v $PWD/qdrant_storage:/qdrant/storage \
-   qdrant/qdrant:latest
-```
-
+### xxxxxxxx
+xxxxxxxx
 
 ## Cleanup environment
-```
-docker stop qdrant
-```
 ```
 deactivate
 ```
