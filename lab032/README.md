@@ -84,7 +84,7 @@ python3 ./resp_04.py
 ```
 
 ## Cleanup environment
-Don't forget to **unset** the environment variable !
+⚠️❗ Don't forget to **unset** the environment variable !
 ```
 unset OPENAI_BASE_URL
 ```
