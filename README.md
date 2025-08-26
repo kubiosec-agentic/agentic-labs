@@ -24,6 +24,7 @@ Each lab student has access to a virtual machine, accessible over SSH. Use the c
 ```bash
 ssh -i agentics-key.pem -L 8080:localhost:8080 \
                -L 8081:localhost:8081 \
+               -L 8000:localhost:8000 \
                -L 5000:localhost:5000 \
                -L 8501:localhost:8501 \
                 ubuntu@x.x.x.x.x
@@ -78,4 +79,5 @@ Each lab is structured to gradually build your understanding and capabilities, f
 | [lab990_addendum](./lab990_addendum) | Additional examples and patterns    | python, various frameworks, specialized use cases |
 
 Each lab has a different environment, feel free to fork, hack, and explore beyond the tasks!
+
 
