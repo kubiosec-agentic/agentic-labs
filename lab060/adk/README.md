@@ -110,7 +110,7 @@ SERP_API_KEY=your_serp_api_key_here
    ```
    > ⚡ **What happens**: ADK scans all agent directories and spins up a web server
 
-3. **Open your browser** to `http://localhost:8080`
+3. **Open your browser** to `http://localhost:8000`
    > 🎨 **You'll see**: A clean interface with all your agents ready to chat
 
 4. **Pick your agent** from the dropdown or agent selector
