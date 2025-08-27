@@ -1,4 +1,4 @@
-# LAB07: Model Context Protocol
+# LAB070: Model Context Protocol
 ## Introduction
 This lab introduces the Model Context Protocol (MCP), a secure standard for connecting AI agents to tools and data sources. You'll explore:
 - MCP transports: stdio and SSE for agent-tool communication
