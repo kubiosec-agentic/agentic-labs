@@ -9,7 +9,7 @@ fetch_mcp_server = StdioServerParams(command="uvx", args=["mcp-server-fetch"])
 
 async def main():
     async with McpWorkbench(fetch_mcp_server) as workbench:  
-        model_client = OpenAIChatCompletionClient(model="gpt-4.1-nano")
+        model_client = OpenAIChatCompletionClient(model="gpt-5-nano")
         fetch_agent = AssistantAgent(
             name="fetcher", model_client=model_client, workbench=workbench, reflect_on_tool_use=True
         )
