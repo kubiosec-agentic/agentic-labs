@@ -93,9 +93,9 @@ python3 LA_04.py
 ```
 
 #### Example 5: LangChain Chain (Advanced)
-Advanced LangChain chain example (purpose depends on LC_04.py implementation).
+Advanced LangChain chain example.
 ```bash
-python3 LC_04.py
+python3 LA_05.py
 ```
 
 ## Security Notes for Experimental Features
