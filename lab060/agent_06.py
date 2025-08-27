@@ -8,7 +8,8 @@ with open("data/docker-curl-https.txt", "r", encoding="utf-8") as f:
 
 # Create security analysis agent with JSON output
 security_agent = Agent(
-    name="Security Trace Analyst", 
+    name="Security Trace Analyst",
+    model="gpt-4.1-mini",
     instructions="""You are a security and malware analyst. 
 
 Analyze the sysdig system call trace and provide your analysis in the following JSON format:
