@@ -1,4 +1,4 @@
-# LAB08: Agentic frameworks
+# LAB080: Agentic frameworks
 ## Introduction
 This lab explores advanced AutoGen agents and teamwork, combining tool integration, group chat dynamics, secure code execution, and blogging workflows:
 - Use MCP to connect agents to real tools like web fetchers
