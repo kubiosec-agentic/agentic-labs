@@ -10,6 +10,7 @@ with open("data/docker-curl-https.txt", "r", encoding="utf-8") as f:
 # Agent 1: Security Trace Analyzer - performs detailed analysis
 analyzer_agent = Agent(
     name="Security Trace Analyzer",
+    model="gpt-4.1-mini",
     instructions="""You are a security analyst specialized in system call trace analysis.
 
 Analyze the provided sysdig trace data and extract:
