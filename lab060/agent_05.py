@@ -16,7 +16,7 @@ instructions = """You are a security and malware analyst.
 
 # Send to Responses API
 response = client.responses.create(
-    model="gpt-4.1",
+    model="gpt-4.1-mini",
     instructions=instructions,
     input=f"""Text:
 \"\"\"
