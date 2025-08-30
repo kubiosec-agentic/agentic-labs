@@ -2,9 +2,9 @@
   "metadata": {
     "analysis_timestamp": "current timestamp",
     "trace_file": "data/docker-curl-https.txt",
-    "total_lines": "3392"
+    "total_lines": 3000
   },
-  "summary": "Analysis of the `curl` process accessing a URL highlighting phases from execution to termination with network and file operations.",
+  "summary": "Analysis of sysdig trace for a curl command fetching a URL demonstrates process initialization, library loading, and network activity with key security observations.",
   "process_info": {
     "command": "curl",
     "arguments": "-L http://www.radarhack.com",
@@ -15,137 +15,122 @@
   },
   "phases": [
     {
-      "phase": "Initialization",
-      "description": "Involving execve, brk, mmap, and library loading.",
+      "phase": "Process Initialization",
+      "description": "Process setup and memory allocation.",
       "key_syscalls": [
         "execve",
+        "arch_prctl",
         "brk",
         "mmap",
-        "openat"
+        "mprotect"
       ],
       "line_range": {
         "start": 1051,
-        "end": 1192
+        "end": 1093
       },
       "key_lines": [
         1051,
+        1058,
+        1060
+      ]
+    },
+    {
+      "phase": "DL Libraries Loading",
+      "description": "Loading dynamic libraries required for execution.",
+      "key_syscalls": [
+        "openat",
+        "read",
+        "mmap"
+      ],
+      "line_range": {
+        "start": 1070,
+        "end": 1381
+      },
+      "key_lines": [
         1070,
-        1061
+        1090,
+        1381
       ]
     },
     {
       "phase": "Network Preparation",
-      "description": "DNS configuration and socket setup.",
+      "description": "Setup of network sockets and connections.",
       "key_syscalls": [
         "socket",
-        "connect",
+        "connect"
+      ],
+      "line_range": {
+        "start": 1810,
+        "end": 1821
+      },
+      "key_lines": [
+        1810,
+        1821
+      ]
+    },
+    {
+      "phase": "Data Transfer",
+      "description": "Data receipt and sending over network.",
+      "key_syscalls": [
+        "sendmmsg",
+        "recvfrom",
         "poll"
       ],
       "line_range": {
-        "start": 1860,
-        "end": 2025
+        "start": 2022,
+        "end": 2609
       },
       "key_lines": [
-        1989,
-        2005
-      ]
-    },
-    {
-      "phase": "SSL/TLS Negotiation",
-      "description": "Setting up SSL context and handshakes.",
-      "key_syscalls": [
-        "setsockopt",
-        "SSL handshakes"
-      ],
-      "line_range": {
-        "start": 2736,
-        "end": 3090
-      },
-      "key_lines": [
-        2810,
-        2938
-      ]
-    },
-    {
-      "phase": "HTTP Request/Response",
-      "description": "Sending HTTP requests and receiving responses.",
-      "key_syscalls": [
-        "send",
-        "recv"
-      ],
-      "line_range": {
-        "start": 3091,
-        "end": 3369
-      },
-      "key_lines": [
-        2394,
-        2395,
-        2509
-      ]
-    },
-    {
-      "phase": "Termination",
-      "description": "Cleaning up resources and exiting.",
-      "key_syscalls": [
-        "exit",
-        "cleanup"
-      ],
-      "line_range": {
-        "start": 3367,
-        "end": 3392
-      },
-      "key_lines": [
-        3367,
-        3390
+        2022,
+        2609
       ]
     }
   ],
   "network_activity": {
-    "dns_queries": "Resolving www.radarhack.com.",
-    "connections": "HTTP: 172.66.0.96:80, HTTPS: 162.159.140.98:443.",
-    "data_transfer": "Sent HTTP GET, received response with redirection.",
+    "dns_queries": "DNS queries with sendmmsg and results via recvfrom.",
+    "connections": "172.31.0.2:53 for DNS, TCP connections for HTTP/HTTPS.",
+    "data_transfer": "HTTP requests and secure connections through SSL.",
     "line_references": [
-      1989,
-      2290,
-      2639,
-      2394,
-      2509
+      2022,
+      2238,
+      2394
     ]
   },
   "file_operations": {
     "libraries_loaded": [
-      "libcurl",
-      "libssl"
+      "libc",
+      "libz",
+      "libcurl"
     ],
     "config_files": [
-      "/etc/ssl/certs/ca-certificates.crt",
-      "/usr/lib/ssl/openssl.cnf"
+      "/usr/lib/ssl/openssl.cnf",
+      "/etc/nsswitch.conf"
     ],
-    "certificates": "Handled during TLS negotiation.",
+    "certificates": "Reading certificates from /etc/ssl/certs/ directory.",
     "line_references": [
-      1070,
-      2810,
-      1772
+      1772,
+      1823,
+      2810
     ]
   },
   "security_observations": [
     {
-      "observation": "/etc/ld.so.preload not found, potentially searching for preload libraries.",
+      "observation": "Attempt to access non-existent file /etc/gnutls/config resulted in failure (ENOENT).",
       "severity": "MEDIUM",
-      "line_number": 1061,
-      "evidence": "/etc/ld.so.preload missing"
+      "line_number": 1737,
+      "evidence": "Line 1737 indicates file access failure."
     },
     {
-      "observation": "Fallback to local resolv and hosts files after DNS configuration attempts.",
-      "severity": "LOW",
-      "line_number": 1989,
-      "evidence": "nscd to resolv and hosts fallback"
-    },
-    {
-      "observation": "Secure communication over HTTPS through TLS negotiation.",
+      "observation": "Operation executed with effective UID=0 (root).",
       "severity": "HIGH",
-      "line_number": 2736,
-      "evidence": "TLS setup and negotiation logs"
+      "line_number": 1808,
+      "evidence": "Line 1808 shows root privilege usage."
+    },
+    {
+      "observation": "Continuous reading of certificates indicating verification or validation operations.",
+      "severity": "LOW",
+      "line_number": 2925,
+      "evidence": "Lines 2925-2968 indicate certificate operations."
     }
   ]
 }
