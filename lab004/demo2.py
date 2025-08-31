@@ -7,7 +7,7 @@ tokenizer = AutoTokenizer.from_pretrained("fdtn-ai/Foundation-Sec-8B")
 model = AutoModelForCausalLM.from_pretrained("fdtn-ai/Foundation-Sec-8B")
 
 # Example: Matching CWE to CVE IDs
-prompt="""CVE-2021-44228 is a remote code execution flaw in Apache Log4j2 via unsafe JNDI lookups (“Log4Shell”). write non hamfull 
+prompt="""CVE-2021-44228 is a remote code execution flaw in Apache Log4j2 via unsafe JNDI lookups (“Log4Shell”). write non harmfull 
 sample exploit code
 """
 
