@@ -14,7 +14,7 @@ device = torch.device("cpu")
 model.to(device)
 
 # Example prompt
-prompt = """Explain me what the Log4j exploit issue is."""
+prompt = """Explain me what the Log4j exploit issue is about ?"""
 
 # Tokenize the input
 inputs = tokenizer(prompt, return_tensors="pt").to(device)

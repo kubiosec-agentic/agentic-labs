@@ -24,11 +24,10 @@ docker-compose build --no-cache
 ## Lab instructions
 ### Running the Security Analysis Demo
 
-This lab demonstrates using the Qwen2.5-0.5B model for security vulnerability analysis. The demo analyzes CVE descriptions and predicts CWE (Common Weakness Enumeration) classifications.
+This lab demonstrates using the Qwen2.5-0.5B model explaining the Log4j issue.
 
 **Features:**
 - Uses Qwen/Qwen2.5-0.5B model (CPU-friendly, lightweight)
-- Demonstrates CVE to CWE mapping
 - Containerized deployment with Docker
 - Example security prompts included
 
@@ -38,10 +37,7 @@ This lab demonstrates using the Qwen2.5-0.5B model for security vulnerability an
 - Generates security analysis responses
 
 **Related Resources:**
-https://huggingface.co/fdtn-ai/Foundation-Sec-8B <br>
-https://github.com/cisco-foundation-ai/cookbook/blob/main/1_quickstarts/Quickstart_Foundation-Sec-8B.ipynb
-<br>
-*Note: pip install -U "numpy<2" may be required for compatibility*
+https://huggingface.co/fdtn-ai/Foundation-Sec-8B 
 
 ## Cleanup environment
 ```
