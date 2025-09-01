@@ -9,7 +9,7 @@ export OPENAPI_API_KEY="xxxxxxxxx"
 ./lab_setup.sh
 ```
 ```bash
-source .lab11/bin/activate
+source .lab004/bin/activate
 ```
 
 ### Docker Setup (Recommended)
