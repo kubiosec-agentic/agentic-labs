@@ -1,0 +1,7 @@
+services:
+  app:
+    build: .
+    container_name: lab004_app
+    volumes:
+      - .:/app
+    command: python demo.py
