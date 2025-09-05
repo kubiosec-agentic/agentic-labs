@@ -1,3 +1,5 @@
+## Transformer Encoder (3 Layers, 4 Attention Heads each)
+
 ```mermaid
 flowchart TD
 
@@ -48,4 +50,3 @@ A --> L1
 F1 --> L2
 F2 --> L3
 F3 --> Z[Final Contextualized Representations]
-```
