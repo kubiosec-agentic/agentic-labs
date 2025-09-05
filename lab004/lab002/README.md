@@ -7,8 +7,8 @@ flowchart TD
 A[Input Embeddings + Positional Encoding]
 
 %% Layer 1
-subgraph L1[Encoder Layer 1]
-    subgraph H1[Multi-Head Self-Attention (4 heads)]
+subgraph L1["Encoder Layer 1"]
+    subgraph H1["Multi Head Self Attention"]
         H1a[Head 1]
         H1b[Head 2]
         H1c[Head 3]
@@ -16,12 +16,12 @@ subgraph L1[Encoder Layer 1]
     end
     Hcat1[Concatenate Heads]
     Hlin1[Linear Projection W^O]
-    F1[Feed-Forward Network]
+    F1[Feed Forward Network]
 end
 
 %% Layer 2
-subgraph L2[Encoder Layer 2]
-    subgraph H2[Multi-Head Self-Attention (4 heads)]
+subgraph L2["Encoder Layer 2"]
+    subgraph H2["Multi Head Self Attention"]
         H2a[Head 1]
         H2b[Head 2]
         H2c[Head 3]
@@ -29,12 +29,12 @@ subgraph L2[Encoder Layer 2]
     end
     Hcat2[Concatenate Heads]
     Hlin2[Linear Projection W^O]
-    F2[Feed-Forward Network]
+    F2[Feed Forward Network]
 end
 
 %% Layer 3
-subgraph L3[Encoder Layer 3]
-    subgraph H3[Multi-Head Self-Attention (4 heads)]
+subgraph L3["Encoder Layer 3"]
+    subgraph H3["Multi Head Self Attention"]
         H3a[Head 1]
         H3b[Head 2]
         H3c[Head 3]
@@ -42,7 +42,7 @@ subgraph L3[Encoder Layer 3]
     end
     Hcat3[Concatenate Heads]
     Hlin3[Linear Projection W^O]
-    F3[Feed-Forward Network]
+    F3[Feed Forward Network]
 end
 
 %% Connections
