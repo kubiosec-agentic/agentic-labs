@@ -20,6 +20,11 @@ docker compose up --build
 # Rebuild without cache if needed
 docker compose build --no-cache
 docker compose up
+
+# You can push this image to Dockerhub (FYI)
+docker tag lab004_transformers-app your_dockerhub_username/your_image_name:latest
+docker login
+docker push your_dockerhub_username/your_image_name:latest
 ```
 
 ## Lab instructions
