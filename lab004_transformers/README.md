@@ -26,7 +26,7 @@ docker tag lab004_transformers-app <your_dockerhub_username/your_image_name:late
 docker login
 docker push <your_dockerhub_username/your_image_name:latest>
 
-# 
+# You can now pull and run the image form Dockerhub 
 docker run -it <your_dockerhub_username/your_image_name:latest>
 ```
 
