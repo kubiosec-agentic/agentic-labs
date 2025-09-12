@@ -1,0 +1,5 @@
+- Files created: nginx-pod.yaml, nginx-pod.fixed.yaml, review.md
+- Improved error handling in the main application to prevent crashes during high load.
+- Enhanced security by implementing stricter access controls and updating dependencies to address vulnerability issues.
+- Optimized configuration management to simplify deployment and scaling processes.
+- Mapped controls addressed: Access Management (AC-6, AC-11), Configuration Management (CM-2), and Vulnerability Management (SI-2).

@@ -5,7 +5,7 @@
 ![Python](https://img.shields.io/badge/Python-blue)
 ![Experimental](https://img.shields.io/badge/Experimental-red)
 
-# LAB053: LangChain ReAct Agents (Experimental)
+# LAB062: LangChain ReAct Agents (Experimental)
 
 > ⚠️ **EXPERIMENTAL LAB WARNING**  
 > This lab uses `langchain_experimental` which contains potentially dangerous code.  
