@@ -44,6 +44,7 @@ https://huggingface.co/fdtn-ai/Foundation-Sec-8B
 ## Transformer Encoder (3 Layers, 4 Attention Heads each)
 <details>
 <summary>Transmformer model encoder drawing</summary>
+
 ```mermaid
 flowchart TD
 
