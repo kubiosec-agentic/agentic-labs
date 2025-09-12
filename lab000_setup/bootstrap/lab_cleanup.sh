@@ -9,7 +9,8 @@ cecho() {
     fi
 }
 
-export LAB=".$(basename "$PWD")"
+# export LAB=".$(basename "$PWD")"
+export LAB=".$(basename "$PWD" | cut -c1-6)"
 echo "================================================================================"
 echo "Cleaning up $LAB"
 echo "================================================================================"

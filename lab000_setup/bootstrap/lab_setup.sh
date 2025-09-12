@@ -10,7 +10,8 @@ cecho() {
 }
 
 # Define base directory
-export LAB=".$(basename "$PWD")"
+# export LAB=".$(basename "$PWD")"
+export LAB=".$(basename "$PWD" | cut -c1-6)"
 echo "================================================================================"
 echo "Setting up $LAB"
 echo "================================================================================"
