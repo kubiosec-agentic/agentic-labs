@@ -106,6 +106,7 @@ A --> L1
 N1b --> L2
 N2b --> L3
 N3b --> Z[Final Contextualized Representations]
+```
 </details>
 
 ## Cleanup environment
