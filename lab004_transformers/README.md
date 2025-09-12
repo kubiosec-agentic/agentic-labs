@@ -43,7 +43,7 @@ This lab demonstrates using the Qwen2.5-0.5B model explaining the Log4j issue.
 - Generates security analysis responses
 
 **Related Resources:**
-https://huggingface.co/fdtn-ai/Foundation-Sec-8B 
+https://huggingface.co/Qwen/Qwen2.5-0.5B
 
 ## Transformer Encoder (3 Layers, 4 Attention Heads each)
 <details>
