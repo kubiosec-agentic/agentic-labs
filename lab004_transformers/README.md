@@ -15,10 +15,11 @@ source .lab004/bin/activate
 ### Docker Setup (Recommended)
 ```bash
 # Build and run with Docker Compose
-docker-compose up --build
+docker compose up --build
 
 # Rebuild without cache if needed
-docker-compose build --no-cache
+docker compose build --no-cache
+docker compose up
 ```
 
 ## Lab instructions
