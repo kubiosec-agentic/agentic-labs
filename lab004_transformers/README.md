@@ -39,8 +39,6 @@ This lab demonstrates using the Qwen2.5-0.5B model explaining the Log4j issue.
 **Related Resources:**
 https://huggingface.co/fdtn-ai/Foundation-Sec-8B 
 
-## Bonus
-
 ## Transformer Encoder (3 Layers, 4 Attention Heads each)
 <details>
 <summary>Transmformer model encoder drawing</summary>
