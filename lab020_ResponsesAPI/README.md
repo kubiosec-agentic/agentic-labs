@@ -97,7 +97,7 @@ curl "https://api.openai.com/v1/responses" \
                 ]
             }
         ]
-    }' | jq -r '.output[].content[0].text'
+    }'
 ```
 
 #### Message recall
