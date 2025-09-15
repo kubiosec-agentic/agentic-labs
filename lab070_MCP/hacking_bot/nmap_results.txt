@@ -1,0 +1,93 @@
+# Nmap 7.94SVN scan initiated Sun Sep 14 19:08:15 2025 as: nmap -sn -PS22,80,135,443,3389,5985 --max-retries 2 --max-rtt-timeout 3s --min-rate 500 -oN /tmp/nmap_24_results.txt 192.168.0.0/24
+Nmap scan report for 192.168.0.0
+Host is up (0.00065s latency).
+Nmap scan report for 192.168.0.1
+Host is up (0.030s latency).
+Nmap scan report for 192.168.0.2
+Host is up (0.0019s latency).
+Nmap scan report for 192.168.0.4
+Host is up (0.0032s latency).
+Nmap scan report for 192.168.0.12
+Host is up (0.0020s latency).
+Nmap scan report for 192.168.0.16
+Host is up (0.0019s latency).
+Nmap scan report for 192.168.0.20
+Host is up (0.0018s latency).
+Nmap scan report for 192.168.0.39
+Host is up (0.0056s latency).
+Nmap scan report for 192.168.0.50
+Host is up (0.0043s latency).
+Nmap scan report for 192.168.0.62
+Host is up (0.0027s latency).
+Nmap scan report for 192.168.0.114
+Host is up (0.043s latency).
+Nmap scan report for 192.168.0.116
+Host is up (0.0057s latency).
+Nmap scan report for 192.168.0.118
+Host is up (0.045s latency).
+Nmap scan report for 192.168.0.119
+Host is up (0.24s latency).
+Nmap scan report for 192.168.0.124
+Host is up (0.0078s latency).
+Nmap scan report for 192.168.0.125
+Host is up (0.20s latency).
+Nmap scan report for 192.168.0.127
+Host is up (0.12s latency).
+Nmap scan report for 192.168.0.131
+Host is up (0.18s latency).
+Nmap scan report for 192.168.0.132
+Host is up (0.016s latency).
+Nmap scan report for 192.168.0.147
+Host is up (0.31s latency).
+Nmap scan report for 192.168.0.149
+Host is up (0.50s latency).
+Nmap scan report for 192.168.0.150
+Host is up (0.19s latency).
+Nmap scan report for 192.168.0.152
+Host is up (0.20s latency).
+Nmap scan report for 192.168.0.157
+Host is up (0.00096s latency).
+Nmap scan report for 192.168.0.177
+Host is up (0.11s latency).
+Nmap scan report for 192.168.0.179
+Host is up (0.0059s latency).
+Nmap scan report for 192.168.0.190
+Host is up (0.74s latency).
+Nmap scan report for 192.168.0.195
+Host is up (0.0043s latency).
+Nmap scan report for 192.168.0.202
+Host is up (0.094s latency).
+Nmap scan report for 192.168.0.204
+Host is up (0.014s latency).
+Nmap scan report for 192.168.0.205
+Host is up (0.016s latency).
+Nmap scan report for 192.168.0.208
+Host is up (0.013s latency).
+Nmap scan report for 192.168.0.211
+Host is up (0.084s latency).
+Nmap scan report for 192.168.0.240
+Host is up (4.4s latency).
+Nmap scan report for 192.168.0.243
+Host is up (1.7s latency).
+Nmap scan report for 192.168.0.249
+Host is up (1.4s latency).
+Nmap scan report for 192.168.0.251
+Host is up (0.31s latency).
+Nmap scan report for 192.168.0.252
+Host is up (0.0067s latency).
+Nmap scan report for 192.168.0.255
+Host is up (0.0011s latency).
+# Nmap done at Sun Sep 14 19:08:22 2025 -- 256 IP addresses (39 hosts up) scanned in 6.87 seconds
+
+=== NMAP SCAN ANALYSIS ===
+Network: 192.168.0.0/24 (256 addresses)
+Active hosts discovered: 39
+Scan duration: 6.87 seconds
+Scan type: Ping scan (-sn) with TCP SYN probes to ports 22,80,135,443,3389,5985
+
+Key findings:
+- 39 active hosts discovered (15.2% host density)
+- Gateway likely at 192.168.0.1 (30ms latency)
+- Network includes various device types (routers, workstations, servers)
+- Some hosts show high latency (up to 4.4s) indicating potential network congestion or wireless devices
+- Fast local responses (<5ms) suggest wired infrastructure devices
