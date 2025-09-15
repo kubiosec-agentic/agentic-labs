@@ -14,16 +14,3 @@ docker run -it ubuntu-node-python bash
 ```
 docker run -p 8000:8000 -d ubuntu-node-python npx -y supergateway --outputTransport streamableHttp  --stdio "npx -y @wonderwhy-er/desktop-commander@latest"
 ```
-
-
-
-## Running puppeteer remotely
-```
-Xvfb :99 -screen 0 1280x1024x24 &
-```
-```
-export DISPLAY=:99
-```
-```
-npx -y supergateway --outputTransport streamableHttp  --port 8090  --stdio "npx -y @modelcontextprotocol/server-puppeteer -e headless=true"
-```
