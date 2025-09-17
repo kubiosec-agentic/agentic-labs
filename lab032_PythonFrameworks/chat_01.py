@@ -28,5 +28,5 @@ response = client.chat.completions.create(
   store=False
 )
 
-# Prin the response
+# Print the response
 print(response.choices[0].message.content)
