@@ -8,6 +8,7 @@ print("🤖 AI Chatbot (type 'exit' to quit)\n")
 # Store conversation history
 messages = []
 
+# Loop until we exit
 while True:
     user_input = input("You: ").strip()
     if user_input.lower() in {"exit", "quit"}:
