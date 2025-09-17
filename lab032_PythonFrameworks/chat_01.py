@@ -1,6 +1,6 @@
 from openai import OpenAI
 
-# Create an instance of the OpenAI client and assigning it to the variable client
+# Create an instance of the OpenAI class and assigning it to the variable client
 client = OpenAI()
 
 # Call the create method of the chat.completions object to get a model response
