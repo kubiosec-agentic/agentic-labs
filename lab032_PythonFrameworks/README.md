@@ -49,6 +49,12 @@ export OPENAI_BASE_URL="http://127.0.0.1:8080/v1"
 ```
 python3 chat_01.py
 ```
+#### Interactive Chatbot with Chat Completions
+This example demonstrates building an interactive chatbot that maintains **conversation history** across multiple turns.
+```
+python3 ./chat_02.py
+```
+
 #### Responses API via OpenAI Python SDK and message callback
 This lab shows how to build a multi-turn conversation using the `previous_response_id`, allowing the model to maintain context and respond more naturally across messages.
 ```
@@ -58,12 +64,6 @@ Also check out the next sample. What do you notice?
 ```
 python3 ./resp_02.py
 ```
-#### Interactive Chatbot with Chat Completions
-This example demonstrates building an interactive chatbot that maintains conversation history across multiple turns.
-```
-python3 ./chat_02.py
-```
-
 #### Responses API and Code Executor
 The Code Interpreter tool requires a container object. A container is a fully sandboxed virtual machine that the model can run Python code in. 
 This container can contain files that you upload, or that it generates. Note: Uses gpt-4.1 model which may need to be updated to a valid model like gpt-4o.
