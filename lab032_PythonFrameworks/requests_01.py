@@ -14,6 +14,7 @@ headers = {
     "Content-Type": "application/json"
 }
 
+# payload
 data = {
     "model": "gpt-4o",
     "messages": [
