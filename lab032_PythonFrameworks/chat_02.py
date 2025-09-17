@@ -10,6 +10,7 @@ messages = []
 
 # Loop until we exit
 while True:
+    # Ask the user for input
     user_input = input("You: ").strip()
     if user_input.lower() in {"exit", "quit"}:
         print("Goodbye!")
