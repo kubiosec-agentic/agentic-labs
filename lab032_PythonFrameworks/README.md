@@ -66,7 +66,7 @@ python3 ./resp_02.py
 ```
 #### Responses API and Code Executor
 The Code Interpreter tool requires a container object. A container is a fully sandboxed virtual machine that the model can run Python code in. 
-This container can contain files that you upload, or that it generates. Note: Uses gpt-4.1 model which may need to be updated to a valid model like gpt-4o.
+This container can contain files that you upload, or that it generates.
 ```
 python3 ./resp_03.py
 ```
