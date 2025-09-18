@@ -1,5 +1,6 @@
 # Core dependencies
 langchain-openai
+langchain-google-genai
 langchain-core
 pydantic
 
