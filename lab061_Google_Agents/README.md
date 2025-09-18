@@ -62,22 +62,6 @@ SERP_API_KEY=your_serp_api_key_here
 3. Add to `.env` file
 > 🎯 **Usage**: Only needed for the Flight Assistant agent - other agents work without it
 
-### 2. Create Environment File
-Create a `.env` file in the `adk/` directory with your API credentials:
-```bash
-# Required for Google ADK (tells it to use Google AI Studio instead of Vertex AI)
-GOOGLE_GENAI_USE_VERTEXAI=FALSE
-
-# Required for Google Search agent - get from Google AI Studio
-GOOGLE_API_KEY=your_google_api_key_here
-
-# Required for Flight Assistant - get from SerpApi (free tier available!)
-SERP_API_KEY=your_serp_api_key_here
-```
-> 🔒 **Security Note**: Never commit your `.env` file to version control!
-
-
-
 ## 🤖 Available Agent Examples
 
 ### 1. 🔍 Google Search Agent (`google_search_agent/`)
