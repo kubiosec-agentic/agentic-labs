@@ -205,3 +205,5 @@ lab080/crewai/chromadb-ed333e8f07f6c0764fd1bbe1bc72935f.lock
 lab080/crewai/new-blog-post5.md
 lab060/summary.md
 lab060/details.json
+lab060_OpenAI_Agents/details.json
+.gitignore
