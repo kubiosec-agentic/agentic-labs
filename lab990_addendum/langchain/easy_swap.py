@@ -13,7 +13,7 @@ use_gemini = True  # Set to True to use Gemini, False for OpenAI
 # Initialize the appropriate LLM
 if use_gemini:
     llm = ChatGoogleGenerativeAI(
-        model="gemini-1.5-flash",
+        model="gemini-2.0-flash",
         google_api_key=os.getenv("GOOGLE_API_KEY")
     )
     print("Using Google Gemini")
