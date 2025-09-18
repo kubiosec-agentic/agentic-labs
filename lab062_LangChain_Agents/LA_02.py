@@ -27,5 +27,5 @@ agent = create_react_agent(llm=llm, tools=tools, prompt=prompt)
 agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
 
 # Example usage
-response = agent_executor.invoke({"input": "Can you multiply 5 and 6 and 8 and take sqrt of the result?"})
+response = agent_executor.invoke({"input": "Can you multiply 345678/434+x=500000. What should x be?"})
 print(response)
