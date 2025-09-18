@@ -57,9 +57,14 @@ Features:
 First, create a test directory with shell scripts to analyze:
 ```
 mkdir test_repo
+cd ./test_repo
 # Add some .sh files to test_repo/ directory
 ```
-
+You can try the `lab_setup.sh` and `lab_cleanup.sh`<br>
+Or download a script from Github.
+```
+curl -O https://raw.githubusercontent.com/xxradar/TLSSAN_scanner/refs/heads/master/tlssan_scan.sh
+```
 Then run the security analysis:
 ```
 python3 file_security_review.py
