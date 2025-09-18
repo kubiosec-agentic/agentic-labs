@@ -40,7 +40,7 @@ export OPENAI_API_KEY="xxxxxxxxx"
 ./lab_setup.sh
 ```
 ```bash
-source .lab053/bin/activate
+source .lab062/bin/activate
 ```
 ```bash
 pip install -r requirements.txt
