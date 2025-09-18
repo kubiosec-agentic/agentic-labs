@@ -1,4 +1,15 @@
-# 0) Prereqs
+## Set up your environment
+```
+export OPENAI_API_KEY="xxxxxxxxx"
+```
+```
+python3 -m venv .venv
+```
+```
+source ..venv/bin/activate
+```
+
+## 0) Prereqs
 ```
 # Python 3.10+ recommended
 pip install -U chromadb openai jq
@@ -9,13 +20,13 @@ export BASE="http://localhost:8000/api/v2"
 export TENANT="default_tenant"
 export DB="default_database"
 ```
-# 1) Start a local Chroma server
+## 1) Start a local Chroma server **(Terminal_1)**
 ```
 # persists to ./chroma_db (change path as you like)
 chroma run --path ./chroma_db --host 127.0.0.1 --port 8000
 
 ```
-# 2) Ensure tenant & database exist (v2)
+## 2) Ensure tenant & database exist (v2) **(Terminal_2)**
 ```
 # 2a) Create tenant (idempotent; server may return 409 if it already exists)
 curl -s -X POST "$BASE/tenants" \
@@ -27,7 +38,7 @@ curl -s -X POST "$BASE/tenants/$TENANT/databases" \
   -H "Content-Type: application/json" \
   -d '{"name":"'"$DB"'"}' | jq .
 ```
-# 3) Create a collection
+## 3) Create a collection
 ```
 COLL_RESP=$(curl -s -X POST "$BASE/tenants/$TENANT/databases/$DB/collections" \
   -H "Content-Type: application/json" \
@@ -37,7 +48,7 @@ echo "$COLL_RESP" | jq .
 COLL_ID=$(echo "$COLL_RESP" | jq -r '.id')
 echo "Collection ID: $COLL_ID"
 ```
-# 4) Add a document (client-side OpenAI embedding)
+## 4) Add a document (client-side OpenAI embedding)
 ```
 DOC='Brussels is the capital of Belgium.'
 
@@ -54,7 +65,7 @@ curl -s -X POST "$BASE/tenants/$TENANT/databases/$DB/collections/$COLL_ID/upsert
   | jq .
 
 ```
-# 5) Similarity search via the API (curl)
+## 5) Similarity search via the API (curl)
 ```
 QUERY="What city is Belgium's capital?"
 QEMBED=$(curl -s https://api.openai.com/v1/embeddings \
@@ -69,7 +80,7 @@ curl -s -X POST "$BASE/tenants/$TENANT/databases/$DB/collections/$COLL_ID/query"
         '{query_embeddings:[$q], n_results:3, include:["documents","metadatas","distances"]}')" \
   | jq .
 ```
-# 6) Simple Python client that talks to the server (v2)
+## 6) Simple Python client that talks to the server (v2)
 ```
 # pip install chromadb openai
 import os, chromadb
