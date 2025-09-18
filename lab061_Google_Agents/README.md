@@ -26,12 +26,6 @@ This lab also includes Google's Agent Development Kit examples in the `adk/` dir
 - **MCP Agent**: Model Context Protocol implementation
 - **Multi-Tool Agent**: Agent with multiple tool integrations
 
-**Setup ADK (Optional):**
-```bash
-cd adk
-adk web
-```
-
 ## ⚙️ Environment Setup
 
 ### 1. Create Environment File
