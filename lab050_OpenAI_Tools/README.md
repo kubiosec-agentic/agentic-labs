@@ -3,7 +3,7 @@
 ![Python](https://img.shields.io/badge/Python-blue) 
 
 
-# LAB052: OpenAI Function Calling and Tool Integration
+# LAB050: OpenAI Function Calling and Tool Integration
 ## Introduction
 This lab demonstrates OpenAI's function calling capabilities with custom tools. You'll learn:
 - Directory analysis with function calling
@@ -27,7 +27,7 @@ export OPENAI_API_KEY="xxxxxxxxx"
 ./lab_setup.sh
 ```
 ```bash
-source .lab052/bin/activate
+source .lab050/bin/activate
 ```
 
 ## Lab instructions

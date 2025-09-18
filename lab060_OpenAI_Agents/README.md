@@ -97,27 +97,6 @@ python3 agent_07.py
   "security_observations": [{"observation": "...", "line_number": 1234, "evidence": "..."}]
 }
 ```
-## Additional Resources
-
-### Google Agent Development Kit (ADK)
-This lab also includes Google's Agent Development Kit examples in the `adk/` directory:
-- **Flight Assistant**: AI agent for flight booking and scheduling  
-- **Google Search Agent**: Web search integration with Google APIs
-- **MCP Agent**: Model Context Protocol implementation
-- **Multi-Tool Agent**: Agent with multiple tool integrations
-
-**Setup ADK (Optional):**
-```bash
-cd adk
-pip install -r requirements.txt
-export GOOGLE_API_KEY="xxxxxxxxx"
-export SERP_API_KEY="xxxxxxxxx"  # From https://serpapi.com/
-adk web
-```
-
-**Resources:**
-- [ADK Documentation](https://google.github.io/adk-docs/get-started/quickstart/)
-- [ADK Sample Agents](https://github.com/google/adk-samples)
 
 ## Cleanup environment
 ```bash

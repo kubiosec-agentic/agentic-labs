@@ -1,4 +1,4 @@
-# LAB082
+# LAB064
 ## Set up your environment
 ```
 export OPENAI_API_KEY="xxxxxxxxx"
@@ -7,7 +7,7 @@ export OPENAI_API_KEY="xxxxxxxxx"
 ./lab_setup.sh
 ```
 ```
-source .lab082/bin/activate
+source .lab064/bin/activate
 ```
 ## Lab instructions
 ### xxxxxxxx

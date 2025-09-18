@@ -5,7 +5,7 @@
 ![Python](https://img.shields.io/badge/Python-blue) 
 
 
-# LAB050: Tool Based Workflows in LangChain
+# LAB054: Tool Based Workflows in LangChain
 ## Introduction
 In this lab, you will learn how to build and extend tool-augmented LLM workflows using LangChain and OpenAI. We’ll start with simple, standalone chains and later progress toward agents that can call tools, process their outputs, and reason about the next step. You will also learn how to inspect and debug API calls using mitmproxy.
 
@@ -26,7 +26,7 @@ export OPENAI_API_KEY="xxxxxxxxx"
 ./lab_setup.sh
 ```
 ```
-source .lab050/bin/activate
+source .lab054/bin/activate
 ```
 To avoid the **_LangSmith_** warnings (build, test, debug, and monitor framework developed by **_LangChain_**)
 ```
