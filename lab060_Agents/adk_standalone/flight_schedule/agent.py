@@ -71,7 +71,7 @@ async def async_main():
 
     content = types.Content(
         role="user",
-        parts=[types.Part(text="Find flights from Atlanta to Brussels 2025-09-05 one-way")]
+        parts=[types.Part(text="Find flights from Atlanta to Brussels 2025-09-30 one-way")]
     )
 
     agent, toolset = await get_agent_async()
