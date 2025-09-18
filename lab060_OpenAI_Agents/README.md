@@ -50,7 +50,10 @@ Shows how to implement content filtering using output guardrails. Detects and bl
 ```bash
 python3 agent_04.py
 ```
-
+Input an dOutput guardrails.
+```bash
+python3 agent_04_bis.py
+```
 #### Example 5: OpenAI Responses API for Security Analysis
 Uses OpenAI's Responses API (direct client approach) to analyze security traces and network captures.
 ```bash
