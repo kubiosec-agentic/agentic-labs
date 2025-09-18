@@ -8,7 +8,8 @@ This directory contains advanced LangChain examples that demonstrate practical, 
 ```
 export OPENAI_API_KEY="xxxxxxxxx"
 ```
-For multi-provider examples, also set:
+For multi-provider examples, also set: <br>
+Use the API key from Goole AI Studio.
 ```
 export GOOGLE_API_KEY="xxxxxxxxx"
 ```
