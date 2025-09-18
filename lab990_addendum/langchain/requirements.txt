@@ -1,7 +1,7 @@
 # Core dependencies
 langchain-openai
 langchain-google-genai
-langchain-core
+langchain
 pydantic
 
 # Weather API dependencies
