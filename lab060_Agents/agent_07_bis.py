@@ -30,12 +30,24 @@ summary_agent = Agent(
 
 json_agent = Agent(
     name="JSON Formatter",
+    model="gpt-4o-mini",
     instructions=(
-        "You receive a security summary and must return strict JSON with keys: "
-        "findings[], evidence[], impact, likelihood, recommendations[]. "
-        "Values must be short strings. Return only valid JSON."
-    ),
+        "You are a JSON formatter agent. Your ONLY job is to convert security analysis into valid JSON.\n\n"
+        "CRITICAL RULES:\n"
+        "1. Output ONLY valid JSON - no markdown, no text, no backticks, no explanations\n"
+        "2. Start immediately with { and end with }\n"
+        "3. Use this exact structure:\n"
+        "{\n"
+        '  "findings": ["finding1", "finding2"],\n'
+        '  "evidence": ["evidence1", "evidence2"],\n'
+        '  "impact": "impact description",\n'
+        '  "likelihood": "HIGH|MEDIUM|LOW",\n'
+        '  "recommendations": ["rec1", "rec2"]\n'
+        "}\n\n"
+        "Convert the input security summary into this JSON format. Output JSON only."
+    )
 )
+
 
 # 2) Orchestrator with handoffs
 orchestrator_agent = Agent(
