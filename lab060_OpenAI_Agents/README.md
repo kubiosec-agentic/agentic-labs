@@ -50,7 +50,7 @@ Shows how to implement content filtering using output guardrails. Detects and bl
 ```bash
 python3 agent_04.py
 ```
-Input an dOutput guardrails.
+Input and Output guardrails example.
 ```bash
 python3 agent_04_bis.py
 ```
