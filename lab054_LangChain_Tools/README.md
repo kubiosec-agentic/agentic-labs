@@ -63,7 +63,20 @@ In this lab, we demonstrate how to create a custom LangChain pipeline that integ
 ```
 python3 LC_core.py
 ```
+#### Example 5:
+This snippet wires a simple LangChain pipeline to OpenAI’s function-calling so a model can call a tiny “datetime tool” when needed. It:
 
+- Loads your OpenAI API key and creates a client.  
+- Defines a tool `get_current_datetime()` that returns a formatted timestamp, and exposes it to the model via the `tools` schema.  
+- Builds a `ChatPromptTemplate` that asks, “Answer this question: {text}”.  
+- Wraps an OpenAI Chat Completions call in a `RunnableLambda`. If the model requests the tool, the code executes it, appends the tool result to the conversation, and asks the model for a final answer.  
+- Composes a chain `prompt | llm | StrOutputParser` and invokes it with “What is the current date and time?”, printing the model’s response that includes the live datetime.  
+
+This is a minimal, end-to-end example of tool use with LangChain runnables and OpenAI chat completions.
+
+```
+python3 LC_core.py
+```
 ## Cleanup environment
 ```
 unset LANGCHAIN_TRACING_V2
