@@ -1,7 +1,22 @@
-from agents import Agent, Runner
+from agents import Agent, Runner, function_tool
 import asyncio
 
 # --- Specialist agents ---
+@function_tool
+def read_file(filename: str) -> str:
+    """Read the contents of a file in the local directory."""
+    try:
+        with open(filename, 'r') as f:
+            return f.read()
+    except Exception as e:
+        return f"Error reading {filename}: {e}"
+
+# Example agent using the read_file tool
+file_reader_agent = Agent(
+    name="File Reader",
+    instructions="You can read the contents of a specified file in the local directory.",
+    tools=[read_file],
+)
 
 red_team_agent = Agent(
     name="Red-Team Planner",
@@ -49,6 +64,8 @@ You are a security compliance specialist. Map requests to controls and checklist
 
 # --- Orchestrator with handoffs ---
 
+
+# Updated triage agent to include file_reader_agent
 triage_agent = Agent(
     name="Security Triage",
     instructions="""
@@ -56,10 +73,11 @@ Route the user's request to the most appropriate specialist:
 - If the user asks about scanning, recon, “how to test,” “nmap,” “zap,” “burp,” or pentest planning → Red-Team Planner.
 - If they ask about patching, hardening, SIEM, detections, alerts, or “how to fix” → Blue-Team Remediator.
 - If they ask about policies, standards, controls, audits, evidence, or compliance frameworks → Compliance Mapper.
+- If the user asks to read or analyze a file, or mentions a filename (e.g., .json, .txt, .log) → File Reader.
 
 If ambiguous, ask ONE clarifying question, then hand off.
 """,
-    handoffs=[red_team_agent, blue_team_agent, compliance_agent],
+    handoffs=[red_team_agent, blue_team_agent, compliance_agent, file_reader_agent],
 )
 
 # --- Demo runner ---
@@ -86,5 +104,16 @@ async def main():
     )
     print(result.final_output)
 
+
+    print("\n--- Example 4: Analyse result.json ---")
+    result = await Runner.run(
+        triage_agent,
+        input="Read and analyze the file result.json. Summarize its contents."
+    )
+    print(result.final_output)
+
+
+
 if __name__ == "__main__":
     asyncio.run(main())
+
