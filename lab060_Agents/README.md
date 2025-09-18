@@ -24,9 +24,6 @@ export OPENAI_API_KEY="xxxxxxxxx"
 ```bash
 source .lab060/bin/activate
 ```
-```bash
-pip install -r requirements.txt
-```
 
 ## Lab instructions
 
