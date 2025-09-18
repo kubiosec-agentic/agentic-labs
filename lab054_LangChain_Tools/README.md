@@ -63,7 +63,7 @@ In this lab, we demonstrate how to create a custom LangChain pipeline that integ
 ```
 python3 LC_core.py
 ```
-#### Example 5:
+#### Example 5: Integrating LangChain Runnables with OpenAI Function Calling
 This snippet wires a simple LangChain pipeline to OpenAI’s function-calling so a model can call a tiny “datetime tool” when needed. It:
 
 - Loads your OpenAI API key and creates a client.  
