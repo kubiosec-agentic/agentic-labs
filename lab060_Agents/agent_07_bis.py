@@ -102,10 +102,13 @@ async def run_orchestrated_analysis():
     print("📋 Step 1: Creating execution plan...")
     
     # Get orchestration plan
-    plan_result = await Runner.run(
+    plan_run_result = await Runner.run(
         orchestrator_agent,
         f"Create execution plan for analyzing this sysdig trace:\n\n{text[:2000]}..."
     )
+    
+    # Extract the actual plan data from the RunResult
+    plan_result = plan_run_result.final_output
     
     print(f"✅ Plan created: {plan_result.total_tasks} tasks")
     print(f"📊 Execution order: {' → '.join(plan_result.execution_order)}")
@@ -114,19 +117,80 @@ async def run_orchestrated_analysis():
     if plan_result.parallel_groups:
         print(f"🔄 Parallel groups: {list(plan_result.parallel_groups.keys())}")
     
-    print("\n📋 Step 2: Executing analysis tasks...")
+    print("\n📋 Step 2: Orchestrator delegating tasks...")
     
-    # Execute ANALYZE task
-    print("🔍 Running security analysis...")
-    analysis_result = await Runner.run(analyzer_agent, text)
+    # Create a mapping of task names to agents
+    task_agents = {
+        "ANALYZE": analyzer_agent,
+        "SUMMARIZE": summary_agent,
+        "STRUCTURE": json_agent
+    }
     
-    print("📝 Running parallel tasks (summary & JSON formatting)...")
+    # Storage for intermediate results
+    task_results = {}
     
-    # Execute SUMMARIZE and STRUCTURE tasks in parallel
-    summary_task = Runner.run(summary_agent, analysis_result)
-    json_task = Runner.run(json_agent, analysis_result)
+    # Execute tasks according to the orchestrator's plan
+    for step in plan_result.execution_order:
+        if step in plan_result.parallel_groups:
+            # Handle parallel execution group
+            parallel_tasks = plan_result.parallel_groups[step]
+            print(f"� Orchestrator executing parallel group '{step}': {parallel_tasks}")
+            
+            # Create tasks for parallel execution
+            async_tasks = []
+            for task_name in parallel_tasks:
+                if task_name == "ANALYZE":
+                    # Analysis uses the original text
+                    async_tasks.append(
+                        Runner.run(task_agents[task_name], text)
+                    )
+                elif task_name in ["SUMMARIZE", "STRUCTURE"]:
+                    # These depend on analysis results
+                    if "ANALYZE" in task_results:
+                        async_tasks.append(
+                            Runner.run(task_agents[task_name], task_results["ANALYZE"])
+                        )
+                    else:
+                        print(f"⚠️  Warning: {task_name} depends on ANALYZE but no analysis results available")
+                        continue
+            
+            # Execute parallel tasks
+            if async_tasks:
+                parallel_results = await asyncio.gather(*async_tasks)
+                for i, task_name in enumerate([t for t in parallel_tasks if t in task_agents]):
+                    if i < len(parallel_results):
+                        task_results[task_name] = parallel_results[i].final_output
+                        print(f"✅ Orchestrator completed: {task_name}")
+        
+        elif step in task_agents:
+            # Handle individual task
+            print(f"🎯 Orchestrator executing: {step}")
+            
+            if step == "ANALYZE":
+                # Analysis uses the original text
+                result = await Runner.run(task_agents[step], text)
+                task_results[step] = result.final_output
+            elif step in ["SUMMARIZE", "STRUCTURE"]:
+                # These depend on analysis results
+                if "ANALYZE" in task_results:
+                    result = await Runner.run(task_agents[step], task_results["ANALYZE"])
+                    task_results[step] = result.final_output
+                else:
+                    print(f"⚠️  Warning: {step} depends on ANALYZE but no analysis results available")
+                    continue
+            
+            print(f"✅ Orchestrator completed: {step}")
+        
+        else:
+            print(f"⚠️  Unknown step in execution plan: {step}")
     
-    summary_result, json_result = await asyncio.gather(summary_task, json_task)
+    # Extract results based on what was actually executed
+    analysis_result = task_results.get("ANALYZE", "No analysis performed")
+    summary_result = task_results.get("SUMMARIZE", "No summary generated")
+    json_result = task_results.get("STRUCTURE", "No JSON structure created")
+    
+    print(f"\n🎭 Orchestrator delegation complete!")
+    print(f"📊 Tasks executed: {list(task_results.keys())}")
     
     return analysis_result, summary_result, json_result, plan_result
 
