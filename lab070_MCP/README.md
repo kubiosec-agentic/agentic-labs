@@ -26,18 +26,10 @@ The Model Context Protocol (MCP) stdio transport is a communication method that 
 ```
 python3 mcp_01_stdio.py
 ```
-
 ### MCP SSE
-The Model Context Protocol (MCP) **Server-Sent Events (SSE) transport** is a communication method that enables AI applications to interact with tools or data sources by establishing a persistent HTTP connection for server-to-client streaming and using HTTP POST requests for client-to-server communication.  
+The Model Context Protocol (MCP) Server-Sent Events (SSE) transport is a communication method that enables AI applications to interact with tools or data sources by establishing a persistent HTTP connection for server-to-client streaming and using HTTP POST requests for client-to-server communication.  This code example connects to a MCP SSE server using the main() function, that in turn will call the run() function, creating an agent answering a few questions that require calling external tools.
 
-⚠️ **Deprecated:** SSE transport has been deprecated in favor of `mcp streamable-http`, which provides more robust, incremental streaming over plain HTTP and avoids some of the deployment limitations of SSE (such as reverse proxies and gateway compatibility).  
-
-### MCP streamable-http
-The **MCP streamable-http** transport is a variant of the Model Context Protocol that leverages standard HTTP endpoints with incremental, chunked responses. Instead of relying on long-lived event streams like SSE, it allows the server to stream tool outputs and model responses back to the client in a progressive way over plain HTTP.  
-
-This approach is particularly useful when integrating with environments where WebSockets or SSE are restricted, while still enabling real-time interaction. The client sends standard HTTP POST requests, and the server responds with a sequence of JSON messages (chunks) that can be consumed as they arrive, making the experience close to interactive streaming.  
-
-#### Start the MCP server (terminal_2)
+#### Start the MCP SSE server (terminal_2)
 ```
 python3 server_streamable.py
 ```
@@ -45,17 +37,13 @@ python3 server_streamable.py
 ```
 python3 mcp_02_streamable.py 
 ```
-### MCP [SECURITY]
-A Model Context Protocol (MCP) **shadowing attack** is a sophisticated exploit where a malicious tool covertly alters the behavior of trusted tools within an AI agent's environment, leading to unauthorized actions or data exfiltration without user awareness.
-
-An **Indirect prompt injection** attacts is covertly manipulating an agent’s external inputs, tools, or environment so it changes behavior or goals without modifying its core prompt.
-
-#### Start the MCP server (terminal_2)
+### MCP SSE [SECURITY] (Shadowing attack)
+A Model Context Protocol (MCP) shadowing attack is a sophisticated exploit where a malicious tool covertly alters the behavior of trusted tools within an AI agent's environment, leading to unauthorized actions or data exfiltration without user awareness.
+#### Start the MCP SSE server (terminal_2)
 ```
 python3 server_streamable.py
 ```
-#### Start the MCP server (terminal_3)
-Shadowing MCP server
+#### Start the MCP SSE server (terminal_3)
 ```
 python3 server_rogue_streamable.py
 ```
@@ -64,6 +52,7 @@ Model Context Protocol (MCP) shadowing attack
 ```
 python3 mcp_03_streamable.py 
 ```
+### MCP SSE [SECURITY] (Indirect Prompt Injection)
 #### Run the agent (terminal_1)
 Indirect Prompt Injection (Agent Hijacking)
 ```
