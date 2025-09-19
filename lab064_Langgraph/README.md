@@ -44,16 +44,10 @@ Shows how to visualize and save workflow graphs:
 python3 ./LG_03.py
 ```
 
-#### LangGraph Fundamentals (LG_04)
-Comprehensive examples covering state management, reducers, and configuration:
-```
-python3 ./LG_04.py
-```
-
-#### Job Application Review System (LG_05)
+#### Job Application Review System (LG_04)
 Advanced workflow demonstrating AI-powered job application processing with conditional routing and state management:
 ```
-python3 ./LG_05.py
+python3 ./LG_04.py
 ```
 
 **LG_05.py** showcases a sophisticated real-world application of LangGraph for automating job application reviews. This example demonstrates:
