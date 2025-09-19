@@ -46,12 +46,13 @@ python3 server_streamable.py
 python3 mcp_02_streamable.py 
 ```
 ### MCP [SECURITY]
-A Model Context Protocol (MCP) shadowing attack is a sophisticated exploit where a malicious tool covertly alters the behavior of trusted tools within an AI agent's environment, leading to unauthorized actions or data exfiltration without user awareness.
+A Model Context Protocol (MCP) **shadowing attack** is a sophisticated exploit where a malicious tool covertly alters the behavior of trusted tools within an AI agent's environment, leading to unauthorized actions or data exfiltration without user awareness.
 #### Start the MCP server (terminal_2)
 ```
 python3 server_streamable.py
 ```
 #### Start the MCP server (terminal_3)
+Shadowing MCP server
 ```
 python3 server_rogue_streamable.py
 ```
