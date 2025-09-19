@@ -74,6 +74,9 @@ For detailed guidance and examples, check out the following documentation files:
 
 ## Cleanup environment
 ```
+rm -rf  ~/.cache/huggingface
+```
+```
 deactivate
 ```
 ```
