@@ -50,6 +50,44 @@ Comprehensive examples covering state management, reducers, and configuration:
 python3 ./LG_04.py
 ```
 
+#### Job Application Review System (LG_05)
+Advanced workflow demonstrating AI-powered job application processing with conditional routing and state management:
+```
+python3 ./LG_05.py
+```
+
+**LG_05.py** showcases a sophisticated real-world application of LangGraph for automating job application reviews. This example demonstrates:
+
+- **Multi-Node Workflow:** Complex pipeline with analysis, generation, and review phases
+- **Conditional Routing:** Smart decision-making based on candidate suitability assessment
+- **State Management:** Comprehensive state tracking with action logging using `add` reducers
+- **LLM Integration:** Multiple OpenAI model calls for different specialized tasks
+- **Error Handling:** Robust fallback mechanisms for offline or API failure scenarios
+- **TypedDict States:** Strongly-typed state definitions for better code reliability
+
+**Key Features:**
+- 🔍 **Job Requirement Analysis:** AI-powered matching of candidate experience to job requirements
+- ✍️ **Automated Letter Generation:** Personalized application letters based on candidate profile and job description
+- 📊 **Application Scoring:** Intelligent review system with numerical scoring (1-10) and detailed feedback
+- 🔀 **Smart Routing:** Conditional workflow that either processes suitable candidates or handles rejections
+- 📈 **Action Tracking:** Complete audit trail of all workflow steps and decisions
+- 🛡️ **Fallback Logic:** Graceful degradation with template responses when AI services are unavailable
+
+**Workflow Steps:**
+1. **analyze_job:** Evaluates candidate fit against job requirements
+2. **Conditional Router:** Routes to application generation or rejection based on suitability
+3. **generate_application:** Creates personalized cover letters for suitable candidates
+4. **review_application:** Scores and provides feedback on generated applications
+5. **reject_application:** Handles unsuitable candidates with appropriate messaging
+
+**Demo Scenarios:**
+The demo processes three different candidate profiles against a software engineering job posting:
+- **Alice Johnson:** Highly qualified Python/Django expert (Expected: High score)
+- **Bob Smith:** Java developer with limited Python experience (Expected: Lower score/rejection)
+- **Carol Chen:** Well-matched Python/FastAPI specialist (Expected: High score)
+
+This example perfectly illustrates how LangGraph can orchestrate complex business workflows that require multiple AI decisions, state persistence, and conditional logic - making it ideal for enterprise automation scenarios.
+
 ## Key Concepts Demonstrated
 
 ### State Management
