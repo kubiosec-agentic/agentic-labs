@@ -58,6 +58,19 @@ Indirect Prompt Injection (Agent Hijacking)
 ```
 python3 mcp_04_streamable.py 
 ```
+### Youtube Transcriber
+You can obtain a token from https://mcp-cloud.ai/ <br>
+Deploy the youtube-transcribe MCP server.<br>
+
+```
+export MCPCLOUD_API_TOKEN="xxxxxx"
+```
+```
+export MCP_SSE_URL="xxxxxxx"
+```
+```
+python3 mcp05_youtube_transcribe.py 
+```
 ### MCP Debugging
 https://github.com/mcp-firewall/mcp-debugging
 

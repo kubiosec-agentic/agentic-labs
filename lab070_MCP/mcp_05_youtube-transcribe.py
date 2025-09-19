@@ -31,7 +31,7 @@ async def run(mcp_server: MCPServer):
 async def init_server():
     server_a = MCPServerSse(
         name="Server A",
-        params={"url": "https://youtube-transcribe-1752753808748.server.mcp-cloud.ai/sse",
+        params={"url": os.getenv("MCP_SSE_URL"),
                 "headers": {"Authorization": "Bearer " + os.getenv("MCPCLOUD_API_TOKEN")}
         },
 
