@@ -32,7 +32,7 @@ The Model Context Protocol (MCP) **Server-Sent Events (SSE) transport** is a com
 
 ⚠️ **Deprecated:** SSE transport has been deprecated in favor of `mcp streamable-http`, which provides more robust, incremental streaming over plain HTTP and avoids some of the deployment limitations of SSE (such as reverse proxies and gateway compatibility).  
 
-## MCP streamable-http
+### MCP streamable-http
 The **MCP streamable-http** transport is a variant of the Model Context Protocol that leverages standard HTTP endpoints with incremental, chunked responses. Instead of relying on long-lived event streams like SSE, it allows the server to stream tool outputs and model responses back to the client in a progressive way over plain HTTP.  
 
 This approach is particularly useful when integrating with environments where WebSockets or SSE are restricted, while still enabling real-time interaction. The client sends standard HTTP POST requests, and the server responds with a sequence of JSON messages (chunks) that can be consumed as they arrive, making the experience close to interactive streaming.  
