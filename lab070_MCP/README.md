@@ -69,7 +69,7 @@ export MCPCLOUD_API_TOKEN="xxxxxx"
 export MCP_SSE_URL="xxxxxxx"
 ```
 ```
-python3 mcp05_youtube_transcribe.py 
+python3 mcp_05_youtube-transcribe.py 
 ```
 ### MCP Debugging
 https://github.com/mcp-firewall/mcp-debugging
