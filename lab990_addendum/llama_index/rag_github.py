@@ -1,24 +1,3 @@
-"""
-This script analyzes GitHub repositories using LlamaIndex and OpenAI GPT models.
-
-REQUIREMENTS:
-- Install dependencies: pip install -r requirements_github_analysis.txt
-- Set environment variables:
-  * GITHUB_TOKEN: Your GitHub personal access token
-  * OPENAI_API_KEY: Your OpenAI API key
-
-USAGE:
-- Modify the 'owner' and 'repo' variables to analyze different repositories
-- The script will load repository documents, create a vector index, and use OpenAI to answer questions
-
-FEATURES:
-- Loads documents from GitHub repositories
-- Creates semantic vector index for intelligent search
-- Uses OpenAI GPT-4o for natural language querying
-- Asks multiple analytical questions about the repository
-- Handles errors gracefully with fallback approaches
-"""
-
 import os
 from llama_index.core import VectorStoreIndex, Settings
 from llama_index.readers.github import GithubRepositoryReader, GithubClient
