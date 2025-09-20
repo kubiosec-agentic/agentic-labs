@@ -6,7 +6,7 @@ export OPENAI_API_KEY="xxxxxxxxx"
 python3 -m venv .venv
 ```
 ```
-source ..venv/bin/activate
+source .venv/bin/activate
 ```
 
 ## 0) Prereqs
