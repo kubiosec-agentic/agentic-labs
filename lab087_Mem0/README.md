@@ -80,13 +80,7 @@ python mem0_managed/mem_02_saas.py
 #### Example 3: Search Functionality (`mem_03_agent.py`)
 Memory search capabilities:
 ```bash
-python mem0_managed/mem_03_search_functionality.py
-```
-
-#### Example 4: Filtering with v2 (`mem_04_v2_filters.py`)
-Advanced filtering features in Mem0 v2:
-```bash
-python mem0_managed/mem_04_v2_filters.py
+python mem0_managed/mem_03_agent.py
 ```
 
 ### Key Concepts
