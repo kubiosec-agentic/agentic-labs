@@ -77,7 +77,7 @@ Advanced features with the managed service:
 python mem0_managed/mem_02_saas.py
 ```
 
-#### Example 3: Search Functionality (`mem_03_search_functionality.py`)
+#### Example 3: Search Functionality (`mem_03_agent.py`)
 Memory search capabilities:
 ```bash
 python mem0_managed/mem_03_search_functionality.py
