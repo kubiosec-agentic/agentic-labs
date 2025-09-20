@@ -69,7 +69,7 @@ This shows:
 Install and run the A2A Inspector for advanced monitoring and debugging:
 
 ```bash
-cd ..
+cd ~/agentic-labs/lab110_A2A
 ```
 ```bash
 git clone https://github.com/a2aproject/a2a-inspector.git
