@@ -13,6 +13,42 @@ anthropic:
 # MCP Server configurations
 mcp:
   servers:
-    openmemory:
-      transport: sse
-      url: "http://127.0.0.1:8765/mcp/openmemory/sse/xxradar"
+    # YouTube transcription server (remote SSE)
+    youtube_transcribe:
+      transport: "sse"
+      url: "https://youtube-transcribe-1752753808748.server.mcp-cloud.ai/sse"
+      read_transport_sse_timeout_seconds: 300
+      headers:
+        Authorization: "Bearer ${YOUTUBE_TRANSCRIBE_TOKEN}"
+      elicitation:
+        mode: "forms"  # Enable form-based elicitations
+    
+    # Exa search server (remote SSE)
+    exa_search:
+      transport: "sse"
+      url: "https://exa-search-1755203204130.server.mcp-cloud.ai/sse"
+      read_transport_sse_timeout_seconds: 300
+      headers:
+        Authorization: "Bearer ${EXA_SEARCH_TOKEN}"
+      elicitation:
+        mode: "forms"
+    
+    # Web fetch server (local STDIO)
+    fetch:
+      command: "uvx"
+      args: ["mcp-server-fetch"]
+      transport: "stdio"
+      elicitation:
+        mode: "auto_cancel"  # Auto-cancel elicitations for fetch operations
+    
+    # File system server (local STDIO)
+    filesystem:
+      command: "npx"
+      args: ["-y", "@modelcontextprotocol/server-filesystem", "."]
+      transport: "stdio"
+      roots:
+        - uri: "file://."
+          name: "Current Directory"
+      elicitation:
+        mode: "forms"
+  

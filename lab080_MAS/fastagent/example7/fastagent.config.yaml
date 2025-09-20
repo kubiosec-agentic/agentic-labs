@@ -1,0 +1,18 @@
+# Default model configuration
+default_model: "openai.gpt-4o"
+
+# Model provider configurations
+openai:
+  api_key: "${OPENAI_API_KEY}"  # Will be loaded from environment or secrets file
+  base_url: "https://api.openai.com/v1" #Use "http://127.0.0.1:8080/v1" for mitmproxy
+
+anthropic:
+  api_key: "${ANTHROPIC_API_KEY}"  # Will be loaded from environment or secrets file
+  base_url: "https://api.anthropic.com/v1"
+
+# MCP Server configurations
+mcp:
+  servers:
+    openmemory:
+      transport: sse
+      url: "http://127.0.0.1:8765/mcp/openmemory/sse/xxradar"
