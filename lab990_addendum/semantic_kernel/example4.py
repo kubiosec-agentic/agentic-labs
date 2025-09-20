@@ -1,6 +1,7 @@
 import os
 import asyncio
 from semantic_kernel import Kernel
+from ddgs import DDGS
 from semantic_kernel.functions import KernelArguments
 from semantic_kernel.connectors.ai.open_ai import OpenAIChatCompletion
 
@@ -8,9 +9,24 @@ from semantic_kernel.connectors.ai.open_ai import OpenAIChatCompletion
 from semantic_kernel.functions.kernel_function_decorator import kernel_function
 
 class SearchPlugin:
-    @kernel_function(name="search_topic", description="Search info on topic")
+    """A plugin that provides search functionality for topics."""
+
+    @kernel_function(
+        description="Search for information about a topic using DuckDuckGo",
+        name="search_topic"
+    )
     async def search_topic(self, topic: str) -> str:
-        return f"Simulated search result for: {topic}"
+        """Simplified DuckDuckGo search using duckduckgo-search package."""
+        try:
+            with DDGS() as ddgs:
+                results = ddgs.text(topic, max_results=1)
+                for r in results:
+                    snippet = r.get("body", "")[:300]
+                    if snippet:
+                        return f"Search result for '{topic}': {snippet}..."
+            return self._get_fallback_info(topic)
+        except Exception:
+            return self._get_fallback_info(topic)
 
 class SummarizerPlugin:
     @kernel_function(name="summarize", description="Summarize text")
