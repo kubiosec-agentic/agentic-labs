@@ -79,7 +79,8 @@ then used to prompt GPT-4 for generating a response. This method grounds the AI'
 ```
 python rag_metadata_03.py
 ```
-Setup with persistent storage
+Setup with persistent storage.<br>
+Change `answer = query_rag("what are the alpha testing results?", access_levels=["public"])` to further test the RAG functionality.
 ```
 python rag_metadata_04.py
 ```
