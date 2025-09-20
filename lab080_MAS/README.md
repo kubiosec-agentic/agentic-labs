@@ -20,7 +20,7 @@ source .lab080/bin/activate
 ```
 ## Lab instructions
 ```
-cd augogen
+cd autogen
 ```
 #### Agent using MCP
 This lab demonstrates how to use AutoGen's MCP integration to empower an AssistantAgent with external tool access via a local MCP server. Specifically, it uses mcp-server-fetch to retrieve and summarize web content. The agent runs tasks like summarizing a Wikipedia page or searching for information on AutoGen, combining tool use with language model reasoning.
