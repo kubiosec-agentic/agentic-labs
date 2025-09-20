@@ -1,3 +1,6 @@
 agno
 yfinance
 ddgs
+arxiv 
+pypdf 
+pycountry
