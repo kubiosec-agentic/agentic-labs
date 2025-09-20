@@ -1,6 +1,6 @@
 import os
 import asyncio
-from duckduckgo_search import DDGS  # <== New simplified search
+from ddgs import DDGS  # <== New simplified search
 from semantic_kernel import Kernel
 from semantic_kernel.connectors.ai.open_ai import OpenAIChatCompletion
 from semantic_kernel.functions import KernelArguments
