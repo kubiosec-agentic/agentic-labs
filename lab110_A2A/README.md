@@ -10,26 +10,28 @@ export OPENAI_API_KEY="xxxxxxxxx"
 source .lab110/bin/activate
 ```
 ## Lab instructions
-### Setup Hello World Agent
+### Setup Hello World Agent (Terminal_1)
 ```
 git clone https://github.com/a2aproject/a2a-samples.git
 cd a2a-samples/samples/python/agents/helloworld
 uv run .
 ```
-### Setup Hello World Client
-
+### Setup Hello World Client (Terminal_2)
 ```
 cd a2a-samples/samples/python/agents/helloworld
 ```
 ```
 uv run test_client.py
 ```
+### Discovery (Terminal_2)
 ```
 curl http://127.0.0.1:9999/.well-known/agent-card.json | jq -r .
 ```
 
-
-### Setup A2A Inspector
+### Setup A2A Inspector (Terminal_2)
+```
+cd ..
+```
 ```
 git clone https://github.com/a2aproject/a2a-inspector.git
 cd a2a-inspector/
