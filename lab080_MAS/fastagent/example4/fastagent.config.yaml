@@ -35,11 +35,9 @@ mcp:
     
     # Web fetch server (local STDIO)
     fetch:
-      command: "uvx"
-      args: ["mcp-server-fetch"]
+      command: "npx"
+      args: ["-y", "@mcp-get-community/server-curl""]
       transport: "stdio"
-      elicitation:
-        mode: "auto_cancel"  # Auto-cancel elicitations for fetch operations
     
     # File system server (local STDIO)
     filesystem:
