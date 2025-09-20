@@ -19,6 +19,9 @@ export OPENAI_API_KEY="xxxxxxxxx"
 source .lab080/bin/activate
 ```
 ## Lab instructions
+```
+cd augogen
+```
 #### Agent using MCP
 This lab demonstrates how to use AutoGen's MCP integration to empower an AssistantAgent with external tool access via a local MCP server. Specifically, it uses mcp-server-fetch to retrieve and summarize web content. The agent runs tasks like summarizing a Wikipedia page or searching for information on AutoGen, combining tool use with language model reasoning.
 ```
@@ -51,7 +54,9 @@ This lab shows how to execute Python code in a Docker container using AutoGen's 
 ```
 python3 AG_05.py
 ```
-
+```
+cd ..
+```
 ### CrewAI
 This script uses CrewAI to coordinate two agents
 - a Senior Researcher
