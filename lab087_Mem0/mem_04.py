@@ -29,15 +29,9 @@ config = {
     "vector_store": {
         "provider": "qdrant",
         "config": {
-            # either host/port:
             "host": "localhost",
             "port": 6333,
-            # or a single URL instead of host/port:
-            # "url": "http://localhost:6333",
-
             "collection_name": "mem0",
-            # if you set an API key in Docker env:
-            # "api_key": "super-secret",
         }
     },
     "llm": {
@@ -78,12 +72,16 @@ def get_all_memory(ctx: RunContextWrapper[Mem0Context]) -> str:
 # --- The agent
 memory_agent = Agent[Mem0Context](
     name="Memory Assistant",
-    instructions=(
-        "You can store facts with add_to_memory, search them with search_memory, "
-        "and list everything with get_all_memory. When the user says 'remember' or shares a profile fact, "
-        "call add_to_memory with that fact. When they ask about past facts, call search_memory. "
-        "If they ask what you know, call get_all_memory. After tools, answer concisely."
+    instructions = (
+        "You have access to three memory tools:\n"
+        "- **add_to_memory**: Use when the user says 'remember' or shares a personal/profile fact.\n"
+        "- **search_memory**: Use when the user asks about something they told you before.\n"
+        "- **get_all_memory**: Use when the user asks what you know about them.\n\n"
+        "Always call the appropriate tool first, then provide a concise natural-language response to the user.\n"
+        "Create a concise profile of the user based on what they tell you.\n"
+        "Always update the profile when they tell you something new.\n"
     ),
+
     tools=[add_to_memory, search_memory, get_all_memory],
 )
 

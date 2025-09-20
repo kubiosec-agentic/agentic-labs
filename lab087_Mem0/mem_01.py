@@ -22,8 +22,6 @@ config = {
             # either host/port:
             "host": "localhost",
             "port": 6333,
-            # or a single URL instead of host/port:
-            # "url": "http://localhost:6333",
             "collection_name": "mem0",
             # if you set an API key in Docker env:
             # "api_key": "super-secret",
@@ -36,18 +34,6 @@ config = {
 }
 
 m = Memory.from_config(config)
-
-# Use Openrouter by passing it's api key
-# os.environ["OPENROUTER_API_KEY"] = "your-api-key"
-# config = {
-#    "llm": {
-#        "provider": "openai",
-#        "config": {
-#            "model": "meta-llama/llama-3.1-70b-instruct",
-#        }
-#    }
-# }
-
 
 messages = [
     {"role": "user", "content": "I'm planning to watch a movie tonight. Any recommendations?"},
