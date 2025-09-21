@@ -1,0 +1,437 @@
+{
+  "version": "1.0",
+  "target": "https://www.radarhack.com",
+  "assumptions_and_rules_of_engagement": {
+    "authorization": "You state you own radarhack.com and have sign-off for penetration testing.",
+    "rules": [
+      "No denial-of-service, stress, or destructive testing.",
+      "Respect rate limits; use conservative concurrency.",
+      "Only test assets within scope (*.radarhack.com unless otherwise specified).",
+      "Stop immediately if you encounter third-party or customer data; record minimal evidence.",
+      "Log all activity, timestamps, source IPs, and commands.",
+      "Only perform exploitation to the extent necessary to prove impact with safe payloads."
+    ],
+    "testing_window": "DEFINE_START_UTC to DEFINE_END_UTC",
+    "source_ips": ["ADD_YOUR_EGRESS_IPS"],
+    "contacts": {
+      "security_owner": "NAME/EMAIL",
+      "ops_on_call": "NAME/EMAIL"
+    }
+  },
+  "environment": {
+    "os": "Ubuntu 22.04 container",
+    "variables_to_export": {
+      "TARGET_DOMAIN": "radarhack.com",
+      "DATE": "$(date +%F_%H%M%S)",
+      "OUT": "$HOME/pt_${TARGET_DOMAIN}_$DATE",
+      "PATH_APPEND": "/usr/local/go/bin:$HOME/go/bin"
+    },
+    "directories": [
+      "$OUT",
+      "$OUT/raw",
+      "$OUT/scans",
+      "$OUT/findings",
+      "$OUT/logs",
+      "$OUT/tools",
+      "$OUT/screenshots",
+      "$OUT/wordlists"
+    ],
+    "intensity_profile": {
+      "concurrency": 25,
+      "rate_limit_httpx": 150,
+      "rate_limit_ffuf": 50,
+      "naabu_rate": 1000,
+      "nuclei_concurrency": 25,
+      "nuclei_rate_limit": 150
+    }
+  },
+  "tools": [
+    {
+      "name": "curl, jq, git, build-essential, python3-pip, dnsutils, whois, nmap, unzip, seclists, nikto, sqlmap, whatweb",
+      "purpose": "Base utilities, DNS/WHOIS, port/service scan, wordlists, web fingerprinting, vuln tools",
+      "install_commands": [
+        "set -euo pipefail",
+        "sudo apt-get update",
+        "sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends curl wget ca-certificates git jq make build-essential python3 python3-pip dnsutils whois nmap unzip seclists nikto sqlmap whatweb"
+      ]
+    },
+    {
+      "name": "Go toolchain",
+      "purpose": "Build/run ProjectDiscovery and other Go-based tools",
+      "install_commands": [
+        "cd /tmp",
+        "GO_VERSION=1.22.6",
+        "wget -q https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz",
+        "sudo rm -rf /usr/local/go && sudo tar -C /usr/local -xzf go${GO_VERSION}.linux-amd64.tar.gz",
+        "echo 'export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin' >> ~/.bashrc",
+        "export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin"
+      ]
+    },
+    {
+      "name": "ProjectDiscovery suite (subfinder, httpx, dnsx, naabu, nuclei, katana, interactsh-client, mapcidr)",
+      "purpose": "Discovery, HTTP probing, DNS resolution, port scan, vulnerability scanning, crawling, OAST",
+      "install_commands": [
+        "export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin",
+        "go install -v github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest",
+        "go install -v github.com/projectdiscovery/httpx/cmd/httpx@latest",
+        "go install -v github.com/projectdiscovery/dnsx/cmd/dnsx@latest",
+        "go install -v github.com/projectdiscovery/naabu/v2/cmd/naabu@latest",
+        "go install -v github.com/projectdiscovery/nuclei/v3/cmd/nuclei@latest",
+        "go install -v github.com/projectdiscovery/katana/cmd/katana@latest",
+        "go install -v github.com/projectdiscovery/interactsh/cmd/interactsh-client@latest",
+        "go install -v github.com/projectdiscovery/mapcidr/cmd/mapcidr@latest"
+      ]
+    },
+    {
+      "name": "OWASP Amass",
+      "purpose": "Passive subdomain enumeration",
+      "install_commands": [
+        "export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin",
+        "go install -v github.com/owasp-amass/amass/v4/...@latest"
+      ]
+    },
+    {
+      "name": "ffuf",
+      "purpose": "Directory and vhost fuzzing",
+      "install_commands": [
+        "export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin",
+        "go install -v github.com/ffuf/ffuf/v2@latest"
+      ]
+    },
+    {
+      "name": "dalfox",
+      "purpose": "Reflected/Stored XSS testing with safe payloads",
+      "install_commands": [
+        "export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin",
+        "go install -v github.com/hahwul/dalfox/v2@latest"
+      ]
+    },
+    {
+      "name": "gau",
+      "purpose": "Collect historical URLs from public sources (for parameter discovery)",
+      "install_commands": [
+        "export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin",
+        "go install -v github.com/lc/gau/v2/cmd/gau@latest"
+      ]
+    },
+    {
+      "name": "nuclei-templates",
+      "purpose": "Template library for nuclei",
+      "install_commands": [
+        "mkdir -p $OUT/tools",
+        "git clone --depth 1 https://github.com/projectdiscovery/nuclei-templates $OUT/tools/nuclei-templates"
+      ]
+    },
+    {
+      "name": "testssl.sh",
+      "purpose": "TLS configuration and cipher testing",
+      "install_commands": [
+        "git clone --depth 1 https://github.com/drwetter/testssl.sh $OUT/tools/testssl.sh"
+      ]
+    },
+    {
+      "name": "sslyze (optional, alternative to testssl.sh)",
+      "purpose": "TLS analyzer",
+      "install_commands": [
+        "pip3 install --user sslyze"
+      ]
+    }
+  ],
+  "plan": [
+    {
+      "phase": "0-setup-and-scope",
+      "steps": [
+        {
+          "id": "setup_01_dirs_vars",
+          "description": "Create working directories, export variables, record scope",
+          "shell": "bash",
+          "commands": [
+            "set -euo pipefail",
+            "export TARGET_DOMAIN=radarhack.com",
+            "export DATE=$(date +%F_%H%M%S)",
+            "export OUT=$HOME/pt_${TARGET_DOMAIN}_$DATE",
+            "export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin",
+            "mkdir -p $OUT/{raw,scans,findings,logs,tools,screenshots,wordlists}",
+            "echo \"$TARGET_DOMAIN\" > $OUT/raw/scope.txt",
+            "echo \"Testing window: DEFINE_START_UTC to DEFINE_END_UTC\" > $OUT/logs/metadata.txt",
+            "echo \"Source IPs: ADD_YOUR_EGRESS_IPS\" >> $OUT/logs/metadata.txt"
+          ]
+        }
+      ]
+    },
+    {
+      "phase": "1-passive-reconnaissance",
+      "steps": [
+        {
+          "id": "passive_01_whois_dns",
+          "description": "WHOIS and basic DNS records enumeration (no direct service probing)",
+          "shell": "bash",
+          "commands": [
+            "whois $TARGET_DOMAIN | tee $OUT/raw/whois.txt",
+            "dig +short NS $TARGET_DOMAIN | tee $OUT/raw/dns_ns.txt",
+            "dig +short MX $TARGET_DOMAIN | tee $OUT/raw/dns_mx.txt",
+            "dig +short A $TARGET_DOMAIN | tee $OUT/raw/dns_a.txt",
+            "dig +short AAAA $TARGET_DOMAIN | tee $OUT/raw/dns_aaaa.txt"
+          ]
+        },
+        {
+          "id": "passive_02_certtransparency",
+          "description": "Collect subdomains from Certificate Transparency logs",
+          "shell": "bash",
+          "commands": [
+            "curl -s \"https://crt.sh/?q=%25.$TARGET_DOMAIN&output=json\" | jq -r '.[].name_value' | tr ' ' '\\n' | sed 's/\\*\\.//' | sort -u > $OUT/raw/crtsh_subs.txt"
+          ]
+        },
+        {
+          "id": "passive_03_subfinder_amass",
+          "description": "Passive subdomain enumeration using subfinder and amass",
+          "shell": "bash",
+          "commands": [
+            "subfinder -silent -all -d $TARGET_DOMAIN -o $OUT/raw/subfinder_subs.txt",
+            "amass enum -passive -norecursive -noalts -d $TARGET_DOMAIN -o $OUT/raw/amass_subs.txt",
+            "cat $OUT/raw/crtsh_subs.txt $OUT/raw/subfinder_subs.txt $OUT/raw/amass_subs.txt | sort -u > $OUT/raw/candidate_subs.txt"
+          ]
+        }
+      ]
+    },
+    {
+      "phase": "2-active-reconnaissance-and-enumeration",
+      "steps": [
+        {
+          "id": "active_01_dns_resolve",
+          "description": "Resolve candidate subdomains to live hosts and collect DNS records",
+          "shell": "bash",
+          "commands": [
+            "dnsx -l $OUT/raw/candidate_subs.txt -silent -o $OUT/raw/resolved_hosts.txt",
+            "wc -l $OUT/raw/resolved_hosts.txt | tee $OUT/logs/resolved_count.txt",
+            "dnsx -l $OUT/raw/resolved_hosts.txt -a -aaaa -cname -resp-only -o $OUT/raw/dns_records.txt"
+          ]
+        },
+        {
+          "id": "active_02_http_probe_and_screenshots",
+          "description": "Probe HTTP(S) services, fingerprint tech, take screenshots",
+          "shell": "bash",
+          "commands": [
+            "httpx -l $OUT/raw/resolved_hosts.txt -silent -ports 80,443,8080,8443 -follow-redirects -random-agent -status-code -title -tech-detect -server -ip -cdn -location -content-length -json -o $OUT/scans/httpx.json",
+            "jq -r 'select(.url!=null) | .url' $OUT/scans/httpx.json | sort -u > $OUT/scans/alive_urls.txt",
+            "httpx -l $OUT/raw/resolved_hosts.txt -silent -ports 80,443,8080,8443 -follow-redirects -ss -srd $OUT/screenshots -rate-limit 50 -json -o $OUT/scans/httpx_screens.json"
+          ]
+        },
+        {
+          "id": "active_03_port_scan_naabu",
+          "description": "Top 1000 TCP port scan (safe rate); follow-up detailed Nmap per host/port",
+          "shell": "bash",
+          "commands": [
+            "naabu -list $OUT/raw/resolved_hosts.txt -top-ports 1000 -rate 1000 -json -o $OUT/scans/naabu_top1k.json",
+            "jq -r '.ip+\" \"+(.port|tostring)' $OUT/scans/naabu_top1k.json | sort -u > $OUT/scans/open_ip_port.txt",
+            "while read -r ip port; do nmap -sV -sT -Pn -T3 -p \"$port\" \"$ip\" -oX \"$OUT/scans/nmap_${ip//./_}_$port.xml\"; done < $OUT/scans/open_ip_port.txt"
+          ]
+        },
+        {
+          "id": "active_04_web_fingerprinting_and_headers",
+          "description": "Fingerprint web tech, capture headers",
+          "shell": "bash",
+          "commands": [
+            "whatweb --log-json=$OUT/scans/whatweb.json --input-file=$OUT/scans/alive_urls.txt --quiet || true"
+          ]
+        }
+      ]
+    },
+    {
+      "phase": "3-content-and-endpoint-enumeration",
+      "steps": [
+        {
+          "id": "enum_01_crawl_katana",
+          "description": "Crawl discovered web apps to extract URLs and parameters",
+          "shell": "bash",
+          "commands": [
+            "katana -list $OUT/scans/alive_urls.txt -jc -aff -fx -silent -o $OUT/raw/katana_urls.txt",
+            "gau -subs $TARGET_DOMAIN | sort -u > $OUT/raw/gau_urls.txt",
+            "cat $OUT/raw/katana_urls.txt $OUT/raw/gau_urls.txt | sort -u > $OUT/raw/all_urls.txt",
+            "grep -E '\\?.+=' $OUT/raw/all_urls.txt | sort -u > $OUT/raw/urls_with_params.txt"
+          ]
+        },
+        {
+          "id": "enum_02_dir_fuzz_ffuf",
+          "description": "Directory and file discovery on alive targets with conservative rate",
+          "shell": "bash",
+          "commands": [
+            "WORDLIST=/usr/share/seclists/Discovery/Web-Content/raft-small-words.txt",
+            "while read -r base; do out=\"$OUT/scans/ffuf_$(echo \"$base\" | sed 's#https\\?://##; s#[^A-Za-z0-9]#_#g').json\"; ffuf -u \"$base/FUZZ\" -w \"$WORDLIST\" -ac -mc 200,204,301,302,307,401,403 -t 25 -rate 50 -of json -o \"$out\" || true; done < $OUT/scans/alive_urls.txt"
+          ]
+        },
+        {
+          "id": "enum_03_vhost_fuzz_ffuf_optional",
+          "description": "Optional: Virtual host fuzzing on apex (only if permitted)",
+          "shell": "bash",
+          "commands": [
+            "APEX=http://$TARGET_DOMAIN",
+            "ffuf -u \"$APEX\" -H 'Host: FUZZ.$TARGET_DOMAIN' -w /usr/share/seclists/Discovery/DNS/subdomains-top1million-5000.txt -ac -mc 200,204,301,302,307,401,403 -t 25 -rate 50 -of json -o $OUT/scans/ffuf_vhost.json || true"
+          ]
+        }
+      ]
+    },
+    {
+      "phase": "4-vulnerability-scanning",
+      "steps": [
+        {
+          "id": "vscan_01_nuclei_general",
+          "description": "Run nuclei against alive URLs with curated templates",
+          "shell": "bash",
+          "commands": [
+            "nuclei -l $OUT/scans/alive_urls.txt -t $OUT/tools/nuclei-templates -severity low,medium,high,critical -c 25 -rl 150 -timeout 10 -irr -stats -jsonl -o $OUT/findings/nuclei_results.jsonl"
+          ]
+        },
+        {
+          "id": "vscan_02_nikto_light",
+          "description": "Nikto light touch scan across alive URLs (loop, conservative)",
+          "shell": "bash",
+          "commands": [
+            "while read -r url; do nikto -host \"$url\" -ask no -maxtime 2m -C all -timeout 10 -Tuning 123bde -o \"$OUT/scans/nikto_$(echo $url | sed 's#https\\?://##; s#[^A-Za-z0-9]#_#g').txt\" || true; done < $OUT/scans/alive_urls.txt"
+          ]
+        },
+        {
+          "id": "vscan_03_tls_testssl",
+          "description": "TLS checks with testssl.sh (safe, fast mode)",
+          "shell": "bash",
+          "commands": [
+            "while read -r host; do $OUT/tools/testssl.sh/testssl.sh -U --sneaky --quiet --fast \"$host\" | tee \"$OUT/scans/testssl_${host}.txt\"; done < $OUT/raw/resolved_hosts.txt"
+          ]
+        }
+      ]
+    },
+    {
+      "phase": "5-targeted-verification-and-safe-exploitation",
+      "steps": [
+        {
+          "id": "exploit_01_xss_dalfox",
+          "description": "Test for reflected XSS using dalfox with safe payloads",
+          "shell": "bash",
+          "commands": [
+            "if [ -s \"$OUT/raw/urls_with_params.txt\" ]; then dalfox file $OUT/raw/urls_with_params.txt --skip-bav -w 100 --no-color -o $OUT/findings/dalfox_xss.txt; fi"
+          ]
+        },
+        {
+          "id": "exploit_02_sqli_sqlmap_sampled",
+          "description": "Sampled low-risk SQLi checks with sqlmap; limit to first 50 parameterized URLs; identify WAF; no heavy tampering",
+          "shell": "bash",
+          "commands": [
+            "SQLMAP_MAX=50",
+            "head -n ${SQLMAP_MAX} $OUT/raw/urls_with_params.txt | while read -r u; do sqlmap -u \"$u\" --batch --level=1 --risk=1 --identify-waf --random-agent --timeout=10 --delay=0 --retries=1 --fresh-queries --output-dir=\"$OUT/findings/sqlmap\" || true; done"
+          ]
+        },
+        {
+          "id": "exploit_03_nuclei_highimpact_verify",
+          "description": "Re-run nuclei limited to high/critical templates for confirmation",
+          "shell": "bash",
+          "commands": [
+            "nuclei -l $OUT/scans/alive_urls.txt -t $OUT/tools/nuclei-templates -severity high,critical -c 15 -rl 80 -irr -jsonl -o $OUT/findings/nuclei_highcrit.jsonl"
+          ]
+        },
+        {
+          "id": "exploit_04_file_upload_safety_check",
+          "description": "If upload forms discovered, attempt benign file upload",
+          "shell": "bash",
+          "commands": [
+            "echo 'radarhack test' > $OUT/raw/benign.txt",
+            "echo 'Review forms manually with Burp or curl as needed, ensuring only harmless text uploads; record requests/responses.' > $OUT/findings/upload_test_README.txt"
+          ]
+        },
+        {
+          "id": "exploit_05_access_control_manual",
+          "description": "Manual checks for IDOR/authorization using multiple roles if available (no brute force). Record cases.",
+          "shell": "bash",
+          "commands": [
+            "echo 'Perform manual IDOR/ACL review using discovered endpoints; do not brute force; log only minimal PII.' > $OUT/findings/access_control_README.txt"
+          ]
+        }
+      ]
+    },
+    {
+      "phase": "6-post-processing-and-triage",
+      "steps": [
+        {
+          "id": "triage_01_summarize_nuclei",
+          "description": "Summarize nuclei findings by severity",
+          "shell": "bash",
+          "commands": [
+            "jq -r '.severity' $OUT/findings/nuclei_results.jsonl | sort | uniq -c | sort -nr | tee $OUT/findings/nuclei_severity_summary.txt",
+            "jq -r '[.severity, .template, .matched-at] | @tsv' $OUT/findings/nuclei_results.jsonl > $OUT/findings/nuclei_findings.tsv"
+          ]
+        },
+        {
+          "id": "triage_02_http_overview",
+          "description": "Create quick overview of alive services",
+          "shell": "bash",
+          "commands": [
+            "jq -r '[.host, .port, .scheme, .status_code, (.title//\"\"), (.tech//[]|join(\";\"))] | @tsv' $OUT/scans/httpx.json > $OUT/scans/http_overview.tsv"
+          ]
+        },
+        {
+          "id": "triage_03_top_findings_shortlist",
+          "description": "Shortlist potential high-risk findings from tools",
+          "shell": "bash",
+          "commands": [
+            "grep -iE 'critical|high|rce|sqli|ssrf|lfi|path traversal|auth bypass' $OUT/findings/nuclei_results.jsonl || true",
+            "grep -iE 'OSVDB|X-XSS-Protection|CSP|Directory indexing' $OUT/scans/nikto_*.txt || true"
+          ]
+        }
+      ]
+    }
+  ],
+  "reporting": {
+    "artifacts_to_collect": [
+      "$OUT/raw/*.txt",
+      "$OUT/raw/*.json",
+      "$OUT/scans/*.json",
+      "$OUT/scans/*.xml",
+      "$OUT/screenshots/*",
+      "$OUT/findings/*",
+      "$OUT/logs/*"
+    ],
+    "evidence_packaging_commands": [
+      "tar -czf $OUT/evidence_pack_${TARGET_DOMAIN}_$DATE.tgz -C $OUT ."
+    ],
+    "executive_summary_template": {
+      "fields": [
+        "Engagement overview: scope, window, source IPs, ROE",
+        "Key risks found: count by severity, top 5 issues",
+        "Business impact narrative",
+        "Remediation summary and priorities",
+        "Limitations and out-of-scope notes"
+      ]
+    },
+    "technical_report_outline": [
+      "1. Scope and Methodology",
+      "2. Asset Inventory (alive hosts, services, versions)",
+      "3. Findings",
+      "- 3.1 Vulnerability Title (ID, Severity, CVSS v3.1 vector and score)",
+      "- Affected Assets/Endpoints",
+      "- Evidence (request/response excerpts, screenshots)",
+      "- Reproduction Steps (exact commands or HTTP requests)",
+      "- Impact",
+      "- Likelihood",
+      "- Remediation/References",
+      "4. Attack Surface Reduction Opportunities",
+      "5. Appendix (tool versions, command logs, raw outputs)"
+    ],
+    "auto_summaries_commands": [
+      "echo 'Tool versions:' > $OUT/logs/tool_versions.txt",
+      "subfinder -version >> $OUT/logs/tool_versions.txt || true",
+      "httpx -version >> $OUT/logs/tool_versions.txt || true",
+      "nuclei -version >> $OUT/logs/tool_versions.txt || true",
+      "naabu -version >> $OUT/logs/tool_versions.txt || true",
+      "katana -version >> $OUT/logs/tool_versions.txt || true",
+      "ffuf -V >> $OUT/logs/tool_versions.txt || true",
+      "dalfox -v >> $OUT/logs/tool_versions.txt || true",
+      "echo 'Nuclei high/critical:' > $OUT/findings/top_findings.txt",
+      "jq -r 'select(.severity==\"high\" or .severity==\"critical\") | [.severity, .template, .matched-at] | @tsv' $OUT/findings/nuclei_results.jsonl >> $OUT/findings/top_findings.txt",
+      "echo 'Open ports (naabu):' >> $OUT/findings/top_findings.txt",
+      "cat $OUT/scans/open_ip_port.txt >> $OUT/findings/top_findings.txt"
+    ],
+    "data_handling": [
+      "Sanitize any PII or secrets before sharing reports.",
+      "Store evidence_pack securely; restrict access."
+    ]
+  }
+}
