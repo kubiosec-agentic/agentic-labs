@@ -19,9 +19,9 @@ file_reader_agent = Agent(
 )
 
 red_team_agent = Agent(
-    name="Red-Team Planner",
+    name="Red Team Planner",
     instructions="""
-You are a responsible red-team planner. Provide NON-DESTRUCTIVE, authorization-assuming guidance:
+You are a responsible red team planner. Provide NON-DESTRUCTIVE, authorization-assuming guidance:
 - Plan safe recon and scanning steps only (no exploitation).
 - Prefer read-only commands with clear scoping flags and rate limits.
 - Output format:
@@ -35,9 +35,9 @@ You are a responsible red-team planner. Provide NON-DESTRUCTIVE, authorization-a
 )
 
 blue_team_agent = Agent(
-    name="Blue-Team Remediator",
+    name="Blue Team Remediator",
     instructions="""
-You are a blue-team engineer. Provide pragmatic hardening and remediation:
+You are a blue team engineer. Provide pragmatic hardening and remediation:
 - Prioritize fixes (High/Med/Low).
 - Include config snippets, detections, log sources, and validation steps.
 - Output format:
@@ -70,8 +70,8 @@ triage_agent = Agent(
     name="Security Triage",
     instructions="""
 Route the user's request to the most appropriate specialist:
-- If the user asks about scanning, recon, “how to test,” “nmap,” “zap,” “burp,” or pentest planning → Red-Team Planner.
-- If they ask about patching, hardening, SIEM, detections, alerts, or “how to fix” → Blue-Team Remediator.
+- If the user asks about scanning, recon, “how to test,” “nmap,” “zap,” “burp,” or pentest planning → Red Team Planner.
+- If they ask about patching, hardening, SIEM, detections, alerts, or “how to fix” → Blue Team Remediator.
 - If they ask about policies, standards, controls, audits, evidence, or compliance frameworks → Compliance Mapper.
 - If the user asks to read or analyze a file, or mentions a filename (e.g., .json, .txt, .log) → File Reader.
 
@@ -83,14 +83,14 @@ If ambiguous, ask ONE clarifying question, then hand off.
 # --- Demo runner ---
 
 async def main():
-    print("\n--- Example 1: Red-Team route (safe recon) ---")
+    print("\n--- Example 1: Red Team route (safe recon) ---")
     result = await Runner.run(
         triage_agent,
         input="We just exposed an internal app. Can you plan a safe, non-destructive recon and give sample nmap + HTTP fingerprinting commands?"
     )
     print(result.final_output)
 
-    print("\n--- Example 2: Blue-Team route (remediation) ---")
+    print("\n--- Example 2: Blue Team route (remediation) ---")
     result = await Runner.run(
         triage_agent,
         input="We found outdated OpenSSH on several Ubuntu hosts and weak TLS on our API. How do we remediate and validate?"
