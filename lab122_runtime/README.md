@@ -1,4 +1,4 @@
-## Pre-quisites
+## Prerequisites
 Install tetragon https://tetragon.io/docs/getting-started/install-docker/
 
 ## Test
