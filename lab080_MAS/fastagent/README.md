@@ -29,6 +29,11 @@ uv sync
 uv run agent.py
 ```
 
+### Running Examples and Exposing Agents as MCP
+```
+uv run agent.py --server --transport http --host 0.0.0.0 --port 9090
+```
+
 ## Examples Overview
 
 ### Setup your API keys
