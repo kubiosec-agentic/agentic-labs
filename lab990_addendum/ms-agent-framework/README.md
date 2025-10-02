@@ -3,7 +3,7 @@
 1. Goto https://ai.azure.com and **Sign In**
 2. Create new <Azure AI Foundry resource>
 3. Create a project _**demo-project-kubiosec**_
-4. Note Azure AI Foundry project endpoint _**https://demo-project-kubiosec-resource.services.ai.azure.com/api/projects/demo-project-kubiosec**_
+4. Note Azure AI Foundry project endpoint `_**https://demo-project-kubiosec-resource.services.ai.azure.com/api/projects/demo-project-kubiosec**_`
 5. Goto Models + endpoints -> Deploy model -> Deploy base model -> Select gpt-4o -> Confirm -> Deploy
 6. Note (see Deployment info) Name _**gpt-4o**_
 
