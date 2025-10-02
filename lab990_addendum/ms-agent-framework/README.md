@@ -17,10 +17,6 @@ Set the Deployment Name (6)
 ```
 export AZURE_AI_MODEL_DEPLOYMENT_NAME="gpt-4o"
 ```
-Optional
-```
-export BING_CONNECTION_ID="your-bing-connection-id"  # Optional, only needed for web search samples
-```
 
 ## Run the agent
 ```
