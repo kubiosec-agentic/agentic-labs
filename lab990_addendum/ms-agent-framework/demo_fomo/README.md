@@ -115,6 +115,85 @@ Testing security filter (chat middleware):
 I cannot process requests containing sensitive information...
 ```
 
+### demo_fomo_4.py - Azure AI Agent Client with Middleware
+
+Enterprise-grade demo using Azure AI Agent Client with Azure CLI authentication and comprehensive middleware.
+
+**Features:**
+- **Azure AI Agent Client**: Uses Azure CLI authentication (requires `az login`)
+- **Auto-managed lifecycle**: Agents created and deleted automatically
+- **Both streaming and non-streaming** response examples
+- **Multi-layer middleware**: Same security features as demo_fomo_3
+- **Comprehensive testing**: Three test scenarios included
+
+**Prerequisites:**
+```bash
+# Install and login to Azure CLI first
+az login
+
+# Set required environment variables
+export AZURE_AI_PROJECT_ENDPOINT="https://demo-project-kubiosec-resource.services.ai.azure.com/api/projects/demo-project-kubiosec"
+export AZURE_AI_MODEL_DEPLOYMENT_NAME="gpt-4o"
+```
+
+**Run:**
+```bash
+source .venv/bin/activate
+python ./demo_fomo_4.py
+```
+
+**Expected Output:**
+```
+=== Non-streaming Response Example with Middleware ===
+User: What's the weather like in Seattle?
+Agent: The weather in Seattle is sunny with a high of 53°C...
+
+=== Middleware Test Examples ===
+Test 2 - Atlantis request (should be blocked by function middleware):
+Agent: Atlantis is a special place, and we must never ask about the weather there!
+
+Test 3 - Request with sensitive info (should be blocked by chat middleware):
+Agent: I cannot process requests containing sensitive information...
+```
+
+## Demo Comparison: Authentication & Chat Clients
+
+| Demo | Chat Client | Authentication | Middleware | Key Features |
+|------|-------------|----------------|------------|--------------|
+| **demo_fomo_1.py** | `AzureOpenAIChatClient` | API Key | None | Basic weather agent, simple setup |
+| **demo_fomo_2.py** | `AzureOpenAIChatClient` | API Key | Function only | Adds Atlantis blocking |
+| **demo_fomo_3.py** | `AzureOpenAIChatClient` | API Key | Chat + Function | Multi-layer security, cost optimization |
+| **demo_fomo_4.py** | `AzureAIAgentClient` | Azure CLI | Chat + Function | Enterprise-grade, auto-lifecycle, streaming |
+
+### Key Differences:
+
+#### **Authentication Methods:**
+- **API Key** (demos 1-3): Simple, direct authentication using `AZURE_OPENAI_API_KEY`
+- **Azure CLI** (demo 4): Enterprise authentication, requires `az login` and environment variables
+
+#### **Chat Client Types:**
+- **AzureOpenAIChatClient** (demos 1-3): 
+  - Direct Azure OpenAI API access
+  - Manual agent lifecycle management
+  - Simpler configuration
+  - Endpoint: `https://phbo-openai-1.openai.azure.com/`
+  
+- **AzureAIAgentClient** (demo 4):
+  - Azure AI Foundry project integration
+  - Automatic agent creation/deletion
+  - Advanced features (streaming, lifecycle management)
+  - Endpoint: `https://demo-project-kubiosec-resource.services.ai.azure.com/`
+
+#### **Middleware Evolution:**
+1. **No Middleware**: Basic functionality
+2. **Function Middleware**: Blocks specific tool calls
+3. **Chat + Function**: Comprehensive security layers
+4. **Enterprise Implementation**: Same security with enterprise client
+
+#### **Use Cases:**
+- **Demos 1-3**: Development, testing, simple deployments
+- **Demo 4**: Production, enterprise environments, complex workflows
+
 ## Configuration Details
 
 ### Azure OpenAI Configuration
