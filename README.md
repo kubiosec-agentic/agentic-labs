@@ -59,6 +59,7 @@ Each lab is structured to gradually build your understanding and capabilities, f
 | Lab | Focus Area                                      | Tools & Topics                              |
 |-----|-------------------------------------------------|---------------------------------------------|
 | [lab000_setup](./lab000_setup) | Lab environment setup                        | bash scripts, environment preparation       |
+| [lab004_transformers](./lab004_transformers) | Transformers and Hugging Face demos          | python, transformers, model demos           |
 | [lab010_ChatCompletion](./lab010_ChatCompletion) | OpenAI - Chat completions basics              | curl, few-shot prompts, image analysis     |
 | [lab020_ResponsesAPI](./lab020_ResponsesAPI) | OpenAI - Responses API basics                 | curl, tools, structured output              |
 | [lab032_PythonFrameworks](./lab032_PythonFrameworks) | Advanced OpenAI features                      | python, chat, responses, structured output  |
@@ -67,15 +68,22 @@ Each lab is structured to gradually build your understanding and capabilities, f
 | [lab050_OpenAI_Tools](./lab050_OpenAI_Tools) | LangChain tools and agents                    | python, langchain, tool integration        |
 | [lab054_LangChain_Tools](./lab054_LangChain_Tools) | LangChain tools and examples                 | python, OpenAI/LangChain tools, examples   |
 | [lab060_OpenAI_Agents](./lab060_OpenAI_Agents) | Multi-agent orchestration                     | python, OpenAI Agents SDK, MCP integration  |
+| [lab061_Google_Agents](./lab061_Google_Agents) | Google Agents examples                        | python, Google Agents SDK, integrations    |
+| [lab062_LangChain_Agents](./lab062_LangChain_Agents) | LangChain agent recipes                      | python, LangChain agents, examples         |
 | [lab070_MCP](./lab070_MCP) | MCP (Model Context Protocol)                 | python, MCP, SSE, streamable responses     |
 | [lab080_MAS](./lab080_MAS) | Multi-agent frameworks                       | python, Autogen, CrewAI, PydanticAI, FastAgent |
 | [lab064_Langgraph](./lab064_Langgraph) | LangGraph workflows                | python, LangGraph, workflow orchestration  |
+| [lab085_OpenAI_Memory](./lab085_OpenAI_Memory) | OpenAI memory patterns                        | python, memory, persistence strategies     |
+| [lab087_Mem0](./lab087_Mem0) | Mem0 memory workshop                          | python, Mem0, memory usage                 |
 | [lab090_Enterprise](./lab090_Enterprise) | Enterprise-grade agents with tracing         | python, OpenAI tracing, metadata, persistence |
 | [lab093](./lab093) | Memory management for agents                 | python, Mem0, Qdrant, persistent memory    |
 | [lab100](./lab100) | Advanced agent patterns                      | TBD                                         |
 | [lab105_evaluatuions](./lab105_evaluatuions) | Agent evaluation and testing       | python, evaluation frameworks              |
 | [lab110_A2A](./lab110_A2A) | Production deployment                        | TBD                                         |
+| [lab120_Security](./lab120_Security) | Security-focused labs                         | python, security, analysis                 |
+| [lab122_runtime](./lab122_runtime) | Runtime tools and utilities                   | python, runtime helpers, tooling           |
 | [lab990_addendum](./lab990_addendum) | Additional examples and patterns    | python, various frameworks, specialized use cases |
+| [lab950_Template](./lab950_Template) | Lab template and examples                     | templates, starter labs                    |
 
 Each lab has a different environment, feel free to fork, hack, and explore beyond the tasks!
 
