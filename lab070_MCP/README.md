@@ -26,10 +26,10 @@ The Model Context Protocol (MCP) stdio transport is a communication method that 
 ```
 python3 mcp_01_stdio.py
 ```
-### MCP SSE
-The Model Context Protocol (MCP) Server-Sent Events (SSE) transport is a communication method that enables AI applications to interact with tools or data sources by establishing a persistent HTTP connection for server-to-client streaming and using HTTP POST requests for client-to-server communication.  This code example connects to a MCP SSE server using the main() function, that in turn will call the run() function, creating an agent answering a few questions that require calling external tools.
+### MCP
+The Model Context Protocol (MCP) Server-Sent Events (SSE) transport mode has been deprecated (though still widely used) and replaced by the streamable HTTP transport mode. This new mode is the preferred communication method, allowing AI applications to interact with tools and data sources by maintaining a persistent HTTP connection for server-to-client streaming, while using HTTP POST requests for client-to-server communication.
 
-#### Start the MCP SSE server (terminal_2)
+#### Start the MCP server (terminal_2)
 ```
 python3 server_streamable.py
 ```
@@ -37,13 +37,13 @@ python3 server_streamable.py
 ```
 python3 mcp_02_streamable.py 
 ```
-### MCP SSE [SECURITY] (Shadowing attack)
+### MCP [SECURITY] (Shadowing attack)
 A Model Context Protocol (MCP) shadowing attack is a sophisticated exploit where a malicious tool covertly alters the behavior of trusted tools within an AI agent's environment, leading to unauthorized actions or data exfiltration without user awareness.
 #### Start the MCP SSE server (terminal_2)
 ```
 python3 server_streamable.py
 ```
-#### Start the MCP SSE server (terminal_3)
+#### Start the MCP server (terminal_3)
 ```
 python3 server_rogue_streamable.py
 ```
@@ -52,7 +52,7 @@ Model Context Protocol (MCP) shadowing attack
 ```
 python3 mcp_03_streamable.py 
 ```
-### MCP SSE [SECURITY] (Indirect Prompt Injection)
+### MCP [SECURITY] (Indirect Prompt Injection)
 #### Run the agent (terminal_1)
 Indirect Prompt Injection (Agent Hijacking)
 ```
