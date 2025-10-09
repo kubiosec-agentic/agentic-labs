@@ -1,4 +1,4 @@
-# LAB10
+# LAB122 Security
 ## Set up your environment
 ```
 export OPENAI_API_KEY="xxxxxxxxx"
