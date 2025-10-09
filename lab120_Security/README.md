@@ -1,4 +1,4 @@
-# LAB122 Security
+# LAB120 Security
 ## Set up your environment
 ```
 export OPENAI_API_KEY="xxxxxxxxx"
@@ -7,7 +7,7 @@ export OPENAI_API_KEY="xxxxxxxxx"
 ./lab_setup.sh
 ```
 ```
-source .lab100/bin/activate
+source .lab120/bin/activate
 ```
 ## Lab instructions
 ### xxxxxxxx
