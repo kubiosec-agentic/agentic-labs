@@ -72,7 +72,27 @@ export MCP_SSE_URL="xxxxxxx"
 python3 mcp_05_youtube-transcribe.py 
 ```
 ### MCP Debugging
-https://github.com/mcp-firewall/mcp-debugging
+See https://github.com/mcp-firewall/mcp-debugging <br>
+
+Use the following example to analyse the entire Agetnic flow using mitmproxy.<br>
+```
+export OPENAI_BASE_URL="http;//127.0.0.1:8080/v1/
+```
+```
+docker run --rm -it \
+    -v ~/.mitmproxy:/home/mitmproxy/.mitmproxy \
+    -p 8080:8080 \
+    -p 8081:8081 \
+    -p 8089:8089 \
+    mitmproxy/mitmproxy mitmweb \
+        --web-host 0.0.0.0 \
+        --set block_global=false \
+        --mode reverse:https://api.openai.com:443@8080 \
+        --mode reverse:http://192.168.0.246:8000@8089
+```
+```
+python mcp_06_streamable_mitm.py
+```
 
 ## Cleanup environment
 ```
