@@ -4,7 +4,7 @@
 
 ## 🔍 What You'll Learn
 
-- How to work directly with the **OpenAI API Chat completion**, the brand new **OpenAI responses API** and the new **OpenAI Agents SDK**
+- How to work directly with the **OpenAI Chat Completions API**, the brand new **OpenAI Responses API**, and the new **OpenAI Agents SDK**
 - How to build and chain intelligent agents using **LangChain** and custom tools
 - The core principles behind **agentic systems** that plan, reason, and act
 - How to integrate AI agents into real-world workflows for **security**, **automation**, and **development**
@@ -13,7 +13,7 @@
   
 This is more than just a workshop, it's an exploration of how intelligent agents are transforming the way we build and secure systems.
 By the end, you'll not only know how to use AI, you'll know how to *engineer* it.
-Let’s plug in, patch deep, and push the boundaries of what’s possible.
+Let’s plug in, dig deep, and push the boundaries of what’s possible.
 
 Welcome to the lab and let's **#HACKTOLEARN** 🚀
 
@@ -63,11 +63,11 @@ Each lab is structured to gradually build your understanding and capabilities, f
 | [lab020](./lab020) | OpenAI - Responses API basics                 | curl, tools, structured output              |
 | [lab032](./lab032) | Advanced OpenAI features                      | python, chat, responses, structured output  |
 | [lab035](./lab035) | Advanced prompting techniques                 | python, multi-turn conversations, HuggingFace |
-| [lab040](./lab040) | RAG (Retrieval Augmented Generation)         | python, RAG, chroma, llama-index, OpenAI VectorStore |
+| [lab040](./lab040) | RAG (Retrieval-Augmented Generation)         | python, RAG, chroma, llama-index, OpenAI VectorStore |
 | [lab050](./lab050) | LangChain tools and agents                    | python, langchain, tool integration        |
-| [lab052](./lab052) | OpenAI Agent SDK                              | python, OpenAI Agent SDK, vulnerability analysis |
+| [lab052](./lab052) | OpenAI Agents SDK                              | python, OpenAI Agents SDK, vulnerability analysis |
 | [lab053](./lab053) | LangChain advanced features                   | python, langchain, advanced agent patterns |
-| [lab060](./lab060) | Multi-agent orchestration                     | python, OpenAI Agent SDK, MCP integration  |
+| [lab060](./lab060) | Multi-agent orchestration                     | python, OpenAI Agents SDK, MCP integration  |
 | [lab070](./lab070) | MCP (Model Context Protocol)                 | python, MCP, SSE, streamable responses     |
 | [lab080](./lab080) | Multi-agent frameworks                       | python, Autogen, CrewAI, PydanticAI, FastAgent |
 | [lab082_langgraph](./lab082_langgraph) | LangGraph workflows                | python, LangGraph, workflow orchestration  |
