@@ -59,23 +59,22 @@ Each lab is structured to gradually build your understanding and capabilities, f
 | Lab | Focus Area                                      | Tools & Topics                              |
 |-----|-------------------------------------------------|---------------------------------------------|
 | [lab000_setup](./lab000_setup) | Lab environment setup                        | bash scripts, environment preparation       |
-| [lab010](./lab010) | OpenAI - Chat completions basics              | curl, few-shot prompts, image analysis     |
-| [lab020](./lab020) | OpenAI - Responses API basics                 | curl, tools, structured output              |
-| [lab032](./lab032) | Advanced OpenAI features                      | python, chat, responses, structured output  |
-| [lab035](./lab035) | Advanced prompting techniques                 | python, multi-turn conversations, HuggingFace |
-| [lab040](./lab040) | RAG (Retrieval-Augmented Generation)         | python, RAG, chroma, llama-index, OpenAI VectorStore |
-| [lab050](./lab050) | LangChain tools and agents                    | python, langchain, tool integration        |
-| [lab052](./lab052) | OpenAI Agents SDK                              | python, OpenAI Agents SDK, vulnerability analysis |
-| [lab053](./lab053) | LangChain advanced features                   | python, langchain, advanced agent patterns |
-| [lab060](./lab060) | Multi-agent orchestration                     | python, OpenAI Agents SDK, MCP integration  |
-| [lab070](./lab070) | MCP (Model Context Protocol)                 | python, MCP, SSE, streamable responses     |
-| [lab080](./lab080) | Multi-agent frameworks                       | python, Autogen, CrewAI, PydanticAI, FastAgent |
-| [lab082_langgraph](./lab082_langgraph) | LangGraph workflows                | python, LangGraph, workflow orchestration  |
-| [lab090](./lab090) | Enterprise-grade agents with tracing         | python, OpenAI tracing, metadata, persistence |
+| [lab010_ChatCompletion](./lab010_ChatCompletion) | OpenAI - Chat completions basics              | curl, few-shot prompts, image analysis     |
+| [lab020_ResponsesAPI](./lab020_ResponsesAPI) | OpenAI - Responses API basics                 | curl, tools, structured output              |
+| [lab032_PythonFrameworks](./lab032_PythonFrameworks) | Advanced OpenAI features                      | python, chat, responses, structured output  |
+| [lab035_Langchain](./lab035_Langchain) | Advanced prompting techniques                 | python, multi-turn conversations, HuggingFace |
+| [lab040_RAG](./lab040_RAG) | RAG (Retrieval-Augmented Generation)         | python, RAG, chroma, llama-index, OpenAI VectorStore |
+| [lab050_OpenAI_Tools](./lab050_OpenAI_Tools) | LangChain tools and agents                    | python, langchain, tool integration        |
+| [lab054_LangChain_Tools](./lab054_LangChain_Tools) | LangChain tools and examples                 | python, OpenAI/LangChain tools, examples   |
+| [lab060_OpenAI_Agents](./lab060_OpenAI_Agents) | Multi-agent orchestration                     | python, OpenAI Agents SDK, MCP integration  |
+| [lab070_MCP](./lab070_MCP) | MCP (Model Context Protocol)                 | python, MCP, SSE, streamable responses     |
+| [lab080_MAS](./lab080_MAS) | Multi-agent frameworks                       | python, Autogen, CrewAI, PydanticAI, FastAgent |
+| [lab064_Langgraph](./lab064_Langgraph) | LangGraph workflows                | python, LangGraph, workflow orchestration  |
+| [lab090_Enterprise](./lab090_Enterprise) | Enterprise-grade agents with tracing         | python, OpenAI tracing, metadata, persistence |
 | [lab093](./lab093) | Memory management for agents                 | python, Mem0, Qdrant, persistent memory    |
 | [lab100](./lab100) | Advanced agent patterns                      | TBD                                         |
-| [lab105_evaluations](./lab105_evaluations) | Agent evaluation and testing       | python, evaluation frameworks              |
-| [lab110](./lab110) | Production deployment                        | TBD                                         |
+| [lab105_evaluatuions](./lab105_evaluatuions) | Agent evaluation and testing       | python, evaluation frameworks              |
+| [lab110_A2A](./lab110_A2A) | Production deployment                        | TBD                                         |
 | [lab990_addendum](./lab990_addendum) | Additional examples and patterns    | python, various frameworks, specialized use cases |
 
 Each lab has a different environment, feel free to fork, hack, and explore beyond the tasks!
