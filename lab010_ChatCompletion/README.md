@@ -214,7 +214,7 @@ curl https://api.openai.com/v1/chat/completions \
           {
             "type": "image_url",
             "image_url": {
-              "url": "https://i.sstatic.net/Iodjt.jpg"
+              "url": "https://www.radarhack.com/demo/vuln.jpg"
             }
           },
           {
