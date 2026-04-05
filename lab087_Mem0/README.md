@@ -1,23 +1,34 @@
-# LAB087 - Mem0 (Memory for AI Agents)
+![OpenAI](https://img.shields.io/badge/OpenAI-lightblue) ![Python](https://img.shields.io/badge/Python-blue) ![Docker](https://img.shields.io/badge/Docker-blue)
+
+# LAB087: Mem0 - Intelligent Memory Layer
+
+## Introduction
+
+This lab demonstrates how to use Mem0, an intelligent memory layer that enables AI agents to remember, learn, and improve over time. You'll explore both self-hosted and managed SaaS configurations.
+
 ## Set up your environment
+
+### Prerequisites
+
+Install Docker and Python 3.8+
+
+### Setup Commands
+
 ```bash
 export OPENAI_API_KEY="your_openai_api_key_here"
 ```
+
 ```bash
 ./lab_setup.sh
 ```
+
 ```bash
 source .lab087/bin/activate
 ```
 
 ## Lab instructions
-### Mem0: Intelligent Memory Layer for AI Agents
-
-This lab demonstrates how to use Mem0, an intelligent memory layer that enables AI agents to remember, learn, and improve over time. You'll explore both self-hosted and managed SaaS configurations.
 
 ### Self-hosted Setup with Qdrant Vector Store
-
-For self-hosted memory storage, run Qdrant locally:
 
 ```bash
 docker run -d --name qdrant \
@@ -28,12 +39,9 @@ docker run -d --name qdrant \
 
 ### Managed SaaS Setup
 
-For the managed Mem0 service, set your API key:
 ```bash
 export MEM0_API_KEY="your_mem0_api_key_here"
 ```
-
-## Example Scripts
 
 ### Self-hosted Examples (with Qdrant)
 
@@ -72,13 +80,17 @@ python mem0_managed/mem_01_saas.py
 ```
 
 #### Example 2: Advanced SaaS Features (`mem_02_saas.py`)
+
 Advanced features with the managed service:
+
 ```bash
 python mem0_managed/mem_02_saas.py
 ```
 
 #### Example 3: Search Functionality (`mem_03_agent.py`)
+
 Memory search capabilities:
+
 ```bash
 python mem0_managed/mem_03_agent.py
 ```

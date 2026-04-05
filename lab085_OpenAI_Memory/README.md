@@ -1,5 +1,15 @@
-# LAB085 - OpenAI Memory
+![OpenAI](https://img.shields.io/badge/OpenAI-lightblue)
+![Python](https://img.shields.io/badge/Python-blue)
+![Agents](https://img.shields.io/badge/Agents-orange)
+
+# LAB085: OpenAI Agents with Memory Persistence
+
+## Introduction
+This lab demonstrates how to implement conversation memory using OpenAI agents with SQLite session storage. You'll learn how to create agents that maintain conversation context across multiple interactions, use SQLite sessions to persist conversation history, manage different conversation sessions for different users, and handle asynchronous agent interactions.
+
 ## Set up your environment
+
+### Setup Commands
 ```bash
 export OPENAI_API_KEY="your_openai_api_key_here"
 ```
@@ -11,17 +21,9 @@ source .lab085/bin/activate
 ```
 
 ## Lab instructions
-### OpenAI Agents with Memory Persistence
 
-This lab demonstrates how to implement conversation memory using OpenAI agents with SQLite session storage. You'll learn how to:
-
-- Create agents that maintain conversation context across multiple interactions
-- Use SQLite sessions to persist conversation history
-- Manage different conversation sessions for different users
-- Handle asynchronous agent interactions
-
-### Example 1: Basic Memory Usage (`OA_01.py`)
-Demonstrates basic conversation memory where the agent remembers previous context within a session:
+#### Example 1: Basic Memory Usage
+Demonstrates basic conversation memory where the agent remembers previous context within a session using `OA_01.py`.
 
 ```bash
 python OA_01.py
@@ -33,8 +35,8 @@ This example shows:
 - Multiple conversation turns where context is maintained
 - Asynchronous agent execution
 
-### Example 2: Multiple Sessions (`OA_02.py`)
-Shows how to manage separate conversation histories for different users:
+#### Example 2: Multiple Sessions
+Shows how to manage separate conversation histories for different users using `OA_02.py`.
 
 ```bash
 python OA_02.py
@@ -58,4 +60,5 @@ deactivate
 ```bash
 ./lab_cleanup.sh
 ```
+
 Back to [Lab Overview](https://github.com/kubiosec-agentic/agentic-labs/blob/master/README.md#-lab-overview)

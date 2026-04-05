@@ -1,7 +1,9 @@
 ![OpenAI](https://img.shields.io/badge/OpenAI-lightblue) ![Evaluations](https://img.shields.io/badge/Evaluations-yellow) ![Curl](https://img.shields.io/badge/Curl-orange) 
 
-# LAB03: Prompt Evaluation
+# LAB105: Prompt Evaluation
+
 ## Introduction
+
 This lab walks through setting up and running OpenAI Evals to test how well models perform on classification tasks. In this example we focus on IT ticket categorization.
 
 You'll learn to:
@@ -11,19 +13,25 @@ You'll learn to:
 - Fetch results and view reports via the API
 
 Perfect for validating prompt quality and measuring model accuracy with structured, repeatable tests.
+
 ## Set up your environment
-```
+
+### Setup Commands
+
+```bash
 export OPENAI_API_KEY="xxxxxxxxx"
 ```
-```
+
+```bash
 ./lab_setup.sh
 ```
 ## Lab instructions
+
 ### Evals
-This lab walks through the process of prompt evaluation, useful for testing how well the model handles classification tasks.
-#### Create an request
-An example prompt for ticket categorization.
-```
+
+#### Create a Request
+
+```bash
 curl https://api.openai.com/v1/chat/completions \
     -H "Authorization: Bearer $OPENAI_API_KEY" \
     -H "Content-Type: application/json"     \
@@ -41,8 +49,10 @@ curl https://api.openai.com/v1/chat/completions \
         ]
     }'
 ```
-A textbook response
-```
+
+Example response:
+
+```json
 {
   "id": "chatcmpl-BSiptlaw3aGt5e6WhLe1fFtMNkgtD",
   "object": "chat.completion",
@@ -80,9 +90,9 @@ A textbook response
   "system_fingerprint": "fp_7439084672"
 }
 ```
-#### Creating an eval
-How to evaluate the prompts ?
-```
+#### Creating an Eval
+
+```bash
 EVAL=$(curl https://api.openai.com/v1/evals \
     -H "Authorization: Bearer $OPENAI_API_KEY" \
     -H "Content-Type: application/json" \
@@ -111,7 +121,8 @@ EVAL=$(curl https://api.openai.com/v1/evals \
         ]
     }'  | jq -r .id)
 ```
-```
+
+```bash
 echo $EVAL
 ```
 <details>
@@ -119,7 +130,7 @@ echo $EVAL
 Complete example response
 </summary>
 
-```
+```json
 {
   "object": "eval",
   "id": "eval_6813e1235630819094b3646a860de26f",
@@ -292,15 +303,16 @@ Complete example response
     
 </details>
 
-#### Uploading the test data
-Test data is upload in with filetype `jsonl` as `purpose="evals"`
-```
+#### Uploading Test Data
+
+```bash
 FILEID=$(curl https://api.openai.com/v1/files \
   -H "Authorization: Bearer $OPENAI_API_KEY" \
   -F purpose="evals" \
   -F file="@tickets.jsonl" | jq -r .id)
 ```
-```
+
+```bash
 echo $FILEID
 ```
 <details>
@@ -308,7 +320,7 @@ echo $FILEID
 Complete example response
 </summary>
 
-```
+```json
 {
   "object": "file",
   "id": "file-EsrvPZ76WpsACkuVkyWoPq",
@@ -324,16 +336,16 @@ Complete example response
 </details>
 
 #### Run Evaluation
-Update `request.json` manually with the `FILEID` or run
-```
+
+```bash
 if [[ "$OSTYPE" == "darwin"* ]]; then
   sed -i '' 's/"id": *"[^"]*"/"id": "'"$FILEID"'"/' request.json
 else
   sed -i 's/"id": *"[^"]*"/"id": "'"$FILEID"'"/' request.json
 fi
 ```
-The evaluation is described in `request.json`
-```
+
+```json
 {
     "name": "Categorization text run",
     "data_source": {
@@ -359,14 +371,15 @@ The evaluation is described in `request.json`
     }
   }
 ```
-Run the evaluation
-```
+
+```bash
 EVALRUN=$(curl https://api.openai.com/v1/evals/$EVAL/runs \
   -H "Authorization: Bearer $OPENAI_API_KEY" \
   -H "Content-Type: application/json" \
   -d @request.json | jq -r .id)
 ```
-```
+
+```bash
 echo $EVALRUN
 ```
 <details>
@@ -374,7 +387,7 @@ echo $EVALRUN
 Complete example response
 </summary>
 
-```
+```json
 {
   "object": "eval.run",
   "id": "evalrun_68148d1e89a08190bf5852498fcdb6db",
@@ -430,13 +443,15 @@ Complete example response
 
 </details>
 
-#### Get the results
-```
+#### Get the Results
+
+```bash
 RESULTS=$(curl https://api.openai.com/v1/evals/$EVAL/runs/$EVALRUN \
     -H "Authorization: Bearer $OPENAI_API_KEY" \
     -H "Content-Type: application/json" | jq -r .)
 ```
-```
+
+```bash
 echo $RESULTS | jq -r '.report_url'
 echo $RESULTS | jq -r '.result_counts'
 echo $RESULTS | jq -r '.report_url'
@@ -446,7 +461,7 @@ echo $RESULTS | jq -r '.report_url'
 Complete example response
 </summary>
 
-```
+```json
 {
   "object": "eval.run",
   "id": "evalrun_68148f7e68688190baf81ad26e979d79",

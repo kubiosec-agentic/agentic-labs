@@ -1,3 +1,5 @@
+![OpenAI](https://img.shields.io/badge/OpenAI-lightblue) ![Python](https://img.shields.io/badge/Python-blue) ![Agents](https://img.shields.io/badge/Agents-orange)
+
 # LAB060: Multi-Agent Orchestration & OpenAI APIs
 ## Introduction
 This lab explores both the **OpenAI agents framework** and **OpenAI Responses API** for building structured AI agents. You'll learn to:
@@ -69,19 +71,19 @@ python3 agent_06.py
 #### Example 7: Multi-Agent Security Analysis Pipeline
 Advanced multi-agent orchestration demonstrating sophisticated agent workflows with three specialized agents:
 
-**🔄 Agent Architecture:**
+**Agent Architecture:**
 - **Analyzer Agent**: Performs detailed sysdig trace analysis with line number extraction
 - **Summary Agent**: Converts technical analysis into markdown documentation (summary.md)
 - **JSON Agent**: Structures findings into comprehensive JSON format (details.json)
 
-**📊 Key Capabilities:**
+**Key Capabilities:**
 - Agent handoff and result passing between specialized agents
 - Automatic file generation with error handling
 - Multi-format output (human-readable + machine-readable)
 - Progress tracking through complex workflows
 - Line number referencing for forensic review
 
-**💾 Generated Artifacts:**
+**Generated Artifacts:**
 - `summary.md`: Executive summary and key findings in markdown format
 - `details.json`: Structured analysis with metadata, line references, and evidence
 

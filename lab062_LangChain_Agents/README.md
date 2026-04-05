@@ -61,7 +61,7 @@ Basic LangChain ReAct agent using GPT-3.5-turbo without any tool access. Demonst
 python3 LA_01.py
 ```
 
-#### Example 2: ReAct Agent with Python REPL Tool  
+#### Example 2: ReAct Agent with Python REPL Tool
 > ⚠️ **SECURITY WARNING**: Uses PythonREPLTool which can execute arbitrary Python code
 
 LangChain ReAct agent with access to Python REPL for mathematical computations. Uses experimental tools.
@@ -89,7 +89,7 @@ curl -XPOST http://127.0.0.1:5000/v1/chat/completions \
 #### Example 4: Wikipedia Research Agent
 LangChain ReAct agent with Wikipedia integration for research queries. Demonstrates external knowledge source integration.
 ```bash
-python3 LA_04.py  
+python3 LA_04.py
 ```
 
 #### Example 5: LangChain Chain (Advanced)
@@ -100,13 +100,13 @@ python3 LA_05.py
 
 ## Security Notes for Experimental Features
 
-**🔒 LangChain Experimental Security Considerations:**
+**LangChain Experimental Security Considerations:**
 - **PythonREPLTool**: Can execute arbitrary Python code - sandbox recommended
 - **Agent Execution**: May follow unexpected reasoning paths
 - **External Tools**: Wikipedia and web access may leak information
 - **Prompt Injection**: Agents vulnerable to malicious prompts
 
-**✅ Safe Usage Guidelines:**
+**Safe Usage Guidelines:**
 - Run in isolated/sandboxed environments only
 - Never expose experimental agents to untrusted input
 - Monitor agent actions and tool usage
@@ -114,23 +114,23 @@ python3 LA_05.py
 
 ## Deprecation Timeline & Migration Path
 
-**📅 LangChain Experimental Status (2025):**
+**LangChain Experimental Status (2025):**
 - **Current Status**: Active but experimental (version 0.3.x)
 - **Migration Target**: [LangGraph](https://python.langchain.com/docs/langgraph/) for complex agent orchestration
 - **Legacy Support**: Maintained until LangChain 1.0.0 release
 - **Security Concerns**: Features with CVEs moved to experimental package in 2023
 
-**🔄 Migration Strategy:**
+**Migration Strategy:**
 1. **Immediate**: Use this lab for learning experimental patterns
 2. **Near-term**: Migrate to `create_react_agent()` from core LangChain
 3. **Long-term**: Transition to LangGraph for production agent workflows
 
-**📖 Key Resources:**
+**Key Resources:**
 - [LangChain v0.3 Migration Guide](https://python.langchain.com/docs/versions/v0_3/)
 - [Deprecations List](https://python.langchain.com/docs/versions/v0_2/deprecations/)
 - [GitHub Migration Discussion](https://github.com/langchain-ai/langchain/discussions/18547)
 
-**⚙️ Migration Tools:**
+**Migration Tools:**
 ```bash
 # Install migration CLI
 pip install langchain-cli

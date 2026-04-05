@@ -1,66 +1,52 @@
-
 ![LangChain](https://img.shields.io/badge/LangChain-lightgrey) ![ChatCompletion](https://img.shields.io/badge/ChatCompetion-green)
+
 # LAB035: LangChain Quickstart
-This lab demonstrates how to build powerful language model workflows using LangChain and LangGraph.<br>
 
-**LangChain** is a flexible framework for composing prompts, models, tools, and logic into modular pipelines called chains.<br>
-
-**LangGraph** builds on top of LangChain by allowing you to define stateful, multi-step graphs with branching logic ideal for building agents and complex decision-making systems.
-
-With just a few lines of code, you can:
-- **Create structured chains:** connect prompts, language models, and output parsers
-- **Build intelligent agents:** LLM-powered systems that can make decisions and call tools
-- Use **LangGraph** to model flows as stateful graphs with memory and control
-
-This lab includes minimal examples to help you get started with each concept.
+## Introduction
+This lab demonstrates how to build powerful language model workflows using LangChain and LangGraph. LangChain is a flexible framework for composing prompts, models, tools, and logic into modular pipelines called chains. LangGraph builds on top of LangChain by allowing you to define stateful, multi-step graphs with branching logic ideal for building agents and complex decision-making systems. With just a few lines of code, you can create structured chains, build intelligent agents, and use LangGraph to model flows as stateful graphs with memory and control. This lab includes minimal examples to help you get started with each concept.
 
 ## Set up your environment
-```
+
+### Setup Commands
+```bash
 export OPENAI_API_KEY="xxxxxxxxx"
 export ANTHROPIC_API_KEY="xxxxxxxxx"
 export GOOGLE_API_KEY="xxxxxxxxx"
-```
-```
 ./lab_setup.sh
-```
-```
 source .lab035/bin/activate
 ```
+
 ## Lab instructions
 
-#### Basic Chat Example
+### Basic Chat Example
 Demonstrates using different LLM providers with LangChain:
-```
+```bash
 python3 ./chat.py
 ```
 
-#### Prompt Engineering and Chaining
+### Prompt Engineering and Chaining
 Shows how to create chains with prompt templates:
-```
+```bash
 python3 ./prompt.py
 ```
 
-#### Advanced Prompting Techniques
+### Advanced Prompting Techniques
 Demonstrates system messages and structured prompts:
-```
+```bash
 python3 ./advanced_prompting.py
 ```
 
-#### Multi-Turn Conversations
+### Multi-Turn Conversations
 Implements conversation history and memory:
-```
+```bash
 python3 ./multi-turn.py
 ```
 
-#### HuggingFace Local Model
+### HuggingFace Local Model
 Runs models locally using HuggingFace transformers:
-```
+```bash
 export HF_TOKEN="xxxxxxxxx"
-```
-```
 pip install torch accelerate transformers
-```
-```
 python3 ./hf_local.py
 ```
 
@@ -73,13 +59,9 @@ For detailed guidance and examples, check out the following documentation files:
 - [HuggingFace local model example](./doc/huggingface.md) - Working with local models
 
 ## Cleanup environment
-```
+```bash
 rm -rf  ~/.cache/huggingface
-```
-```
 deactivate
-```
-```
 ./lab_cleanup.sh
 ```
 Back to [Lab Overview](https://github.com/kubiosec-agentic/agentic-labs/blob/master/README.md#-lab-overview)

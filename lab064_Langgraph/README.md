@@ -1,56 +1,52 @@
 ![LangGraph](https://img.shields.io/badge/LangGraph-blue) ![StateGraph](https://img.shields.io/badge/StateGraph-green) ![Workflows](https://img.shields.io/badge/Workflows-orange)
+
 # LAB064: LangGraph - Stateful Workflow Orchestration
-This lab demonstrates how to build stateful, multi-step workflows and intelligent agents using LangGraph.<br>
 
-**LangGraph** is a powerful framework for creating stateful, graph-based workflows that can handle complex decision-making, conditional routing, and multi-agent coordination. It builds on top of LangChain to provide:
-
-- **Stateful Graphs:** Maintain state across multiple steps and nodes
-- **Conditional Routing:** Dynamic workflow paths based on runtime conditions  
-- **Agent Orchestration:** Coordinate multiple LLMs and tools in complex workflows
-- **Memory Management:** Persistent state and conversation history
-- **Tool Integration:** Seamlessly integrate external APIs and functions
-
-With LangGraph, you can build sophisticated AI systems that go beyond simple request-response patterns to create intelligent, adaptive workflows.
+## Introduction
+This lab demonstrates how to build stateful, multi-step workflows and intelligent agents using LangGraph. LangGraph is a powerful framework for creating stateful, graph-based workflows that can handle complex decision-making, conditional routing, and multi-agent coordination. It builds on top of LangChain to provide stateful graphs, conditional routing, agent orchestration, memory management, and tool integration. With LangGraph, you can build sophisticated AI systems that go beyond simple request-response patterns to create intelligent, adaptive workflows.
 
 ## Set up your environment
-```
+
+### Setup Commands
+```bash
 export OPENAI_API_KEY="xxxxxxxxx"
-export ANTHROPIC_API_KEY="xxxxxxxxx" 
+export ANTHROPIC_API_KEY="xxxxxxxxx"
 export GOOGLE_API_KEY="xxxxxxxxx"
 ```
-```
+```bash
 ./lab_setup.sh
 ```
-```
+```bash
 source .lab064/bin/activate
 ```
 ## Lab instructions
 
-#### Basic LangGraph Workflow (LG_01)
+#### Example 1: Basic LangGraph Workflow
 Introduction to StateGraph with simple nodes and edges:
-```
+```bash
 python3 ./LG_01.py
 ```
 
-#### Agent with Tools (LG_02)  
+#### Example 2: Agent with Tools
 Demonstrates agent creation with web search and calculation tools:
-```
+```bash
 python3 ./LG_02.py
 ```
 
-#### Graph Visualization (LG_03)
+#### Example 3: Graph Visualization
 Shows how to visualize and save workflow graphs:
-```
+```bash
 python3 ./LG_03.py
 ```
 
-#### Job Application Review System (LG_04)
+#### Example 4: Job Application Review System
 Advanced workflow demonstrating AI-powered job application processing with conditional routing and state management:
-```
+```bash
 python3 ./LG_04.py
 ```
 
-**LG_05.py** showcases a sophisticated real-world application of LangGraph for automating job application reviews. This example demonstrates:
+#### Example 5: Job Application Review Workflow
+This example showcases a sophisticated real-world application of LangGraph for automating job application reviews with:
 
 - **Multi-Node Workflow:** Complex pipeline with analysis, generation, and review phases
 - **Conditional Routing:** Smart decision-making based on candidate suitability assessment
@@ -60,12 +56,12 @@ python3 ./LG_04.py
 - **TypedDict States:** Strongly-typed state definitions for better code reliability
 
 **Key Features:**
-- 🔍 **Job Requirement Analysis:** AI-powered matching of candidate experience to job requirements
-- ✍️ **Automated Letter Generation:** Personalized application letters based on candidate profile and job description
-- 📊 **Application Scoring:** Intelligent review system with numerical scoring (1-10) and detailed feedback
-- 🔀 **Smart Routing:** Conditional workflow that either processes suitable candidates or handles rejections
-- 📈 **Action Tracking:** Complete audit trail of all workflow steps and decisions
-- 🛡️ **Fallback Logic:** Graceful degradation with template responses when AI services are unavailable
+- **Job Requirement Analysis:** AI-powered matching of candidate experience to job requirements
+- **Automated Letter Generation:** Personalized application letters based on candidate profile and job description
+- **Application Scoring:** Intelligent review system with numerical scoring (1-10) and detailed feedback
+- **Smart Routing:** Conditional workflow that either processes suitable candidates or handles rejections
+- **Action Tracking:** Complete audit trail of all workflow steps and decisions
+- **Fallback Logic:** Graceful degradation with template responses when AI services are unavailable
 
 **Workflow Steps:**
 1. **analyze_job:** Evaluates candidate fit against job requirements
@@ -110,14 +106,14 @@ This example perfectly illustrates how LangGraph can orchestrate complex busines
 
 ### Configuration Management
 Runtime customization of models, tools, and parameters:
-```python
+```bash
 config = {"configurable": {"model_provider": "OpenAI", "model_name": "gpt-4o"}}
 result = graph.invoke(input_data, config=config)
 ```
 
 ### Streaming and Real-time Updates
 Monitor workflow execution in real-time:
-```python
+```bash
 async for chunk in graph.astream(input_data, stream_mode="values"):
     print(f"Update: {chunk}")
 ```

@@ -1,30 +1,25 @@
 ![OpenAI](https://img.shields.io/badge/OpenAI-lightblue) ![Responses_API](https://img.shields.io/badge/Responses_API-brightgreen) ![Curl](https://img.shields.io/badge/Curl-orange) ![Tools](https://img.shields.io/badge/Tools-purple)
-# LAB02: OpenAI responses API
-## Introduction
-This lab explores the new OpenAI responses API, covering essential capabilities like basic prompting, real-time web search, file analysis, streaming, and message recall. You'll use curl and jq to inspect responses and learn how to build context-aware conversations in Python.
-Ideal for understanding how to:
-- Make direct API calls
-- Enable tools like web_search_preview
-- Upload and query files
-- Stream responses
-- Reference past messages <br>
 
-Great for developers wanting hands-on experience with OpenAI's lower-level APIs.
+# LAB020: OpenAI Responses API
+
+## Introduction
+This lab explores the new OpenAI responses API, covering essential capabilities like basic prompting, real-time web search, file analysis, streaming, and message recall. You'll use curl and jq to inspect responses and learn how to build context-aware conversations in Python. Ideal for understanding how to make direct API calls, enable tools like web_search_preview, upload and query files, stream responses, and reference past messages. Great for developers wanting hands-on experience with OpenAI's lower-level APIs.
 
 ## Set up your environment
-```
+
+### Setup Commands
+```bash
 export OPENAI_API_KEY="xxxxxxxxx"
-```
-```
 ./lab_setup.sh
 ```
 
 ## Lab instructions
-### OpenAI Resonses API
+
+### OpenAI Responses API
 https://platform.openai.com/docs/api-reference/responses
 #### Simple textbook example
 This lab provides a simple textbook example of making a basic API call to retrieve a response using the `/responses` endpoint.
-```
+```bash
 curl -XPOST "https://api.openai.com/v1/responses" \
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $OPENAI_API_KEY" \
@@ -35,19 +30,19 @@ curl -XPOST "https://api.openai.com/v1/responses" \
 ```
 #### `jq` to the rescue
 Tired of digging through raw JSON? This lab shows how `jq` can make API responses clean, readable, and to the point.
-```
+```bash
 curl -XPOST "https://api.openai.com/v1/responses" \
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $OPENAI_API_KEY" \
     -d '{
         "model": "gpt-4o",
         "input": "what are important breakthrough of ai in 2025?"
-    }' | jq -r . 
+    }' | jq -r .
 ```
 **Note:** The model may return outdated information, as its knowledge is limited to events before its training cutoff (e.g., mid-2023 for GPT-4o).
 #### Adding `web_search_preview`
 This lab demonstrates how to enable the `web_search_preview` tool, which lets the model search the web in real time, ideal for retrieving up-to-date information on recent breakthroughs, news, or current events.
-```
+```bash
 curl -XPOST "https://api.openai.com/v1/responses" \
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $OPENAI_API_KEY" \
@@ -57,8 +52,9 @@ curl -XPOST "https://api.openai.com/v1/responses" \
         "input": "what are important breakthrough of ai in 2025?"
     }' | jq -r '.output[].content[0].text'
 ```
+
 Extracting the link annotations.
-```
+```bash
 curl -XPOST "https://api.openai.com/v1/responses" \
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $OPENAI_API_KEY" \
@@ -70,13 +66,14 @@ curl -XPOST "https://api.openai.com/v1/responses" \
 ```
 #### File search
 This lab demonstrates how to upload a file and query its contents using the API, perfect for letting the model analyze documents like PDFs.
-```
+```bash
 FILEID=$(curl https://api.openai.com/v1/files \
     -H "Authorization: Bearer $OPENAI_API_KEY" \
     -F purpose="assistants" \
     -F file="@./data/story.pdf" | jq -r .id)
 ```
-```
+
+```bash
 curl "https://api.openai.com/v1/responses" \
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $OPENAI_API_KEY" \
@@ -102,7 +99,7 @@ curl "https://api.openai.com/v1/responses" \
 
 #### Message recall
 This lab shows how to recall a previous response using its unique ID, handy for reviewing or debugging past interactions without re-running the entire request. Also asynchronous workflows will benefit from this concept, where you send a request, do other tasks, and fetch the result later when it's ready. (Modify and run previous command to find the response ID.)
-```
+```bash
 curl "https://api.openai.com/v1/responses/resp_<id>" \
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $OPENAI_API_KEY"
@@ -110,24 +107,23 @@ curl "https://api.openai.com/v1/responses/resp_<id>" \
 
 #### Streaming
 This lab introduces streaming responses, allowing you to receive the model’s output token by token as it generates—great for faster feedback and interactive experiences.
-```
+```bash
 curl -XPOST "https://api.openai.com/v1/responses" \
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $OPENAI_API_KEY" \
-    -d '{
+    -d ‘{
         "model": "gpt-4o",
         "input": "what are important breakthrough of ai?",
         "stream": true
-    }' 
+    }’
 ```
-#### Structured Ouptput
+
+#### Structured Output
 See [./ADDON.md](./ADDON.md)
 
 ## Cleanup environment
-```
+```bash
 deactivate
-```
-```
 ./lab_cleanup.sh
 ```
 Back to [Lab Overview](https://github.com/kubiosec-agentic/agentic-labs/blob/master/README.md#-lab-overview)

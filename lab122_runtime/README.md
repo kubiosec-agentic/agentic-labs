@@ -1,32 +1,50 @@
-# LAB122 Runtime Security
+![Security](https://img.shields.io/badge/Security-red) ![Docker](https://img.shields.io/badge/Docker-blue) ![Python](https://img.shields.io/badge/Python-blue)
+
+# LAB122: Runtime Security Monitoring
+
+## Introduction
+
+This lab demonstrates runtime security monitoring using Tetragon, a runtime security tool that provides real-time visibility into container and system behavior for agentic AI applications. You'll learn how to capture, analyze, and visualize security events.
+
 ## Set up your environment
-```
+
+### Prerequisites
+
+Install Tetragon: https://tetragon.io/docs/getting-started/install-docker/
+
+### Setup Commands
+
+```bash
 export OPENAI_API_KEY="xxxxxxxxx"
 ```
-```
+
+```bash
 ./lab_setup.sh
 ```
-```
+
+```bash
 source .lab122/bin/activate
 ```
-## Prerequisites
-Install tetragon https://tetragon.io/docs/getting-started/install-docker/
 
-## Test
-```
+## Lab instructions
+
+### Test
+
+```bash
 docker exec -ti tetragon tetra getevents -o compact
 ```
-```
+
+```bash
 docker exec -ti tetragon tetra getevents >events.jsonl
 ```
-```
+
+```bash
 python treejson.py < events.jsonl
 ```
 
-
-## Filters
 ### Egress Tracing Filter
-```
+
+```bash
 jq -r '
   select(.process_kprobe != null)
   | {
@@ -46,7 +64,8 @@ jq -r '
     }
 '
 ```
-```
+
+```bash
 jq -r '
   select(.process_kprobe != null)
   | {
@@ -68,11 +87,14 @@ jq -r '
     }
 '
 ```
+
 ## Cleanup environment
-```
+
+```bash
 deactivate
 ```
-```
+
+```bash
 ./lab_cleanup.sh
 ```
 Back to [Lab Overview](https://github.com/kubiosec-agentic/agentic-labs/blob/master/README.md#-lab-overview)

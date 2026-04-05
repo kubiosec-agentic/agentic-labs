@@ -19,23 +19,30 @@ By completing this lab, you will:
 This lab is ideal for developers who want practical, hands-on experience with building, extending, and debugging LLM agents that can interact with real-world data sources.
 
 ## Set up your environment
-```
+### Prerequisites
+- Python 3.7+ with pip
+- OpenAI API key (for LLM integration)
+
+### Setup Commands
+```bash
 export OPENAI_API_KEY="xxxxxxxxx"
 ```
-```
+```bash
 ./lab_setup.sh
 ```
-```
+```bash
 source .lab054/bin/activate
 ```
-To avoid the **_LangSmith_** warnings (build, test, debug, and monitor framework developed by **_LangChain_**)
-```
+
+To avoid the **LangSmith** warnings (build, test, debug, and monitor framework developed by **LangChain**):
+```bash
 export LANGCHAIN_TRACING_V2="false"
 export LANGCHAIN_API_KEY=""
 ```
+
 In your code you can add:
-```
-# Suppress LangSmith warnings 
+```python
+# Suppress LangSmith warnings
 import warnings
 warnings.filterwarnings("ignore", category=UserWarning, module="langsmith")
 ```
@@ -43,51 +50,47 @@ warnings.filterwarnings("ignore", category=UserWarning, module="langsmith")
 ## Lab instructions
 #### Example 1: Basic LangChain LLM Query (No Tools)
 This minimal example demonstrates a simple LangChain LLM query without any tool integration or structured output. It shows the basic pattern of invoking an LLM with a user message.
-```
+```bash
 python3 LC_01.py
 ```
 #### Example 2: LangChain chain with tool integration and structured output example
 This script demonstrates how to use a LangChain chain **with tool integration and structured output**. It connects an LLM to a simple weather tool, handles tool invocation and result parsing and feeds the result back into the chain for a final response. It uses the `ChatOpenAI` from `langchain_openai` class that provides an interface for interacting with OpenAI's chat-based language models, like GPT-3.5 and GPT-4. It simplifies the process of sending prompts to these models and receiving their responses, making it easier to build conversational AI applications.
-```
+```bash
 python3 LC_02.py
 ```
 There is a real weather app example to try out, see [lab990_addendum](../lab990_addendum/langchain)
 
 #### Example 3: LangChain with OpenAI Responses API and Web Search
 In this example, we explore how to extend a language model with tool integration using LangChain and **OpenAI's Responses API**. We initialize a ChatOpenAI instance with the `gpt-4.1-mini` model using the `output_version="responses/v1"` parameter to use the Responses API format, then bind it to a preview web search tool. This allows the model to augment its responses with live information from the web.
-```
+```bash
 python3 LC_03.py
 ```
 #### Example 4: Building a Custom Translation Pipeline with LangChain and OpenAI (Advanced)
 In this lab, we demonstrate how to create a custom LangChain pipeline that integrates directly with the OpenAI API. We start by defining a ChatPromptTemplate for translating text into French, then implement a RunnableLambda to send messages to OpenAI’s gpt-4 model. By combining the prompt, the LLM call, and a StrOutputParser into a runnable chain, we create a simple yet flexible translation workflow. Finally, we test the chain by translating a sample English phrase into French and printing the result.
-```
+```bash
 python3 LC_core.py
 ```
 #### Example 5: Integrating LangChain Runnables with OpenAI Function Calling
 This snippet wires a simple LangChain pipeline to OpenAI’s function-calling so a model can call a tiny “datetime tool” when needed. It:
 
-- Loads your OpenAI API key and creates a client.  
-- Defines a tool `get_current_datetime()` that returns a formatted timestamp, and exposes it to the model via the `tools` schema.  
-- Builds a `ChatPromptTemplate` that asks, “Answer this question: {text}”.  
-- Wraps an OpenAI Chat Completions call in a `RunnableLambda`. If the model requests the tool, the code executes it, appends the tool result to the conversation, and asks the model for a final answer.  
-- Composes a chain `prompt | llm | StrOutputParser` and invokes it with “What is the current date and time?”, printing the model’s response that includes the live datetime.  
+- Loads your OpenAI API key and creates a client.
+- Defines a tool `get_current_datetime()` that returns a formatted timestamp, and exposes it to the model via the `tools` schema.
+- Builds a `ChatPromptTemplate` that asks, “Answer this question: {text}”.
+- Wraps an OpenAI Chat Completions call in a `RunnableLambda`. If the model requests the tool, the code executes it, appends the tool result to the conversation, and asks the model for a final answer.
+- Composes a chain `prompt | llm | StrOutputParser` and invokes it with “What is the current date and time?”, printing the model’s response that includes the live datetime.
 
 This is a minimal, end-to-end example of tool use with LangChain runnables and OpenAI chat completions.
 
-```
+```bash
 python3 LC_core.py
 ```
 ## Cleanup environment
-```
+```bash
 unset LANGCHAIN_TRACING_V2
-```
-```
 unset LANGCHAIN_API_KEY
-```
-```
 deactivate
 ```
-```
+```bash
 ./lab_cleanup.sh
 ```
 Back to [Lab Overview](https://github.com/kubiosec-agentic/agentic-labs/blob/master/README.md#-lab-overview)

@@ -5,10 +5,10 @@
 LAB010 introduces the foundational steps for interacting with the OpenAI Chat Completions API. You’ll set up a working development environment, learn how to send requests using `curl`, structure conversations with system prompts, extract responses using `jq`, and even perform image-based tasks.  This lab is ideal for anyone seeking to develop a solid understanding of OpenAI API mechanics through hands-on practice. Mastering these techniques is a valuable penetration testing skill, particularly when low-level interactions are required or when only basic tooling is available. It can also serve as a quick win for integrating AI feedback into scripts or automation pipelines, such as GitHub Actions.
 
 ## Set up your environment
-```
+
+### Setup Commands
+```bash
 export OPENAI_API_KEY="xxxxxxxxx"
-```
-```
 ./lab_setup.sh
 ```
 
@@ -17,7 +17,7 @@ export OPENAI_API_KEY="xxxxxxxxx"
 https://platform.openai.com/docs/api-reference/chat
 #### Simple textbook example
 This lab demonstrates a simple textbook example of how to call the OpenAI Chat Completions API using `curl`.
-```
+```bash
 curl -XPOST https://api.openai.com/v1/chat/completions \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $OPENAI_API_KEY" \
@@ -35,11 +35,10 @@ curl -XPOST https://api.openai.com/v1/chat/completions \
       }
     ]
   }'
-
 ```
 #### Adding a System prompt
 Next, add a system prompt to guide the behavior of the assistant in an OpenAI Chat API request.
-```
+```bash
 curl -XPOST https://api.openai.com/v1/chat/completions \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $OPENAI_API_KEY" \
@@ -70,11 +69,11 @@ curl -XPOST https://api.openai.com/v1/chat/completions \
     "top_p": 1,
     "frequency_penalty": 0,
     "presence_penalty": 0
-  }' 
+  }'
 ```
 #### `jq` to the rescue
 This lab introduces the use of `jq` to neatly extract and display the assistant’s reply from the JSON response.
-```
+```bash
 curl -XPOST https://api.openai.com/v1/chat/completions \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $OPENAI_API_KEY" \
@@ -109,7 +108,7 @@ curl -XPOST https://api.openai.com/v1/chat/completions \
 ```
 #### Continuing the conversation
 This lab demonstrates how to continue a conversation by including previous messages in the prompt to maintain context and coherence.
-```
+```bash
 curl -XPOST https://api.openai.com/v1/chat/completions \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $OPENAI_API_KEY" \
@@ -173,7 +172,7 @@ See [./ADDON.md](./ADDON.md)
 
 #### Image analysis
 This lab illustrates how to perform image analysis with the Chat Completions API by sending an image URL and requesting a specific extraction task, such as reading a license plate.
-```
+```bash
 curl -XPOST https://api.openai.com/v1/chat/completions \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $OPENAI_API_KEY" \
@@ -201,7 +200,7 @@ curl -XPOST https://api.openai.com/v1/chat/completions \
   }' | jq -r .
 ```
 Try this ;-)
-```
+```bash
 curl https://api.openai.com/v1/chat/completions \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $OPENAI_API_KEY" \
@@ -231,33 +230,32 @@ curl https://api.openai.com/v1/chat/completions \
 Now, try fixing it using natural language and the chat completion.
 #### Streaming
 This example introduces streaming , allowing you to receive the model’s output token by token as it generates. This is great for faster feedback and interactive experiences.
-```
+```bash
 curl -XPOST "https://api.openai.com/v1/chat/completions" \
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $OPENAI_API_KEY" \
-  -d '{
+  -d ‘{
     "model": "gpt-4o",
     "messages": [{"role": "user", "content": "Write a poem about the stars."}],
     "stream": true
-  }'
+  }’
 ```
+
 Adding some `grep` magic:
-```
+```bash
 curl -XPOST "https://api.openai.com/v1/chat/completions" \
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $OPENAI_API_KEY" \
-  -d '{
+  -d ‘{
     "model": "gpt-4o",
     "messages": [{"role": "user", "content": "Write a poem about the stars."}],
     "stream": true
-  }' | grep -oP '(?<="content":")[^"]*'
+  }’ | grep -oP ‘(?<="content":")[^"]*’
 ```
 
 ## Cleanup environment
-```
+```bash
 deactivate
-```
-```
 ./lab_cleanup.sh
 ```
 Back to [Lab Overview](https://github.com/kubiosec-agentic/agentic-labs/blob/master/README.md#-lab-overview)

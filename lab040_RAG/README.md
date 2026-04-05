@@ -10,13 +10,13 @@ This lab explores multiple approaches to RAG (Retrieval-Augmented Generation) us
 You’ll also learn how to upload documents (including PDFs), perform queries, and generate LLM-based answers using OpenAI’s tool system, perfect for building context-aware assistants over custom data.
 
 ## Set up your environment
-```
+```bash
 export OPENAI_API_KEY="xxxxxxxxx"
 ```
-```
+```bash
 ./lab_setup.sh
 ```
-```
+```bash
 source .lab040/bin/activate
 ```
 ## Lab instructions
@@ -30,24 +30,24 @@ It prints both the top-matching documents and, if enabled, a synthesized respons
 It relies on the default SimpleNodeParser (unless overridden), which typically uses:
 - Chunk size: 512 tokens
 - Chunk overlap: 20 tokens
-```
+```bash
 python3 ./RAG_01.py
 ```
 #### Example 2: RAG based search using Chroma
 This code uses the LangChain framework with the Chroma vector store to index and search text documents using OpenAI embeddings.
 It loads a `.txt` file, splits it into chunks, embeds those chunks, stores them in Chroma, and performs both keyword-based and vector-based similarity searches on a user query.
-```
+```bash
 python3 ./RAG_02.py
 ```
 #### Example 3: RAG based search using Chroma and Langchain for synthesis (advanced)
 This code uses the LangChain framework with Chroma as the vector store to enable semantic search and LLM-based Q&A over a local `.txt` file.
 It splits the text into overlapping chunks, stores their embeddings, retrieves the top relevant ones for a query, and then uses an OpenAI chat model to generate a synthesized answer using a custom prompt.
-```
+```bash
 python3 ./RAG_03.py
 ```
 #### Example 4: RAG based search using OpenAI VectorStore and Response API
 Create a managed VectorStore using the OpenAI platform
-```
+```bash
 VS_ID=$(curl https://api.openai.com/v1/vector_stores \
   -H "Authorization: Bearer $OPENAI_API_KEY" \
   -H "Content-Type: application/json" \
@@ -56,59 +56,59 @@ VS_ID=$(curl https://api.openai.com/v1/vector_stores \
     "name": "MCP documentation"
   }' | jq -r .id)
 ```
-```
+```bash
 echo $VS_ID
 ```
 File upload to OpenAI (`purpose="assistants"`)
-```
+```bash
 FILE_ID=$(curl https://api.openai.com/v1/files \
   -H "Authorization: Bearer $OPENAI_API_KEY" \
   -F purpose="assistants" \
   -F file="@data/llms-full.txt" | jq -r .id)
 ```
-```
+```bash
 echo $FILE_ID
 ```
 Link the file to the vector store (This can take a few seconds)
-```
+```bash
 curl https://api.openai.com/v1/vector_stores/$VS_ID/files \
     -H "Authorization: Bearer $OPENAI_API_KEY" \
     -H "Content-Type: application/json" \
     -H "OpenAI-Beta: assistants=v2" \
     -d '{
-      "file_id": "'$FILE_ID'"    
+      "file_id": "'$FILE_ID'"
   }'
 ```
 <details>
 <summary> Optionally add a pdf </summary>
 
-```
+```bash
 curl -o ./data/attention.pdf https://arxiv.org/pdf/1706.03762
 ```
 File upload
-```
+```bash
 FILE_ID=$(curl https://api.openai.com/v1/files \
   -H "Authorization: Bearer $OPENAI_API_KEY" \
   -F purpose="assistants" \
   -F file="@data/attention.pdf" | jq -r .id)
 ```
-```
+```bash
 echo $FILE_ID
 ```
 Link the file to the vector store (This can take a few seconds)
-```
+```bash
 curl https://api.openai.com/v1/vector_stores/$VS_ID/files \
     -H "Authorization: Bearer $OPENAI_API_KEY" \
     -H "Content-Type: application/json" \
     -H "OpenAI-Beta: assistants=v2" \
     -d '{
-      "file_id": "'$FILE_ID'"    
+      "file_id": "'$FILE_ID'"
   }'
 ```
 </details>
 
 Query the responses API
-```
+```bash
 curl https://api.openai.com/v1/responses \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $OPENAI_API_KEY" \
@@ -125,8 +125,8 @@ Try another prompt, like "How can MCP influence attention in LLM reasoning?"
 
 <details>
 <summary> Sample Response </summary>
-  
-```
+
+```json
 {
   "id": "resp_68150931fbf08191941ccd1dc614138202dc14dfaa548bfc",
   "object": "response",
@@ -312,21 +312,21 @@ Try another prompt, like "How can MCP influence attention in LLM reasoning?"
 
 #### Example 5: RAG based search using OpenAI VectorStore and Response API (Python)
 **Important:** You must update the vector store ID in `RAG_04.py` with your VectorStore ID from Example 4 above (the `$VS_ID` value).
-```
+```bash
 python3 ./RAG_04.py
 ```
 
 #### Example 6: Agentic RAG with Tool Calling
 This demonstrates an advanced agentic RAG system where the LLM autonomously decides when to search for information using tool calls and reasoning.
-```
+```bash
 python3 ./ARAG/AgenticRAG.py
 ```
 
 ## Cleanup environment
-```
+```bash
 deactivate
 ```
-```
+```bash
 ./lab_cleanup.sh
 ```
 Back to [Lab Overview](https://github.com/kubiosec-agentic/agentic-labs/blob/master/README.md#-lab-overview)

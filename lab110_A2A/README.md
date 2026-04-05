@@ -1,17 +1,8 @@
-# LAB110 - A2A (Agent-to-Agent Communication)
-## Set up your environment
-```bash
-export OPENAI_API_KEY="your_openai_api_key_here"
-```
-```bash
-./lab_setup.sh
-```
-```bash
-source .lab110/bin/activate
-```
+![Python](https://img.shields.io/badge/Python-blue) ![A2A](https://img.shields.io/badge/A2A-green) ![Agents](https://img.shields.io/badge/Agents-orange)
 
-## Lab instructions
-### Agent-to-Agent Communication Framework
+# LAB110: Agent-to-Agent Communication (A2A)
+
+## Introduction
 
 This lab demonstrates the A2A (Agent-to-Agent) communication framework, which enables direct communication and coordination between autonomous AI agents. You'll learn how to:
 
@@ -22,9 +13,26 @@ This lab demonstrates the A2A (Agent-to-Agent) communication framework, which en
 
 The A2A framework provides a standardized way for agents to discover, communicate, and collaborate with each other in distributed systems.
 
-## Example Scenarios
+## Set up your environment
 
-### Step 1: Setup Hello World Agent (Terminal_1)
+### Setup Commands
+
+```bash
+export OPENAI_API_KEY="your_openai_api_key_here"
+```
+
+```bash
+./lab_setup.sh
+```
+
+```bash
+source .lab110/bin/activate
+```
+
+## Lab instructions
+
+### Step 1: Setup Hello World Agent (Terminal 1)
+
 Start a basic A2A agent that can receive and respond to messages from other agents:
 
 ```bash
@@ -38,7 +46,8 @@ This creates a simple agent that:
 - Exposes an agent card for service discovery
 - Provides basic hello world functionality
 
-### Step 2: Setup Hello World Client (Terminal_2)
+### Step 2: Setup Hello World Client (Terminal 2)
+
 Test the agent communication by running a client that connects to the agent:
 
 ```bash
@@ -53,7 +62,8 @@ This demonstrates:
 - Basic message exchange patterns
 - Agent response handling
 
-### Step 3: Agent Discovery (Terminal_2)
+### Step 3: Agent Discovery (Terminal 2)
+
 Explore the agent's self-description and capabilities using the standard discovery endpoint:
 
 ```bash
@@ -65,7 +75,8 @@ This shows:
 - Available services and endpoints
 - Communication protocols supported
 
-### Step 4: Setup A2A Inspector (Terminal_2)
+### Step 4: Setup A2A Inspector (Terminal 2)
+
 Install and run the A2A Inspector for advanced monitoring and debugging:
 
 ```bash

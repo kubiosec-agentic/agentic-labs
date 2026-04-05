@@ -1,18 +1,26 @@
-# LAB004 - LLM Security Analysis with Qwen Model
+![Docker](https://img.shields.io/badge/Docker-blue) ![Python](https://img.shields.io/badge/Python-blue)
+
+# LAB004: LLM Security Analysis with Qwen Model
+
+## Introduction
+This lab demonstrates using the Qwen2.5-0.5B model to explain security issues such as Log4j vulnerabilities. You'll set up a containerized deployment with Docker and explore how lightweight transformer models can be used for security analysis tasks. The lab includes practical examples of security prompts and model configuration best practices.
+
 ## Set up your environment
 
-### Local Python Setup
+### Prerequisites
+- Docker and Docker Compose installed
+- OpenAI API key (for reference, though this lab uses local Qwen model)
+
+### Setup Commands
+
+#### Local Python Setup
 ```bash
 export OPENAPI_API_KEY="xxxxxxxxx"
-```
-```bash
 ./lab_setup.sh
-```
-```bash
 source .lab004/bin/activate
 ```
 
-### Docker Setup (Recommended)
+#### Docker Setup (Recommended)
 ```bash
 # Build and run with Docker Compose
 docker compose up --build
@@ -31,6 +39,7 @@ docker run -it <your_dockerhub_username/your_image_name:latest>
 ```
 
 ## Lab instructions
+
 ### Running the Security Analysis Demo
 
 This lab demonstrates using the Qwen2.5-0.5B model explaining the Log4j issue.
@@ -118,10 +127,8 @@ N3b --> Z[Final Contextualized Representations]
 </details>
 
 ## Cleanup environment
-```
+```bash
 deactivate
-```
-```
 ./lab_cleanup.sh
 ```
 Back to [Lab Overview](https://github.com/kubiosec-agentic/agentic-labs/blob/master/README.md#-lab-overview)

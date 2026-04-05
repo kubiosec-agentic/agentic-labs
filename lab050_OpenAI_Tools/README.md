@@ -65,7 +65,7 @@ python3 OA_03.py
 **Test with vulnerable packages:**
 The script is pre-configured to scan `requirements-vulnerable.txt` which contains `pillow==6.2.0` with 41 known vulnerabilities.
 
-**💡 DevSecOps Tip**: pip-audit sends summary messages to stderr while JSON data goes to `stdout`. This is normal behavior, the tool handles both streams correctly to extract vulnerability details.
+**DevSecOps Tip**: pip-audit sends summary messages to stderr while JSON data goes to stdout. This is normal behavior, the tool handles both streams correctly to extract vulnerability details.
 
 #### Example 4: Security Innovators Wikipedia Research
 This example demonstrates Wikipedia integration for researching cybersecurity pioneers and innovators. It showcases:
@@ -100,13 +100,13 @@ python3 OA_02.py
 ```
 
 ## Cleanup environment
-```
+```bash
 unset OPENAI_BASE_URL
 ```
-```
+```bash
 deactivate
 ```
-```
+```bash
 ./lab_cleanup.sh
 ```
 Back to [Lab Overview](https://github.com/kubiosec-agentic/agentic-labs/blob/master/README.md#-lab-overview)
