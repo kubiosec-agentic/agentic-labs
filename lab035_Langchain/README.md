@@ -1,4 +1,4 @@
-![LangChain](https://img.shields.io/badge/LangChain-lightgrey) ![ChatCompletion](https://img.shields.io/badge/ChatCompetion-green)
+![LangChain](https://img.shields.io/badge/LangChain-lightgrey) ![Python](https://img.shields.io/badge/Python-blue) ![ChatCompletion](https://img.shields.io/badge/ChatCompletion-green)
 
 # LAB035: LangChain Quickstart
 

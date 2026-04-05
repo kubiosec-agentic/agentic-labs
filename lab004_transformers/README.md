@@ -1,4 +1,4 @@
-![Docker](https://img.shields.io/badge/Docker-blue) ![Python](https://img.shields.io/badge/Python-blue)
+![Docker](https://img.shields.io/badge/Docker-blue) ![Python](https://img.shields.io/badge/Python-blue) ![Security](https://img.shields.io/badge/Security-red)
 
 # LAB004: LLM Security Analysis with Qwen Model
 

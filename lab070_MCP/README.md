@@ -1,6 +1,4 @@
-![MCP](https://img.shields.io/badge/MCP-purple)
-![OpenAI](https://img.shields.io/badge/OpenAI-lightblue)
-![Python](https://img.shields.io/badge/Python-blue)
+![MCP](https://img.shields.io/badge/MCP-purple) ![OpenAI](https://img.shields.io/badge/OpenAI-lightblue) ![Python](https://img.shields.io/badge/Python-blue) ![Security](https://img.shields.io/badge/Security-red)
 
 # LAB070: Model Context Protocol
 

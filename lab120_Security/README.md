@@ -1,4 +1,4 @@
-![Security](https://img.shields.io/badge/Security-red) ![Python](https://img.shields.io/badge/Python-blue)
+![Security](https://img.shields.io/badge/Security-red) ![OpenAI](https://img.shields.io/badge/OpenAI-lightblue) ![Python](https://img.shields.io/badge/Python-blue)
 
 # LAB120: Security Analysis
 

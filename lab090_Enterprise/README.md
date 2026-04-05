@@ -1,4 +1,4 @@
-![OpenAI](https://img.shields.io/badge/OpenAI-lightblue) ![Python](https://img.shields.io/badge/Python-blue) ![Security](https://img.shields.io/badge/Security-red) ![Docker](https://img.shields.io/badge/Docker-blue)
+![OpenAI](https://img.shields.io/badge/OpenAI-lightblue) ![Python](https://img.shields.io/badge/Python-blue) ![Security](https://img.shields.io/badge/Security-red) ![RAG](https://img.shields.io/badge/RAG-pink) ![Docker](https://img.shields.io/badge/Docker-blue)
 
 # LAB090: Enterprise-Ready Agent Systems
 

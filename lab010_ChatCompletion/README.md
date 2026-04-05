@@ -1,4 +1,4 @@
-![OpenAI](https://img.shields.io/badge/OpenAI-lightblue) ![ChatCompletion](https://img.shields.io/badge/ChatCompetion-green) ![Curl](https://img.shields.io/badge/Curl-orange)
+![OpenAI](https://img.shields.io/badge/OpenAI-lightblue) ![ChatCompletion](https://img.shields.io/badge/ChatCompletion-green) ![Curl](https://img.shields.io/badge/Curl-orange)
 
 # LAB010: Chat Completions 
 ## Introduction

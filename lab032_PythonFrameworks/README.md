@@ -1,4 +1,4 @@
-![OpenAI](https://img.shields.io/badge/OpenAI-lightblue) ![Responses_API](https://img.shields.io/badge/Responses_API-brightgreen) ![Python](https://img.shields.io/badge/Python-blue) ![Tools](https://img.shields.io/badge/Tools-purple)
+![OpenAI](https://img.shields.io/badge/OpenAI-lightblue) ![ChatCompletion](https://img.shields.io/badge/ChatCompletion-green) ![Responses_API](https://img.shields.io/badge/Responses_API-brightgreen) ![Python](https://img.shields.io/badge/Python-blue)
 
 # LAB032: Python Frameworks
 

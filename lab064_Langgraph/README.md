@@ -1,4 +1,4 @@
-![LangGraph](https://img.shields.io/badge/LangGraph-blue) ![StateGraph](https://img.shields.io/badge/StateGraph-green) ![Workflows](https://img.shields.io/badge/Workflows-orange)
+![LangGraph](https://img.shields.io/badge/LangGraph-blue) ![Python](https://img.shields.io/badge/Python-blue) ![StateGraph](https://img.shields.io/badge/StateGraph-green) ![Workflows](https://img.shields.io/badge/Workflows-orange)
 
 # LAB064: LangGraph - Stateful Workflow Orchestration
 

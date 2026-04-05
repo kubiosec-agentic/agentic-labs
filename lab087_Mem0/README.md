@@ -1,4 +1,4 @@
-![OpenAI](https://img.shields.io/badge/OpenAI-lightblue) ![Python](https://img.shields.io/badge/Python-blue) ![Docker](https://img.shields.io/badge/Docker-blue)
+![OpenAI](https://img.shields.io/badge/OpenAI-lightblue) ![Python](https://img.shields.io/badge/Python-blue) ![Docker](https://img.shields.io/badge/Docker-blue) ![Mem0](https://img.shields.io/badge/Mem0-pink)
 
 # LAB087: Mem0 - Intelligent Memory Layer
 
