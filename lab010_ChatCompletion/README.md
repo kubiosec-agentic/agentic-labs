@@ -3,9 +3,9 @@
 # LAB010: Chat Completions
 
 ## Introduction
-LAB010 introduces the foundational steps for interacting with the OpenAI Chat Completions API using nothing but `curl` and `jq` — tools available on virtually any Linux system. This is deliberate: knowing how to call an LLM from the command line is one of the fastest ways to add AI capabilities to existing scripts, automation pipelines, or pentest tooling. A quick `curl` call can classify log entries, summarize recon output, generate phishing templates for red-team exercises, or extract structured data from unstructured text — all without writing a single line of Python.
+LAB010 introduces the foundational steps for interacting with the OpenAI Chat Completions API using nothing but `curl` and `jq`, tools available on virtually any Linux system. This is deliberate: knowing how to call an LLM from the command line is one of the fastest ways to add AI capabilities to existing scripts, automation pipelines, or pentest tooling. A quick `curl` call can classify log entries, summarize recon output, generate phishing templates for red-team exercises, or extract structured data from unstructured text. All of this is possible without writing a single line of Python.
 
-You'll learn how to structure API requests, control the model with system prompts, parse JSON responses, handle multi-turn conversations, analyze images, and stream output token by token. Along the way you'll also pick up practical `curl`, `jq`, and `grep` skills that transfer well beyond AI work. The [ADDON](./ADDON.md) then takes these basics into prompting techniques, output format pitfalls, and your first look at prompt injection.
+You'll learn how to structure API requests, control the model with system prompts, parse JSON responses, handle multi-turn conversations, analyze images, and stream output token by token. Along the way, you'll also pick up practical `curl`, `jq`, and `grep` skills that transfer well beyond AI work. The [ADDON](./ADDON.md) then takes these basics into prompting techniques, output format pitfalls, and your first look at prompt injection.
 
 ## Set up your environment
 
@@ -43,7 +43,7 @@ curl -XPOST https://api.openai.com/v1/chat/completions \
 Take a moment to look at the raw JSON response. It contains the model's answer, but also metadata like the model version, token usage, and a `finish_reason`. We'll use `jq` shortly to make sense of this.
 
 #### Adding a System prompt
-The `system` role lets you set the behavior and personality of the assistant *before* the user speaks. Think of it as the instructions you'd give a human assistant before they start a task. This is a critical concept: how you write the system prompt directly affects the quality, safety, and predictability of the model's output.
+The `system` role lets you set the behavior and personality of the assistant *before* the user speaks. Think of it as the instructions you'd give a human assistant before they start a task; this is a critical concept. How you write the system prompt directly affects the quality, safety, and predictability of the model's output.
 ```bash
 curl -XPOST https://api.openai.com/v1/chat/completions \
   -H "Content-Type: application/json" \
@@ -115,7 +115,7 @@ curl -XPOST https://api.openai.com/v1/chat/completions \
   }' | jq '.choices[0].message.content'
 ```
 
-Now try extracting the token usage instead. This tells you how many tokens the prompt and response consumed — important for understanding cost and rate limits:
+Now try extracting the token usage instead. This tells you how many tokens the prompt and response consumed, which is important for understanding cost and rate limits:
 ```bash
 curl -XPOST https://api.openai.com/v1/chat/completions \
   -H "Content-Type: application/json" \
@@ -134,7 +134,7 @@ curl -XPOST https://api.openai.com/v1/chat/completions \
 The response shows `prompt_tokens`, `completion_tokens`, and `total_tokens`. Every API call has a cost based on these numbers.
 
 #### Continuing the conversation
-The Chat Completions API is *stateless* — it has no memory of previous requests. To continue a conversation, you must include the full message history in every request. Notice how the `messages` array now contains the original system prompt, the first user question, the assistant's previous reply, and a new follow-up question.
+The Chat Completions API is *stateless*: it has no memory of previous requests. To continue a conversation, you must include the full message history in every request. Notice how the `messages` array now contains the original system prompt, the first user question, the assistant's previous reply, and a new follow-up question.
 ```bash
 curl -XPOST https://api.openai.com/v1/chat/completions \
   -H "Content-Type: application/json" \
@@ -186,7 +186,7 @@ curl -XPOST https://api.openai.com/v1/chat/completions \
     "presence_penalty": 0
   }' | jq '.choices[0].message.content'
 ```
-This "manual context window" is how every chatbot works under the hood. It also means that longer conversations cost more tokens — a tradeoff you'll encounter throughout the training.
+This "manual context window" is how every chatbot works under the hood. It also means that longer conversations cost more tokens, a tradeoff you'll encounter throughout the training.
 
 #### Attaching request.json
 As requests get larger, embedding the JSON in the command line becomes impractical. You can place the payload in a file and reference it with `@`. This is the same as typing the JSON inline, but much cleaner.
@@ -261,7 +261,7 @@ curl https://api.openai.com/v1/chat/completions \
 Now, try fixing it using natural language and the chat completion.
 
 #### Streaming
-So far, every request waits until the model finishes generating the entire response before returning anything. With `"stream": true`, the API sends back tokens as they are generated — one chunk at a time using Server-Sent Events (SSE). This is how ChatGPT shows text appearing word by word.
+So far, every request waits until the model finishes generating the entire response before returning anything. With `"stream": true`, the API sends back tokens as they are generated, one chunk at a time using Server-Sent Events (SSE). This is how ChatGPT shows text appearing word by word.
 ```bash
 curl -XPOST "https://api.openai.com/v1/chat/completions" \
     -H "Content-Type: application/json" \
@@ -272,7 +272,7 @@ curl -XPOST "https://api.openai.com/v1/chat/completions" \
     "stream": true
   }'
 ```
-Look at the raw output — each line starts with `data:` and contains a small JSON chunk with one token in `choices[0].delta.content`. The stream ends with `data: [DONE]`.
+Look at the raw output: each line starts with `data:` and contains a small JSON chunk with one token in `choices[0].delta.content`. The stream ends with `data: [DONE]`.
 
 Adding some `grep` magic to extract just the text content:
 ```bash

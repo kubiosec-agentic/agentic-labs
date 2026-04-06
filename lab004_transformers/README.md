@@ -1,11 +1,11 @@
 ![Docker](https://img.shields.io/badge/Docker-blue) ![Python](https://img.shields.io/badge/Python-blue) ![Security](https://img.shields.io/badge/Security-red) ![Transformers](https://img.shields.io/badge/Transformers-pink)
 
-# LAB004: Transformers — Generation vs Extraction
+# LAB004: Transformers: Generation vs Extraction
 
 ## Introduction
 This lab gives you hands-on experience with two fundamentally different transformer architectures. You'll run a **decoder model** (Qwen 2.5) that *generates* free-form text, and an **encoder model** (RoBERTa) that *extracts* an answer span from a given context. Understanding this distinction is essential before working with higher-level frameworks in later labs.
 
-Both scripts run on CPU and require no API keys — everything is local.
+Both scripts run on CPU and require no API keys; everything is local.
 
 ## Set up your environment
 
@@ -16,7 +16,7 @@ Both scripts run on CPU and require no API keys — everything is local.
 
 ### Setup Commands
 
-#### Option A — Local Python
+#### Option A: Local Python
 ```bash
 ./lab_setup.sh
 ```
@@ -29,7 +29,7 @@ source .lab004/bin/activate
 > pip install numpy transformers torch
 > ```
 
-#### Option B — Docker (Recommended)
+#### Option B: Docker (Recommended)
 Build and start the container. The lab folder is mounted as a volume, so any edits you make on your host (changing a prompt, tweaking temperature, etc.) are immediately available inside the container.
 ```bash
 docker compose up -d --build
@@ -61,9 +61,9 @@ docker compose down
 
 ### Example 1: Causal Text Generation with Qwen (demo.py)
 
-**Architecture:** Decoder-only (autoregressive) — the model predicts one token at a time, left to right.
+**Architecture:** Decoder-only (autoregressive). The model predicts one token at a time, left to right.
 
-**Model:** [Qwen/Qwen2.5-0.5B](https://huggingface.co/Qwen/Qwen2.5-0.5B) — 0.5 B parameters, CPU-friendly.
+**Model:** [Qwen/Qwen2.5-0.5B](https://huggingface.co/Qwen/Qwen2.5-0.5B), 0.5 B parameters, CPU-friendly.
 
 **What the script does:**
 1. Loads the Qwen tokenizer and model in FP32 on CPU
@@ -76,7 +76,7 @@ python3 demo.py
 ```
 
 **Things to observe:**
-- The output is *generated* text — the model continues the prompt, it does not look anything up.
+- The output is *generated* text: the model continues the prompt, it does not look anything up.
 - Generation quality varies between runs because `do_sample=True` introduces randomness.
 - Try changing the prompt, temperature, or `max_new_tokens` to see how the output changes.
 
@@ -90,9 +90,9 @@ response = tokenizer.decode(outputs[0], skip_special_tokens=True)
 
 ### Example 2: Extractive Question Answering with RoBERTa (roberta.py)
 
-**Architecture:** Encoder-only (bidirectional) — the model reads the full input at once and scores every token as a possible answer start/end.
+**Architecture:** Encoder-only (bidirectional). The model reads the full input at once and scores every token as a possible answer start/end.
 
-**Model:** [deepset/roberta-base-squad2](https://huggingface.co/deepset/roberta-base-squad2) — 125 M parameters, fine-tuned on SQuAD 2.0.
+**Model:** [deepset/roberta-base-squad2](https://huggingface.co/deepset/roberta-base-squad2), 125 M parameters, fine-tuned on SQuAD 2.0.
 
 **What the script does:**
 1. Loads a HuggingFace `question-answering` pipeline (handles tokenization, inference, and decoding internally)
@@ -111,18 +111,18 @@ Context: ... The Hobbit is a fantasy novel by J. R. R. Tolkien ...
 ```
 
 **Things to observe:**
-- The model *extracts* — it can only return text that already exists in the context. It cannot generate new text.
+- The model *extracts*, meaning it can only return text that already exists in the context. It cannot generate new text.
 - The `score` reflects the model's confidence. Try asking a question that isn't answerable from the context and see what happens.
 - The `pipeline()` API hides the tokenizer/model/postprocessing, which is convenient but less transparent than `demo.py`.
 
 **Key code patterns:**
 ```python
-# HuggingFace pipeline — high-level one-liner
+# HuggingFace pipeline: high-level one-liner
 qa = pipeline("question-answering", model="deepset/roberta-base-squad2", device="cpu")
 result = qa(question="Who wrote The Hobbit?", context="...")
 ```
 
-### Decoder vs Encoder — Side by Side
+### Decoder vs Encoder: Side by Side
 
 | | demo.py (Qwen) | roberta.py (RoBERTa) |
 |---|---|---|
