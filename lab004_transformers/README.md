@@ -1,65 +1,131 @@
-![Docker](https://img.shields.io/badge/Docker-blue) ![Python](https://img.shields.io/badge/Python-blue) ![Security](https://img.shields.io/badge/Security-red)
+![Docker](https://img.shields.io/badge/Docker-blue) ![Python](https://img.shields.io/badge/Python-blue) ![Security](https://img.shields.io/badge/Security-red) ![Transformers](https://img.shields.io/badge/Transformers-pink)
 
-# LAB004: LLM Security Analysis with Qwen Model
+# LAB004: Transformers — Generation vs Extraction
 
 ## Introduction
-This lab demonstrates using the Qwen2.5-0.5B model to explain security issues such as Log4j vulnerabilities. You'll set up a containerized deployment with Docker and explore how lightweight transformer models can be used for security analysis tasks. The lab includes practical examples of security prompts and model configuration best practices.
+This lab gives you hands-on experience with two fundamentally different transformer architectures. You'll run a **decoder model** (Qwen 2.5) that *generates* free-form text, and an **encoder model** (RoBERTa) that *extracts* an answer span from a given context. Understanding this distinction is essential before working with higher-level frameworks in later labs.
+
+Both scripts run on CPU and require no API keys — everything is local.
 
 ## Set up your environment
 
 ### Prerequisites
-- Docker and Docker Compose installed
-- OpenAI API key (for reference, though this lab uses local Qwen model)
+- Python 3.10+ with pip and venv
+- Docker and Docker Compose (for the containerised option)
+- ~1 GB disk space for model downloads
 
 ### Setup Commands
 
-#### Local Python Setup
+#### Option A — Local Python
 ```bash
-export OPENAPI_API_KEY="xxxxxxxxx"
 ./lab_setup.sh
+```
+```bash
 source .lab004/bin/activate
 ```
 
-#### Docker Setup (Recommended)
+> **Note:** There is no `requirements.txt` for local setup yet. Install dependencies manually:
+> ```bash
+> pip install 'numpy<2' transformers torch
+> ```
+
+#### Option B — Docker (Recommended)
 ```bash
-# Build and run with Docker Compose
 docker compose up --build
+```
+This builds a slim Python 3.11 image, installs dependencies from `requirements_docker.txt`, and runs `demo.py` automatically.
 
-# Rebuild without cache if needed
-docker compose build --no-cache
-docker compose up
+Rebuild without cache if needed:
+```bash
+docker compose build --no-cache && docker compose up
+```
 
-# You can push this image to Dockerhub (FYI)
+Optionally push to Docker Hub:
+```bash
 docker tag lab004_transformers-app <your_dockerhub_username/your_image_name:latest>
 docker login
 docker push <your_dockerhub_username/your_image_name:latest>
-
-# You can now pull and run the image form Dockerhub 
-docker run -it <your_dockerhub_username/your_image_name:latest>
 ```
 
 ## Lab instructions
 
-### Running the Security Analysis Demo
+### Example 1: Causal Text Generation with Qwen (demo.py)
 
-This lab demonstrates using the Qwen2.5-0.5B model explaining the Log4j issue.
+**Architecture:** Decoder-only (autoregressive) — the model predicts one token at a time, left to right.
 
-**Features:**
-- Uses Qwen/Qwen2.5-0.5B model (CPU-friendly, lightweight)
-- Containerized deployment with Docker
-- Example security prompts included
+**Model:** [Qwen/Qwen2.5-0.5B](https://huggingface.co/Qwen/Qwen2.5-0.5B) — 0.5 B parameters, CPU-friendly.
 
-**Model Information:**
-- Model: Qwen/Qwen2.5-0.5B
-- CPU optimized for local development
-- Generates security analysis responses
+**What the script does:**
+1. Loads the Qwen tokenizer and model in FP32 on CPU
+2. Tokenizes a security-themed prompt about the Log4j exploit
+3. Generates up to 1500 new tokens using sampling (`temperature=0.7`, `top_p=0.9`)
+4. Decodes and prints the full output
 
-**Related Resources:**
-https://huggingface.co/Qwen/Qwen2.5-0.5B
+```bash
+python3 demo.py
+```
 
-## Transformer Encoder (3 Layers, 4 Attention Heads each)
+**Things to observe:**
+- The output is *generated* text — the model continues the prompt, it does not look anything up.
+- Generation quality varies between runs because `do_sample=True` introduces randomness.
+- Try changing the prompt, temperature, or `max_new_tokens` to see how the output changes.
+
+**Key code patterns:**
+```python
+# Tokenize → generate → decode  (the universal decoder pattern)
+inputs = tokenizer(prompt, return_tensors="pt").to(device)
+outputs = model.generate(inputs["input_ids"], max_new_tokens=1500, ...)
+response = tokenizer.decode(outputs[0], skip_special_tokens=True)
+```
+
+### Example 2: Extractive Question Answering with RoBERTa (roberta.py)
+
+**Architecture:** Encoder-only (bidirectional) — the model reads the full input at once and scores every token as a possible answer start/end.
+
+**Model:** [deepset/roberta-base-squad2](https://huggingface.co/deepset/roberta-base-squad2) — 125 M parameters, fine-tuned on SQuAD 2.0.
+
+**What the script does:**
+1. Loads a HuggingFace `question-answering` pipeline (handles tokenization, inference, and decoding internally)
+2. Takes a question and a context paragraph
+3. Returns the extracted answer span, along with a confidence score
+
+```bash
+python3 roberta.py
+```
+
+**Expected output:**
+```
+Question: Who wrote The Hobbit?
+Context: ... The Hobbit is a fantasy novel by J. R. R. Tolkien ...
+{'score': 0.97..., 'start': 44, 'end': 62, 'answer': 'J. R. R. Tolkien'}
+```
+
+**Things to observe:**
+- The model *extracts* — it can only return text that already exists in the context. It cannot generate new text.
+- The `score` reflects the model's confidence. Try asking a question that isn't answerable from the context and see what happens.
+- The `pipeline()` API hides the tokenizer/model/postprocessing, which is convenient but less transparent than `demo.py`.
+
+**Key code patterns:**
+```python
+# HuggingFace pipeline — high-level one-liner
+qa = pipeline("question-answering", model="deepset/roberta-base-squad2", device="cpu")
+result = qa(question="Who wrote The Hobbit?", context="...")
+```
+
+### Decoder vs Encoder — Side by Side
+
+| | demo.py (Qwen) | roberta.py (RoBERTa) |
+|---|---|---|
+| **Architecture** | Decoder-only (causal) | Encoder-only (bidirectional) |
+| **Task** | Text generation | Extractive QA |
+| **Output** | New text the model invents | Span from the input context |
+| **Parameters** | 0.5 B | 125 M |
+| **Loading style** | `AutoModelForCausalLM` + manual generate | `pipeline("question-answering")` |
+| **Randomness** | Yes (`do_sample=True`) | No (deterministic extraction) |
+
+## Transformer Encoder Architecture Reference
 <details>
-<summary>Transformer model encoder drawing</summary>
+<summary>Transformer model encoder diagram (3 layers, 4 attention heads)</summary>
 
 ```mermaid
 flowchart TD
@@ -126,9 +192,23 @@ N3b --> Z[Final Contextualized Representations]
 ```
 </details>
 
+## File structure
+```
+lab004_transformers/
+├── demo.py                 # Causal text generation with Qwen 2.5
+├── roberta.py              # Extractive QA with RoBERTa
+├── Dockerfile              # Container build (Python 3.11-slim)
+├── docker-compose.yml      # Compose config for demo.py
+├── requirements_docker.txt # Docker dependencies (numpy, transformers, torch)
+└── README.md
+```
+
 ## Cleanup environment
 ```bash
 deactivate
+```
+```bash
 ./lab_cleanup.sh
 ```
+
 Back to [Lab Overview](https://github.com/kubiosec-agentic/agentic-labs/blob/master/README.md#-lab-overview)

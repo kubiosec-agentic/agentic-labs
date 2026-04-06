@@ -1,0 +1,10 @@
+# Core test runner
+pytest>=8.0
+
+# .env file loading
+python-dotenv>=1.0
+
+# Lab004: Transformers (Qwen + RoBERTa)
+numpy>=1.24
+transformers>=4.45
+torch>=2.2
