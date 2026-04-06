@@ -13,11 +13,37 @@ You’ll also learn how to upload documents (including PDFs), perform queries, a
 ```bash
 export OPENAI_API_KEY="xxxxxxxxx"
 ```
+
+### Option A: Virtual environment (local)
 ```bash
 ./lab_setup.sh
 ```
 ```bash
 source .lab040/bin/activate
+```
+
+### Option B: Docker
+Build and start the container. The `docker-compose.yml` passes your `OPENAI_API_KEY` into the container and mounts the lab folder so you can edit files on your host and re-run them instantly.
+```bash
+docker compose up -d --build
+```
+Open an interactive shell inside the running container:
+```bash
+docker exec -it lab040_rag bash
+```
+From here you can run any of the scripts exactly as described below (`python3 ./RAG_01.py`, etc.). To change a prompt or parameter, edit the Python file on your host — the volume mount means the change is immediately available inside the container.
+
+You can also run a single script directly without entering the container:
+```bash
+docker exec -it lab040_rag python3 RAG_01.py
+```
+Or pass an environment variable override on the fly:
+```bash
+docker exec -it -e OPENAI_API_KEY=$OPENAI_API_KEY lab040_rag python3 RAG_01.py
+```
+When you're done, tear down the container:
+```bash
+docker compose down
 ```
 ## Lab instructions
 #### Example 1: RAG based search using Llama-index and OpenAI synthesis

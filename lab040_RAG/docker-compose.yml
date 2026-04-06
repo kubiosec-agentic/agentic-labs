@@ -1,7 +1,9 @@
 services:
   app:
     build: .
-    container_name: lab004_app
+    container_name: lab040_rag
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
     volumes:
       - .:/app
     stdin_open: true

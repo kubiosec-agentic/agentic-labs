@@ -26,25 +26,35 @@ source .lab004/bin/activate
 
 > **Note:** There is no `requirements.txt` for local setup yet. Install dependencies manually:
 > ```bash
-> pip install 'numpy<2' transformers torch
+> pip install numpy transformers torch
 > ```
 
 #### Option B — Docker (Recommended)
+Build and start the container. The lab folder is mounted as a volume, so any edits you make on your host (changing a prompt, tweaking temperature, etc.) are immediately available inside the container.
 ```bash
-docker compose up --build
+docker compose up -d --build
 ```
-This builds a slim Python 3.11 image, installs dependencies from `requirements_docker.txt`, and runs `demo.py` automatically.
+
+Open an interactive shell inside the running container:
+```bash
+docker exec -it lab004_app bash
+```
+From here you can run either script exactly as described below.
+
+Or run a script directly without entering the container:
+```bash
+docker exec -it lab004_app python demo.py
+docker exec -it lab004_app python roberta.py
+```
 
 Rebuild without cache if needed:
 ```bash
-docker compose build --no-cache && docker compose up
+docker compose build --no-cache && docker compose up -d
 ```
 
-Optionally push to Docker Hub:
+When you're done, tear down the container:
 ```bash
-docker tag lab004_transformers-app <your_dockerhub_username/your_image_name:latest>
-docker login
-docker push <your_dockerhub_username/your_image_name:latest>
+docker compose down
 ```
 
 ## Lab instructions
@@ -197,8 +207,8 @@ N3b --> Z[Final Contextualized Representations]
 lab004_transformers/
 ├── demo.py                 # Causal text generation with Qwen 2.5
 ├── roberta.py              # Extractive QA with RoBERTa
-├── Dockerfile              # Container build (Python 3.11-slim)
-├── docker-compose.yml      # Compose config for demo.py
+├── Dockerfile              # Container build (Python 3.13-slim)
+├── docker-compose.yml      # Compose config (interactive shell, volume mount)
 ├── requirements_docker.txt # Docker dependencies (numpy, transformers, torch)
 └── README.md
 ```

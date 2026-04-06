@@ -1,5 +1,4 @@
 openai
-logging
 numpy
 tiktoken
 llama_index.core
