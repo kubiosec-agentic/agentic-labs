@@ -1,3 +1,5 @@
+# NOTE: transformers 5.x breaks roberta.py (removed "question-answering" pipeline)
+# and causes demo.py to produce repetitive/degraded output with Qwen.
 numpy>=1.24
 transformers>=4.45,<5
 torch>=2.2
