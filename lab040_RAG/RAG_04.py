@@ -1,49 +1,71 @@
+"""
+RAG with OpenAI's managed vector store and Responses API.
+Self-contained: creates a vector store, uploads a file, waits for indexing,
+queries with file_search, and cleans up. No curl commands needed.
+"""
+import time
 from openai import OpenAI
+
 client = OpenAI()
 
-# TODO: Replace with your actual Vector Store ID from Example 4 (the $VS_ID value)
-# You can find this by running the curl commands in Example 4 of the README
-VECTOR_STORE_ID = "vs_689bb74f20388191a7a26b548f72ccd3"  # Update this!
+DATA_FILE = "data/llms-full.txt"
+
+# ------------------------------------------------------------------
+# 1. Create a managed vector store
+# ------------------------------------------------------------------
+print("[1/5] Creating vector store ...")
+vs = client.vector_stores.create(name="lab040_mcp_docs")
+print(f"      Vector store ID: {vs.id}")
+
+# ------------------------------------------------------------------
+# 2. Upload the file
+# ------------------------------------------------------------------
+print(f"[2/5] Uploading {DATA_FILE} ...")
+with open(DATA_FILE, "rb") as f:
+    uploaded = client.files.create(file=f, purpose="assistants")
+print(f"      File ID: {uploaded.id}")
+
+# ------------------------------------------------------------------
+# 3. Link the file to the vector store and wait for indexing
+# ------------------------------------------------------------------
+print("[3/5] Indexing (this may take a few seconds) ...")
+client.vector_stores.files.create(vs.id, file_id=uploaded.id)
+
+# Poll until the file is indexed
+for _ in range(30):
+    vs_file = client.vector_stores.files.retrieve(vs.id, uploaded.id)
+    if vs_file.status == "completed":
+        break
+    time.sleep(1)
+else:
+    print("      Warning: indexing did not complete within 30 seconds")
+
+print(f"      Status: {vs_file.status}")
+
+# ------------------------------------------------------------------
+# 4. Query with file_search via the Responses API
+# ------------------------------------------------------------------
+query = "What are the differentiating features of MCP?"
+print(f"[4/5] Querying: {query}")
 
 response = client.responses.create(
-  model="gpt-4o",
-  input=[
-    {
-      "role": "user",
-      "content": [
-        {
-          "type": "input_text",
-          "text": "What is MCP"
-        }
-      ]
-    },
-    {
-      "role": "system",
-      "content": [
-        {
-          "type": "input_text",
-          "text": "You are a helpful assistant that provides information about the Model Context Protocol (MCP)."
-        }
-      ]
-    }
-  ],
-  text={
-    "format": {
-      "type": "text"
-    }
-  },
-  reasoning={},
-  tools=[
-    {
-      "type": "file_search",
-      "vector_store_ids": [
-        VECTOR_STORE_ID
-      ]
-    }
-  ],
-  temperature=1,
-  max_output_tokens=2048,
-  top_p=1,
-  store=True
+    model="gpt-4o",
+    input=query,
+    tools=[{
+        "type": "file_search",
+        "vector_store_ids": [vs.id],
+    }],
 )
+
+print("\n" + "=" * 60)
+print("ANSWER:")
+print("=" * 60)
 print(response.output_text)
+
+# ------------------------------------------------------------------
+# 5. Cleanup: delete vector store and uploaded file
+# ------------------------------------------------------------------
+print(f"\n[5/5] Cleaning up ...")
+client.vector_stores.delete(vs.id)
+client.files.delete(uploaded.id)
+print("      Done. Vector store and file deleted.")

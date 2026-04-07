@@ -155,6 +155,20 @@ class TestLab040Smoke:
         src = (LAB_DIR / "RAG_04.py").read_text()
         assert "file_search" in src
 
+    def test_rag04_creates_vector_store(self):
+        src = (LAB_DIR / "RAG_04.py").read_text()
+        assert "vector_stores.create" in src
+
+    def test_rag04_uploads_file(self):
+        src = (LAB_DIR / "RAG_04.py").read_text()
+        assert "files.create" in src
+
+    def test_rag04_cleans_up(self):
+        """Script should delete the vector store and file after use."""
+        src = (LAB_DIR / "RAG_04.py").read_text()
+        assert "vector_stores.delete" in src
+        assert "files.delete" in src
+
     # -- structural content: RAG_05 (Agentic RAG) -------------------------
 
     def test_rag05_has_tool_spec(self):

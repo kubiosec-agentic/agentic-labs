@@ -97,94 +97,63 @@ python3 ./RAG_03.py
 
 ### Step 4: OpenAI managed vector store with Responses API (`RAG_04.py`)
 
-Instead of running your own vector database, OpenAI can host it for you. This step uses the Responses API with `file_search` to upload documents, create a managed vector store, and query it.
-
-> **Deprecation note:** The vector stores endpoint currently requires the `OpenAI-Beta: assistants=v2` header. The Assistants API is scheduled for deprecation in August 2026. The Responses API `file_search` tool is the recommended migration path and is used here.
-
-First, create a vector store and upload a document using curl:
+Instead of running your own vector database, OpenAI can host it for you. The Python SDK handles all the setup: create a vector store, upload your file, wait for indexing, and query with `file_search`. No curl commands, no manual IDs to copy.
 
 ```bash
-# Create a managed vector store
-VS_ID=$(curl https://api.openai.com/v1/vector_stores \
-  -H "Authorization: Bearer $OPENAI_API_KEY" \
-  -H "Content-Type: application/json" \
-  -H "OpenAI-Beta: assistants=v2" \
-  -d '{
-    "name": "MCP documentation"
-  }' | jq -r .id)
-
-echo $VS_ID
-```
-
-```bash
-# Upload a file
-FILE_ID=$(curl https://api.openai.com/v1/files \
-  -H "Authorization: Bearer $OPENAI_API_KEY" \
-  -F purpose="assistants" \
-  -F file="@data/llms-full.txt" | jq -r .id)
-
-echo $FILE_ID
-```
-
-```bash
-# Link the file to the vector store (takes a few seconds)
-curl https://api.openai.com/v1/vector_stores/$VS_ID/files \
-    -H "Authorization: Bearer $OPENAI_API_KEY" \
-    -H "Content-Type: application/json" \
-    -H "OpenAI-Beta: assistants=v2" \
-    -d '{
-      "file_id": "'$FILE_ID'"
-  }'
-```
-
-<details>
-<summary>Optional: also add a PDF</summary>
-
-```bash
-curl -o ./data/attention.pdf https://arxiv.org/pdf/1706.03762
-
-FILE_ID=$(curl https://api.openai.com/v1/files \
-  -H "Authorization: Bearer $OPENAI_API_KEY" \
-  -F purpose="assistants" \
-  -F file="@data/attention.pdf" | jq -r .id)
-
-curl https://api.openai.com/v1/vector_stores/$VS_ID/files \
-    -H "Authorization: Bearer $OPENAI_API_KEY" \
-    -H "Content-Type: application/json" \
-    -H "OpenAI-Beta: assistants=v2" \
-    -d '{
-      "file_id": "'$FILE_ID'"
-  }'
-```
-</details>
-
-Now query the Responses API with file_search:
-
-```bash
-curl https://api.openai.com/v1/responses \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer $OPENAI_API_KEY" \
-  -d '{
-    "model": "gpt-4o",
-    "tools": [{
-      "type": "file_search",
-      "vector_store_ids": ["'$VS_ID'"]
-    }],
-    "input": "What are the differentiating features of MCP?"
-  }' | jq -r '.output[].content[0].text'
-```
-
-Then run the Python version (update the `VECTOR_STORE_ID` in the script first):
-
-```bash
-# Edit RAG_04.py and replace the VECTOR_STORE_ID with your $VS_ID
 python3 ./RAG_04.py
 ```
+
+The script does everything in one run:
+1. Creates a managed vector store on OpenAI's servers
+2. Uploads `data/llms-full.txt`
+3. Waits for indexing to complete
+4. Queries with `file_search` via the Responses API
+5. Cleans up (deletes the vector store and file)
 
 **What to observe:**
 - No local vector database needed. OpenAI handles chunking, embedding, storage, and retrieval.
 - The response includes `file_citation` annotations pointing back to source documents.
 - Compare the answer quality with Steps 1-3: same data, different retrieval infrastructure.
+- The cleanup step at the end is important: managed vector stores have storage costs.
+
+> **Note:** The vector stores API is part of the Assistants infrastructure, which is scheduled for deprecation in August 2026. OpenAI is migrating these capabilities to the Responses API. The Python SDK handles the required `OpenAI-Beta: assistants=v2` header automatically, so your code will keep working until the migration is complete.
+
+<details>
+<summary>Optional: try it with curl to see the raw API</summary>
+
+The Python SDK abstracts the HTTP calls. If you want to see what happens under the hood, you can do it with curl. Note that vector store management currently requires the `OpenAI-Beta: assistants=v2` header (the SDK handles this automatically).
+
+```bash
+# Create a vector store
+VS_ID=$(curl https://api.openai.com/v1/vector_stores \
+  -H "Authorization: Bearer $OPENAI_API_KEY" \
+  -H "Content-Type: application/json" \
+  -H "OpenAI-Beta: assistants=v2" \
+  -d '{"name": "MCP documentation"}' | jq -r .id)
+
+# Upload and link a file
+FILE_ID=$(curl https://api.openai.com/v1/files \
+  -H "Authorization: Bearer $OPENAI_API_KEY" \
+  -F purpose="assistants" \
+  -F file="@data/llms-full.txt" | jq -r .id)
+
+curl https://api.openai.com/v1/vector_stores/$VS_ID/files \
+  -H "Authorization: Bearer $OPENAI_API_KEY" \
+  -H "Content-Type: application/json" \
+  -H "OpenAI-Beta: assistants=v2" \
+  -d '{"file_id": "'$FILE_ID'"}'
+
+# Query via Responses API (no beta header needed here)
+curl https://api.openai.com/v1/responses \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $OPENAI_API_KEY" \
+  -d '{
+    "model": "gpt-4o",
+    "tools": [{"type": "file_search", "vector_store_ids": ["'$VS_ID'"]}],
+    "input": "What are the differentiating features of MCP?"
+  }' | jq -r '.output[].content[0].text'
+```
+</details>
 
 ### Step 5: Agentic RAG (`RAG_05_agentic.py`)
 
