@@ -6,7 +6,7 @@ from langchain_core.prompts import PromptTemplate
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.output_parsers import StrOutputParser
 
-llm = ChatGoogleGenerativeAI(model="gemini-1.5-pro")
+llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash")
 
 # First chain generates a story
 story_prompt = PromptTemplate.from_template("Write a short story about {topic}")
@@ -40,7 +40,7 @@ They act like namespaces that group related functionality together, such as prom
 #### Instantiate the class
 This line creates an instance of the `ChatGoogleGenerativeAI` class called `llm`. It will act as a client that will generate and process text.
 ```
-llm = ChatGoogleGenerativeAI(model="gemini-1.5-pro")
+llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash")
 ```
 ### Step 3
 ####  Introducing `prompts`

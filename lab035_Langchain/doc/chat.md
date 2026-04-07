@@ -12,9 +12,9 @@ from langchain_openai import ChatOpenAI, OpenAI
 # initialize a completion or chat model
 # Uncomment the one you want to use
 
-# chat = ChatGoogleGenerativeAIGoogleGenerativeAI(model="gemini-2.0-flash")
-chat = ChatOpenAI(model="gpt-3.5-turbo")
-# chat = ChatAnthropic(model="claude-3-opus-20240229")
+# chat = ChatGoogleGenerativeAI(model="gemini-2.0-flash")
+chat = ChatOpenAI(model="gpt-4o")
+# chat = ChatAnthropic(model="claude-sonnet-4-20250514")
 # chat = ChatOllama(model="deepseek-r1:1.5b")
 # chat = ChatOllama(model="phi3:3.8b", temperature=0)
 
@@ -41,14 +41,14 @@ A class is like a blueprint in Python. It describes how to build something with 
 ### Step 2:
 You need to instantiate a class to use it.
 ```python
-# chat = ChatGoogleGenerativeAIGoogleGenerativeAI(model="gemini-2.0-flash")
-chat = ChatOpenAI(model="gpt-3.5-turbo")
-# chat = ChatAnthropic(model="claude-3-opus-20240229")
+# chat = ChatGoogleGenerativeAI(model="gemini-2.0-flash")
+chat = ChatOpenAI(model="gpt-4o")
+# chat = ChatAnthropic(model="claude-sonnet-4-20250514")
 # chat = ChatOllama(model="deepseek-r1:1.5b")
 # chat = ChatOllama(model="phi3:3.8b", temperature=0)
 ```
 `chat` is an object that represents an OpenAI chat client.
-It was created (instantiated) from the ChatOpenAI class, and it knows how to send messages to an OpenAI chat model (like GPT-4) and return the responses.
+It was created (instantiated) from the ChatOpenAI class, and it knows how to send messages to an OpenAI chat model (like GPT-4o) and return the responses.
 
 ### Step 3:
 `invoke(...)` is a method call. You're calling the invoke method on the chat object.

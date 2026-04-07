@@ -1,8 +1,16 @@
-langchain-openai
-langchain-google-genai
-langchain-anthropic
-langchain-ollama
-langchain-core
-langchain-community
-langchain_huggingface
+# LangChain provider integrations
+langchain-openai>=0.3,<2
+langchain-google-genai>=2.0,<3
+langchain-anthropic>=0.3,<2
+langchain-ollama>=0.3,<2
 
+# LangChain core
+langchain-core>=0.3,<2
+langchain-community>=0.3,<2
+
+# HuggingFace local model support (optional, see Step 5)
+langchain-huggingface>=0.1,<1
+torch>=2.2
+accelerate>=0.26
+transformers>=4.45,<5
+# Pin transformers <5: version 5.x can degrade small-model output quality

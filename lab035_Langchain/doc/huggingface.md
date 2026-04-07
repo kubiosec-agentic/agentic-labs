@@ -14,7 +14,7 @@ The `hf_local.py` script showcases the integration of Hugging Face transformers 
 
 ### System Requirements
 
-- **Python 3.8+**
+- **Python 3.10+**
 - **Sufficient RAM** (minimum 4GB, recommended 8GB+ for larger models)
 - **CPU or GPU** (Apple Silicon MPS, NVIDIA CUDA, or CPU fallback)
 

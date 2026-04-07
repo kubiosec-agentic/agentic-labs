@@ -8,8 +8,8 @@ from langchain_ollama import ChatOllama
 # Uncomment the one you want to use
 
 # chat = ChatGoogleGenerativeAI(model="gemini-2.0-flash")
-chat = ChatOpenAI(model="gpt-3.5-turbo")
-# chat = ChatAnthropic(model="claude-3-opus-20240229")
+chat = ChatOpenAI(model="gpt-4o")
+# chat = ChatAnthropic(model="claude-sonnet-4-20250514")
 # chat = ChatOllama(model="deepseek-r1:1.5b")
 # chat = ChatOllama(model="phi3:3.8b", temperature=0)
 

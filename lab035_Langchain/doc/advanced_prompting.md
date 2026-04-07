@@ -56,7 +56,7 @@ This initializes a **chat model**. You can switch to other providers by changing
 # chat = ChatOpenAI(model="gpt-4")
 
 # from langchain_anthropic import ChatAnthropic
-# chat = ChatAnthropic(model="claude-3-opus-20240229")
+# chat = ChatAnthropic(model="claude-sonnet-4-20250514")
 ```
 
 ### Step 3
