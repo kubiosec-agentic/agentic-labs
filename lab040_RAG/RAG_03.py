@@ -4,7 +4,7 @@ from langchain_community.document_loaders import TextLoader
 from langchain_openai import OpenAIEmbeddings, ChatOpenAI
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_chroma import Chroma
-from langchain.prompts import PromptTemplate
+from langchain_core.prompts import PromptTemplate
 
 # Set your OpenAI API key from environment variable
 openai.api_key = os.getenv("OPENAI_API_KEY")
