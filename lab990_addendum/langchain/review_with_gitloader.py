@@ -1,14 +1,24 @@
+import os
 from langchain_openai import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate
 from langchain_community.document_loaders import GitLoader
 
 # Load repository context
-repo_loader = GitLoader(
-    repo_path="./test_repo",
-    clone_url="https://github.com/xxradar/TLSSAN_scanner.git", 
-    branch="master", 
-    file_filter=lambda file_path: file_path.endswith(".sh")
+# If test_repo already exists (e.g. from a previous run), skip cloning
+repo_path = "./test_repo"
+clone_url = "https://github.com/xxradar/TLSSAN_scanner.git"
+
+loader_kwargs = dict(
+    repo_path=repo_path,
+    branch="master",
+    file_filter=lambda file_path: file_path.endswith(".sh"),
 )
+
+# Only pass clone_url when the directory does not yet exist
+if not os.path.isdir(repo_path):
+    loader_kwargs["clone_url"] = clone_url
+
+repo_loader = GitLoader(**loader_kwargs)
 documents = repo_loader.load()
 
 # Create context-aware prompt for security review

@@ -69,6 +69,7 @@ python3 file_security_review.py
 Same security review, but uses LangChain's `GitLoader` to clone a repository and extract `.sh` files directly. Useful when you want to analyze a remote repo without manually downloading files.
 
 ```bash
+# Requires GitPython (included in requirements.txt)
 # Clones the repo into ./test_repo on first run
 python3 review_with_gitloader.py
 ```

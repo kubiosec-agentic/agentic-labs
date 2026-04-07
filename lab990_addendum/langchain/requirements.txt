@@ -11,5 +11,8 @@ requests-cache
 retry-requests
 geopy
 
+# GitLoader (review_with_gitloader.py)
+GitPython
+
 # Optional: for better data handling
 numpy
