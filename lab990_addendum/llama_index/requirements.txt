@@ -1,2 +1,3 @@
-llama-index
-llama-index-readers-github
+llama-index>=0.12
+llama-index-readers-github>=0.4
+llama-index-llms-openai>=0.4

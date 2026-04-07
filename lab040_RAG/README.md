@@ -137,7 +137,7 @@ python3 ./RAG_05_agentic.py
 - Cosine similarity scores in the results: the model gets relevance information, not just text
 - Try changing the query to something the vector store doesn't cover and watch the model handle it
 
-For a detailed walkthrough of how this works, see [ARAG/AgenticRAG.md](./ARAG/AgenticRAG.md).
+For a detailed walkthrough of how this works, see [AgenticRAG.md](./AgenticRAG.md).
 
 | Feature | Standard RAG (Steps 1-3) | Agentic RAG (Step 5) |
 |---------|--------------------------|----------------------|
@@ -279,6 +279,8 @@ curl -X DELETE https://api.openai.com/v1/files/$FILE_ID2 \
 ## Going further
 
 The [lab990_addendum/chromadb](../lab990_addendum/chromadb/) folder covers running Chroma as a standalone server (v2 API), including curl-based operations, OWASP LLM Top-10 risk mapping for vector databases, and a RAG poisoning attack PoC that demonstrates how a malicious document in the vector store can hijack LLM answers.
+
+The [lab990_addendum/llama_index](../lab990_addendum/llama_index/) folder shows how to use LlamaIndex's GitHub reader to build a RAG pipeline over a public repository, extending the local-file approach from Step 1.
 
 ## Cleanup environment
 

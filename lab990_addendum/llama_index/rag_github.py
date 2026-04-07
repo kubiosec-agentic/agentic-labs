@@ -1,107 +1,100 @@
+"""
+RAG over a GitHub repository using LlamaIndex.
+
+This script clones a public GitHub repo via the LlamaIndex GitHub reader,
+builds a vector index over its contents, and queries it with GPT-4o.
+It demonstrates how LlamaIndex can ingest structured sources (not just
+local files) and make them queryable through the same RAG pipeline used
+in lab040_RAG.
+
+Prerequisites:
+    pip install -r requirements.txt
+    export OPENAI_API_KEY="your-key-here"
+    export GITHUB_TOKEN="your-github-token"
+
+Get a GitHub token at: https://github.com/settings/tokens
+(no special scopes needed for public repos)
+"""
+
 import os
+import sys
+
 from llama_index.core import VectorStoreIndex, Settings
 from llama_index.readers.github import GithubRepositoryReader, GithubClient
+from llama_index.llms.openai import OpenAI
 
-
-try:
-    from llama_index.llms.openai import OpenAI
-    openai_available = True
-except ImportError:
-    openai_available = False
-
+# ---------------------------------------------------------------
+# 1. Check environment
+# ---------------------------------------------------------------
 github_token = os.environ.get("GITHUB_TOKEN")
 if not github_token:
-    print("Error: Please set the GITHUB_TOKEN environment variable")
-    print("You can get a GitHub token from: https://github.com/settings/tokens")
-    exit(1)
+    print("Error: GITHUB_TOKEN not set.")
+    print("Get one at https://github.com/settings/tokens (no scopes needed for public repos)")
+    sys.exit(1)
 
 openai_api_key = os.environ.get("OPENAI_API_KEY")
 if not openai_api_key:
-    print("Warning: OPENAI_API_KEY not found. OpenAI inference will not be available.")
-    print("To use OpenAI inference, set your API key: export OPENAI_API_KEY='your-key-here'")
-    use_openai = False
-else:
-    use_openai = True
-    print("OpenAI API key found - will use OpenAI for inference")
+    print("Error: OPENAI_API_KEY not set.")
+    sys.exit(1)
 
+# ---------------------------------------------------------------
+# 2. Configure the target repository
+# ---------------------------------------------------------------
+# Change these to point at any public GitHub repo you want to query.
+OWNER = "mcp-guardian"
+REPO = "mcp-guardian"
+BRANCH = "main"
 
-owner = "mcp-firewall"
-repo = "mcp-firewall"
-branch = "main"
+print(f"[1/3] Loading documents from github.com/{OWNER}/{REPO} (branch: {BRANCH}) ...")
 
-print(f"Loading documents from {owner}/{repo}...")
+github_client = GithubClient(github_token=github_token, verbose=False)
 
-github_client = GithubClient(github_token=github_token, verbose=True)
+documents = GithubRepositoryReader(
+    github_client=github_client,
+    owner=OWNER,
+    repo=REPO,
+    use_parser=False,
+    verbose=False,
+    filter_directories=(
+        ["docs", "README", "readme", "src"],
+        GithubRepositoryReader.FilterType.INCLUDE,
+    ),
+    filter_file_extensions=(
+        [".png", ".jpg", ".jpeg", ".gif", ".svg", ".ico", ".json", ".ipynb", ".lock"],
+        GithubRepositoryReader.FilterType.EXCLUDE,
+    ),
+).load_data(branch=BRANCH)
 
-try:
-    documents = GithubRepositoryReader(
-        github_client=github_client,
-        owner=owner,
-        repo=repo,
-        use_parser=False,
-        verbose=True,
-        filter_directories=(
-            ["docs", "README", "readme", "documentation"],
-            GithubRepositoryReader.FilterType.INCLUDE,
-        ),
-        filter_file_extensions=(
-            [".png", ".jpg", ".jpeg", ".gif", ".svg", ".ico", ".json", ".ipynb"],
-            GithubRepositoryReader.FilterType.EXCLUDE,
-        ),
-    ).load_data(branch=branch)
-    print(f"Successfully loaded {len(documents)} documents")
-except Exception as e:
-    print(f"Error loading documents: {e}")
-    print("Trying with simpler approach...")
-    documents = GithubRepositoryReader(
-        github_client=github_client,
-        owner=owner,
-        repo=repo,
-        use_parser=False,
-        verbose=True,
-    ).load_data(branch=branch)
-    print(f"Loaded {len(documents)} documents with fallback approach")
+print(f"      Loaded {len(documents)} documents")
 
-# Create vector index
-print("Creating vector index...")
+# ---------------------------------------------------------------
+# 3. Build vector index
+# ---------------------------------------------------------------
+print("[2/3] Creating vector index ...")
+
+Settings.llm = OpenAI(model="gpt-4o", temperature=0.1)
+
 index = VectorStoreIndex.from_documents(documents)
+query_engine = index.as_query_engine()
 
-# Configure OpenAI and run queries
-if use_openai and openai_available:
-    print("Setting up OpenAI LLM for inference...")
-    llm = OpenAI(
-        model="gpt-4o",
-        api_key=openai_api_key,
-        temperature=0.1
-    )
-    Settings.llm = llm
-    
-    query_engine = index.as_query_engine()
-    
-    questions = [
-        "What is this repository about?",
-        "What are the main features or components?",
-        "How do you install and run this project?",
-        "What technologies or frameworks does it use?"
-    ]
-    
-    for i, question in enumerate(questions, 1):
-        print(f"\n{'='*60}")
-        print(f"Question {i}: {question}")
-        print('='*60)
-        try:
-            response = query_engine.query(question)
-            print(response)
-        except Exception as e:
-            print(f"Error processing question: {e}")
-            
-else:
-    print("OpenAI not available. Showing document content instead:")
-    print(f"Total documents loaded: {len(documents)}")
-    if documents:
-        print("-" * 50)
-        sample_text = documents[0].text[:500] + "..." if len(documents[0].text) > 500 else documents[0].text
-        print(sample_text)
-        print("-" * 50)
+# ---------------------------------------------------------------
+# 4. Query
+# ---------------------------------------------------------------
+questions = [
+    "What is this project about?",
+    "What are the main features or components?",
+    "How do you install and run this project?",
+    "What security mechanisms does it provide?",
+]
 
-print("\nScript completed successfully!")
+print(f"[3/3] Querying ({len(questions)} questions) ...\n")
+
+for i, question in enumerate(questions, 1):
+    print(f"{'=' * 60}")
+    print(f"Q{i}: {question}")
+    print("=" * 60)
+    response = query_engine.query(question)
+    print(response)
+    print()
+
+print("Done.")

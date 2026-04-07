@@ -52,11 +52,8 @@ class TestLab040Smoke:
     def test_script_exists(self, script):
         assert (LAB_DIR / script).is_file()
 
-    def test_arag_directory_exists(self):
-        assert (LAB_DIR / "ARAG").is_dir()
-
-    def test_arag_doc_exists(self):
-        assert (LAB_DIR / "ARAG" / "AgenticRAG.md").is_file()
+    def test_agentic_rag_doc_exists(self):
+        assert (LAB_DIR / "AgenticRAG.md").is_file()
 
     def test_data_directory_exists(self):
         assert (LAB_DIR / "data").is_dir()
@@ -280,9 +277,9 @@ class TestLab040Smoke:
             src = py.read_text()
             assert "\u2014" not in src, f"{py.name} contains em-dashes"
 
-    def test_no_emdashes_in_arag_doc(self):
-        content = (LAB_DIR / "ARAG" / "AgenticRAG.md").read_text()
-        assert "\u2014" not in content, "ARAG/AgenticRAG.md contains em-dashes"
+    def test_no_emdashes_in_agentic_rag_doc(self):
+        content = (LAB_DIR / "AgenticRAG.md").read_text()
+        assert "\u2014" not in content, "AgenticRAG.md contains em-dashes"
 
 
 # ---------------------------------------------------------------------------
