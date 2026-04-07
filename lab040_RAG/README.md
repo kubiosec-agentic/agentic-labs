@@ -278,7 +278,7 @@ curl -X DELETE https://api.openai.com/v1/files/$FILE_ID2 \
 
 ## Going further
 
-The [lab990_addendum/chromadb](../lab990_addendum/chromadb/) folder covers running Chroma as a standalone server (v2 API), including curl-based operations and OWASP LLM Top-10 risk mapping for vector databases.
+The [lab990_addendum/chromadb](../lab990_addendum/chromadb/) folder covers running Chroma as a standalone server (v2 API), including curl-based operations, OWASP LLM Top-10 risk mapping for vector databases, and a RAG poisoning attack PoC that demonstrates how a malicious document in the vector store can hijack LLM answers.
 
 ## Cleanup environment
 

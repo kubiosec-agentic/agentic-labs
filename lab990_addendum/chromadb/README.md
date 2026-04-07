@@ -4,6 +4,12 @@ When you add a vector database to an LLM pipeline, you add a new attack surface.
 
 Use this alongside the hands-on walkthrough in [StepByStep.md](./StepByStep.md) and the RAG lab in [lab040_RAG](../../lab040_RAG/).
 
+| File | Description |
+|------|-------------|
+| [StepByStep.md](./StepByStep.md) | Curl and Python walkthrough for Chroma v2 (Steps 1-7) |
+| [chroma_client.py](./chroma_client.py) | Python client: connect, upsert, query |
+| [rag_poisoning_demo.py](./rag_poisoning_demo.py) | **Security PoC:** LLM01 + LLM03 attack and mitigation demo |
+
 | # | OWASP Risk | How it shows up with Chroma v2 | Quick mitigations |
 |---|-----------|-------------------------------|-------------------|
 | LLM01 | Prompt Injection | Retrieved chunks can contain hidden instructions that steer the model. Similarity search optimizes for semantic proximity, not safety. | Retrieval-time content filtering, instruction firewalls, strict output schemas, "reader" prompts that treat retrieved text as untrusted data. |
@@ -38,3 +44,7 @@ Expose the server only behind a gateway with TLS and auth. Treat the `/collectio
 **Observability:** Log retrieval prompts, top-k hits, and decisions. Alert on spikes in miss rates or unusual query vectors.
 
 **Supply chain:** Pin and scan the Chroma image and clients. Track with SBOMs.
+
+## See it in action
+
+The [rag_poisoning_demo.py](./rag_poisoning_demo.py) script demonstrates LLM01 and LLM03 in a live Chroma environment: it upserts a poisoned document, shows how it hijacks the LLM's answer, and then applies an instruction firewall as mitigation. Run it after completing the [StepByStep walkthrough](./StepByStep.md).
