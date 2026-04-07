@@ -58,6 +58,25 @@ python3 OA_02.py
 - The model's final response incorporates the tool output naturally
 - The `OPENAI_BASE_URL` env var is supported: set it to route requests through a proxy (see Step 5)
 
+**Exercise: parallel tool calls and blind execution**
+
+Open `OA_02.py` and change the prompt on the last line to:
+
+```python
+"Create an SQL query to update the price of the blue pen to 5 dollars and remove the stale red pen"
+```
+
+Run it again and watch the output. The model now returns **two** tool calls in a single response: an UPDATE and a DELETE. Both are executed automatically by the loop, without any human confirmation. The user asked one question; the system silently ran two database operations, one of them destructive.
+
+This is a core risk in agentic tool use. The model decides which tools to call, how many times, and with what arguments. If your execution layer trusts the model unconditionally, a single user prompt (or a prompt injection hidden in retrieved context) can trigger actions the user never intended.
+
+Things to think about:
+- What would happen if the tool were connected to a real database?
+- How would you add a human-in-the-loop confirmation step before executing destructive operations?
+- Could you filter tool calls by operation type (e.g., allow SELECT, block DELETE) before execution?
+
+Use mitmproxy (Step 5) to inspect the raw API traffic for this prompt. Look at the `tool_calls` array in the first response: you will see two entries, each with its own `id`, `function.name`, and `function.arguments`. The second request must include a `tool` role message for every `tool_call_id`, or the API rejects it with a 400 error.
+
 ### Step 3: DevSecOps vulnerability scanner (`OA_03.py`)
 
 A security-focused example where the tool is `pip-audit`, a real dependency scanner. The model decides to scan `requirements-vulnerable.txt` (which contains `pillow==6.2.0` with known CVEs), receives the JSON vulnerability report, and provides a security assessment.
