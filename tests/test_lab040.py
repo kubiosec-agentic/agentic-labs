@@ -235,6 +235,13 @@ class TestLab040Smoke:
         readme = (LAB_DIR / "README.md").read_text()
         assert "Step 1" in readme
         assert "Step 5" in readme
+        assert "Step 6" in readme
+
+    def test_readme_step6_has_curl_commands(self):
+        readme = (LAB_DIR / "README.md").read_text()
+        assert "curl https://api.openai.com/v1/vector_stores" in readme
+        assert "curl https://api.openai.com/v1/responses" in readme
+        assert "OpenAI-Beta: assistants=v2" in readme
 
     def test_readme_has_framework_comparison(self):
         readme = (LAB_DIR / "README.md").read_text()

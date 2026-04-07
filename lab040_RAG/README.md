@@ -15,8 +15,9 @@ This lab walks through five approaches to RAG, each using a different framework 
 | 1 | `RAG_01.py` | **LlamaIndex** | Vector index with persistent storage, retrieval vs. LLM synthesis |
 | 2 | `RAG_02.py` | **LangChain + Chroma** | Document chunking, embedding, similarity search |
 | 3 | `RAG_03.py` | **LangChain + Chroma** | Full RAG pipeline with custom prompt and LLM synthesis |
-| 4 | `RAG_04.py` + curl | **OpenAI Responses API** | Managed vector store with file_search (no local DB needed) |
+| 4 | `RAG_04.py` | **OpenAI Responses API** | Managed vector store with file_search (Python SDK) |
 | 5 | `RAG_05_agentic.py` | **OpenAI SDK** | Agentic RAG: the LLM decides when and what to retrieve |
+| 6 | curl commands | **OpenAI REST API** | Same as Step 4 but with raw HTTP calls, so you see every header and payload |
 
 The progression matters: Steps 1-3 show you the mechanics (chunking, embedding, retrieval, synthesis). Step 4 shows how OpenAI can handle the entire pipeline for you. Step 5 is where it gets interesting for agentic systems: the model itself decides whether it needs to retrieve, making RAG part of an autonomous reasoning loop.
 
@@ -118,42 +119,7 @@ The script does everything in one run:
 
 > **Note:** The vector stores API is part of the Assistants infrastructure, which is scheduled for deprecation in August 2026. OpenAI is migrating these capabilities to the Responses API. The Python SDK handles the required `OpenAI-Beta: assistants=v2` header automatically, so your code will keep working until the migration is complete.
 
-<details>
-<summary>Optional: try it with curl to see the raw API</summary>
-
-The Python SDK abstracts the HTTP calls. If you want to see what happens under the hood, you can do it with curl. Note that vector store management currently requires the `OpenAI-Beta: assistants=v2` header (the SDK handles this automatically).
-
-```bash
-# Create a vector store
-VS_ID=$(curl https://api.openai.com/v1/vector_stores \
-  -H "Authorization: Bearer $OPENAI_API_KEY" \
-  -H "Content-Type: application/json" \
-  -H "OpenAI-Beta: assistants=v2" \
-  -d '{"name": "MCP documentation"}' | jq -r .id)
-
-# Upload and link a file
-FILE_ID=$(curl https://api.openai.com/v1/files \
-  -H "Authorization: Bearer $OPENAI_API_KEY" \
-  -F purpose="assistants" \
-  -F file="@data/llms-full.txt" | jq -r .id)
-
-curl https://api.openai.com/v1/vector_stores/$VS_ID/files \
-  -H "Authorization: Bearer $OPENAI_API_KEY" \
-  -H "Content-Type: application/json" \
-  -H "OpenAI-Beta: assistants=v2" \
-  -d '{"file_id": "'$FILE_ID'"}'
-
-# Query via Responses API (no beta header needed here)
-curl https://api.openai.com/v1/responses \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer $OPENAI_API_KEY" \
-  -d '{
-    "model": "gpt-4o",
-    "tools": [{"type": "file_search", "vector_store_ids": ["'$VS_ID'"]}],
-    "input": "What are the differentiating features of MCP?"
-  }' | jq -r '.output[].content[0].text'
-```
-</details>
+For the raw HTTP version of these same operations (useful for understanding what the SDK does under the hood), see **Step 6** below.
 
 ### Step 5: Agentic RAG (`RAG_05_agentic.py`)
 
@@ -180,10 +146,94 @@ For a detailed walkthrough of how this works, see [ARAG/AgenticRAG.md](./ARAG/Ag
 | Tool use | External, static | Invoked via tool calls |
 | Autonomy | None | Model controls the flow |
 
+### Step 6: Under the hood with curl
+
+Step 4 used the Python SDK, which abstracts HTTP calls and headers. This step does the exact same thing with raw `curl` commands, so you see every request, header, and response. This is useful for debugging, for understanding what the SDK does behind the scenes, and for working with the API from languages without an official SDK.
+
+> **Important:** Vector store management endpoints require the `OpenAI-Beta: assistants=v2` header. The Responses API query endpoint does not. The Assistants API is scheduled for deprecation in August 2026; OpenAI is migrating these capabilities into the Responses API.
+
+**1. Create a managed vector store**
+
+```bash
+VS_ID=$(curl https://api.openai.com/v1/vector_stores \
+  -H "Authorization: Bearer $OPENAI_API_KEY" \
+  -H "Content-Type: application/json" \
+  -H "OpenAI-Beta: assistants=v2" \
+  -d '{
+    "name": "MCP documentation"
+  }' | jq -r .id)
+```
+
+```bash
+echo $VS_ID
+```
+
+**2. Upload a file** (`purpose="assistants"`)
+
+```bash
+FILE_ID=$(curl https://api.openai.com/v1/files \
+  -H "Authorization: Bearer $OPENAI_API_KEY" \
+  -F purpose="assistants" \
+  -F file="@data/llms-full.txt" | jq -r .id)
+```
+
+```bash
+echo $FILE_ID
+```
+
+**3. Link the file to the vector store** (indexing can take a few seconds)
+
+```bash
+curl https://api.openai.com/v1/vector_stores/$VS_ID/files \
+  -H "Authorization: Bearer $OPENAI_API_KEY" \
+  -H "Content-Type: application/json" \
+  -H "OpenAI-Beta: assistants=v2" \
+  -d '{
+    "file_id": "'$FILE_ID'"
+  }'
+```
+
+Optionally upload a PDF or a second file and link it the same way to see multi-document retrieval.
+
+**4. Query the Responses API**
+
+```bash
+curl https://api.openai.com/v1/responses \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $OPENAI_API_KEY" \
+  -d '{
+    "model": "gpt-4o",
+    "tools": [{
+      "type": "file_search",
+      "vector_store_ids": ["'$VS_ID'"]
+    }],
+    "input": "What are the differentiating features of MCP?"
+  }' | jq -r '.output[].content[0].text'
+```
+
+Try another prompt, for example: `"How can MCP influence attention in LLM reasoning?"`
+
+**5. Cleanup**
+
+```bash
+curl -X DELETE https://api.openai.com/v1/vector_stores/$VS_ID \
+  -H "Authorization: Bearer $OPENAI_API_KEY" \
+  -H "OpenAI-Beta: assistants=v2"
+
+curl -X DELETE https://api.openai.com/v1/files/$FILE_ID \
+  -H "Authorization: Bearer $OPENAI_API_KEY"
+```
+
+**What to observe:**
+- The `OpenAI-Beta: assistants=v2` header is needed for `/v1/vector_stores` and `/v1/files`, but not for `/v1/responses`. This tells you which endpoints are still on the Assistants infrastructure.
+- Compare the JSON output from curl with what the Python SDK returns in Step 4. The SDK parses the same JSON into Python objects.
+- The Responses API endpoint (`/v1/responses`) is the new unified API. It does not need the beta header.
+- The `jq` filter at the end extracts just the answer text. Remove it to see the full response structure including `file_citation` annotations.
+
 ## Framework comparison
 
-| Aspect | LlamaIndex (Step 1) | LangChain + Chroma (Steps 2-3) | OpenAI file_search (Step 4) |
-|--------|---------------------|--------------------------------|----------------------------|
+| Aspect | LlamaIndex (Step 1) | LangChain + Chroma (Steps 2-3) | OpenAI file_search (Steps 4, 6) |
+|--------|---------------------|--------------------------------|----------------------------------|
 | Setup complexity | Low (one pipeline) | Medium (separate components) | Lowest (fully managed) |
 | Persistence | Local filesystem | Local or server | Cloud (OpenAI hosted) |
 | Customization | High | Highest (mix and match) | Limited to API parameters |
