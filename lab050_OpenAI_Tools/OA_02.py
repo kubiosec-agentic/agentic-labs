@@ -61,37 +61,40 @@ def llm(user_question, model="gpt-4o"):
         print("Warning: No tool call was returned.")
         return None, None
 
-    # Step 2: Execute the tool locally
-    tool_call = tool_calls[0]
-    function_name = tool_call.function.name
-    function_args = json.loads(tool_call.function.arguments)
+    # Step 2: Execute every tool call the model requested
+    all_args = []
+    for tool_call in tool_calls:
+        function_name = tool_call.function.name
+        function_args = json.loads(tool_call.function.arguments)
+        all_args.append(function_args)
 
-    if function_name == "find_product":
-        tool_output = find_product(function_args["sql_query"])
-    else:
-        tool_output = []
+        if function_name == "find_product":
+            tool_output = find_product(function_args["sql_query"])
+        else:
+            tool_output = []
 
-    # Step 3: Feed tool result back; LLM produces final answer
-    messages.append({
-        "role": "tool",
-        "tool_call_id": tool_call.id,
-        "name": function_name,
-        "content": json.dumps(tool_output),
-    })
+        messages.append({
+            "role": "tool",
+            "tool_call_id": tool_call.id,
+            "name": function_name,
+            "content": json.dumps(tool_output),
+        })
 
+    # Step 3: Feed tool results back; LLM produces final answer
     second_response = client.chat.completions.create(
         model=model,
         messages=messages,
     )
 
-    return function_args, second_response
+    return all_args, second_response
 
 
 if __name__ == "__main__":
     functionarg, answer = llm("Create an SQL query to update the price of the blue pen to 5 dollars")
 
     if functionarg and answer:
-        print(f"SQL Statement: {functionarg['sql_query']}")
+        for i, args in enumerate(functionarg):
+            print(f"SQL Statement {i + 1}: {args['sql_query']}")
         print(f"GPT Response:  {answer.choices[0].message.content}")
     else:
         print("Could not retrieve a valid function call or LLM response.")
