@@ -13,9 +13,10 @@ Each script is self-contained and can be run independently.
 This addendum runs inside the lab035 virtual environment. Complete the [lab035 setup](../../lab035_Langchain/README.md) first, then install the additional dependencies:
 
 ```bash
-cd ../lab035_Langchain
+cd ../../lab035_Langchain
 source .lab035/bin/activate
 pip install -r ../lab990_addendum/langchain/requirements.txt
+cd ../lab990_addendum/langchain
 ```
 
 ```bash

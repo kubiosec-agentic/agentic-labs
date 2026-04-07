@@ -14,9 +14,10 @@ In lab040 Step 1 (`RAG_01.py`), you indexed local text files. Here, the LlamaInd
 This addendum runs inside the lab040 virtual environment. Complete the [lab040 setup](../../lab040_RAG/README.md#set-up-your-environment) first, then install the additional dependencies:
 
 ```bash
-cd ../lab040_RAG
+cd ../../lab040_RAG
 source .lab040/bin/activate
 pip install -r ../lab990_addendum/llama_index/requirements.txt
+cd ../lab990_addendum/llama_index
 ```
 
 You also need a GitHub personal access token. Get one at [github.com/settings/tokens](https://github.com/settings/tokens) (no special scopes needed for public repos).
