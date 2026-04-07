@@ -1,45 +1,59 @@
-## Set up your environment
-```
-export OPENAI_API_KEY="xxxxxxxxx"
-```
-```
-python3 -m venv .venv
-```
-```
-source .venv/bin/activate
+# Chroma v2 Server: Step-by-Step Walkthrough
+
+This walkthrough runs a local Chroma server, creates a collection, adds a document with an OpenAI embedding, and queries it, all via curl and a short Python script. It pairs with the security discussion in [README.md](./README.md).
+
+## Prerequisites
+
+```bash
+pip install chromadb openai --break-system-packages
 ```
 
-## 0) Prereqs
+You also need `jq` (command-line JSON processor). Install it with your system package manager:
+
+```bash
+# macOS
+brew install jq
+
+# Ubuntu / Debian
+sudo apt-get install -y jq
 ```
-# Python 3.10+ recommended
-pip install -U chromadb openai jq
-```
-```
-export OPENAI_API_KEY=sk-...    # for embeddings
+
+## Set up your environment
+
+```bash
+export OPENAI_API_KEY="your-key-here"
 export BASE="http://localhost:8000/api/v2"
 export TENANT="default_tenant"
 export DB="default_database"
 ```
-## 1) Start a local Chroma server **(Terminal_1)**
-```
-# persists to ./chroma_db (change path as you like)
-chroma run --path ./chroma_db --host 127.0.0.1 --port 8000
 
+## Step 1: Start a local Chroma server (Terminal 1)
+
+```bash
+chroma run --path ./chroma_db --host 127.0.0.1 --port 8000
 ```
-## 2) Ensure tenant & database exist (v2) **(Terminal_2)**
-```
-# 2a) Create tenant (idempotent; server may return 409 if it already exists)
+
+Data persists in `./chroma_db`. Leave this terminal running and open a second one for the remaining steps.
+
+## Step 2: Create tenant and database (Terminal 2)
+
+Chroma v2 uses tenants and databases for multi-tenant isolation. The default tenant and database may already exist; a 409 response is fine.
+
+```bash
+# Create tenant (409 = already exists, that's OK)
 curl -s -X POST "$BASE/tenants" \
   -H "Content-Type: application/json" \
   -d '{"name":"'"$TENANT"'"}' | jq .
 
-# 2b) Create database within the tenant
+# Create database within the tenant
 curl -s -X POST "$BASE/tenants/$TENANT/databases" \
   -H "Content-Type: application/json" \
   -d '{"name":"'"$DB"'"}' | jq .
 ```
-## 3) Create a collection
-```
+
+## Step 3: Create a collection
+
+```bash
 COLL_RESP=$(curl -s -X POST "$BASE/tenants/$TENANT/databases/$DB/collections" \
   -H "Content-Type: application/json" \
   -d '{"name":"demo","metadata":{"hnsw:space":"cosine"}}')
@@ -48,8 +62,12 @@ echo "$COLL_RESP" | jq .
 COLL_ID=$(echo "$COLL_RESP" | jq -r '.id')
 echo "Collection ID: $COLL_ID"
 ```
-## 4) Add a document (client-side OpenAI embedding)
-```
+
+**What to observe:** The `hnsw:space` metadata sets the distance function. Cosine is standard for text embeddings.
+
+## Step 4: Add a document (client-side OpenAI embedding)
+
+```bash
 DOC='Brussels is the capital of Belgium.'
 
 EMBED=$(curl -s https://api.openai.com/v1/embeddings \
@@ -63,11 +81,15 @@ curl -s -X POST "$BASE/tenants/$TENANT/databases/$DB/collections/$COLL_ID/upsert
   -d "$(jq -n --arg id "doc1" --arg doc "$DOC" --argjson emb "$EMBED" \
         '{ids:[$id], documents:[$doc], embeddings:[$emb], metadatas:[{source:"demo"}]}')" \
   | jq .
+```
 
-```
-## 5) Similarity search via the API (curl)
-```
+**What to observe:** The embedding is created client-side via the OpenAI API, then sent to Chroma with the document text and metadata. Chroma stores the vector; it does not call OpenAI itself.
+
+## Step 5: Similarity search via curl
+
+```bash
 QUERY="What city is Belgium's capital?"
+
 QEMBED=$(curl -s https://api.openai.com/v1/embeddings \
   -H "Authorization: Bearer $OPENAI_API_KEY" \
   -H "Content-Type: application/json" \
@@ -80,17 +102,27 @@ curl -s -X POST "$BASE/tenants/$TENANT/databases/$DB/collections/$COLL_ID/query"
         '{query_embeddings:[$q], n_results:3, include:["documents","metadatas","distances"]}')" \
   | jq .
 ```
-## 6) Simple Python client that talks to the server (v2)
-```
+
+**What to observe:** The query embedding is computed the same way as the document embedding. Chroma returns the closest matches with distances. Lower distance = more similar.
+
+## Step 6: Python client (v2)
+
+The same operations in Python, using the Chroma HTTP client and OpenAI embedding function:
+
+```python
 # pip install chromadb openai
-import os, chromadb
+import os
+import chromadb
 from chromadb.utils import embedding_functions
 
 TENANT = "default_tenant"
 DB = "default_database"
 
-# Connect to HTTP server; v2 is the default path in recent clients
-client = chromadb.HttpClient(host="localhost", port=8000, ssl=False, tenant=TENANT, database=DB)
+# Connect to the HTTP server
+client = chromadb.HttpClient(
+    host="localhost", port=8000, ssl=False,
+    tenant=TENANT, database=DB,
+)
 
 # Use OpenAI as a client-side embedding function
 openai_ef = embedding_functions.OpenAIEmbeddingFunction(
@@ -101,20 +133,31 @@ openai_ef = embedding_functions.OpenAIEmbeddingFunction(
 col = client.get_or_create_collection(
     name="demo",
     metadata={"hnsw:space": "cosine"},
-    embedding_function=openai_ef
+    embedding_function=openai_ef,
 )
 
-# Upsert & query
+# Upsert a document
 col.upsert(
     ids=["py1"],
     documents=["Belgium borders the Netherlands, Germany, Luxembourg, and France."],
-    metadatas=[{"source": "py"}],
+    metadatas=[{"source": "python-client"}],
 )
+
+# Query
 res = col.query(
     query_texts=["Which countries neighbor Belgium?"],
     n_results=2,
-    include=["documents","metadatas","distances"]
+    include=["documents", "metadatas", "distances"],
 )
 print(res)
 ```
 
+**What to observe:** The Python client handles embedding automatically via the `embedding_function`. You pass plain text; it calls OpenAI, gets the vector, and sends it to Chroma. Compare this with Step 4 where you did the embedding manually with curl.
+
+## Cleanup
+
+Stop the Chroma server (Ctrl+C in Terminal 1). To remove persisted data:
+
+```bash
+rm -rf ./chroma_db
+```
