@@ -70,7 +70,7 @@ Same security review, but uses LangChain's `GitLoader` to clone a repository and
 
 ```bash
 # Requires GitPython (included in requirements.txt)
-# Clones the repo into ./test_repo on first run
+# Clones the repo into ./git_repo on first run
 python3 review_with_gitloader.py
 ```
 
