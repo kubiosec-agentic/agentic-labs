@@ -26,8 +26,9 @@ source .lab004/bin/activate
 
 > **Note:** There is no `requirements.txt` for local setup yet. Install dependencies manually:
 > ```bash
-> pip install numpy transformers torch
+> pip install numpy 'transformers>=4.45,<5' torch
 > ```
+> The `<5` upper bound is important: `transformers` 5.x removed the `question-answering` pipeline that `roberta.py` relies on.
 
 #### Option B: Docker (Recommended)
 Build and start the container. The lab folder is mounted as a volume, so any edits you make on your host (changing a prompt, tweaking temperature, etc.) are immediately available inside the container.

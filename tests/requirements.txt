@@ -5,6 +5,8 @@ pytest>=8.0
 python-dotenv>=1.0
 
 # Lab004: Transformers (Qwen + RoBERTa)
+# NOTE: transformers 5.x removed the "question-answering" pipeline task
+# that roberta.py depends on. Pin to 4.x until the code is migrated.
 numpy>=1.24
-transformers>=4.45
+transformers>=4.45,<5
 torch>=2.2
