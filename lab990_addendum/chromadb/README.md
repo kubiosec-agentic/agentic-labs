@@ -12,8 +12,12 @@ It pairs with the OWASP risk mapping in [owasp_top10_llm.md](./owasp_top10_llm.m
 
 ## Prerequisites
 
+This addendum runs inside the lab040 virtual environment. Complete the [lab040 setup](../../lab040_RAG/README.md#set-up-your-environment) first, then install `chromadb` if it is not already present:
+
 ```bash
-pip install chromadb openai --break-system-packages
+cd ../lab040_RAG
+source .lab040/bin/activate
+pip install chromadb openai
 ```
 
 You also need `jq` (command-line JSON processor). Install it with your system package manager:

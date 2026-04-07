@@ -10,13 +10,19 @@ Each script is self-contained and can be run independently.
 
 ## Set up your environment
 
+This addendum runs inside the lab035 virtual environment. Complete the [lab035 setup](../../lab035_Langchain/README.md) first, then install the additional dependencies:
+
+```bash
+cd ../lab035_Langchain
+source .lab035/bin/activate
+pip install -r ../lab990_addendum/langchain/requirements.txt
+```
+
 ```bash
 export OPENAI_API_KEY="your-key-here"
 
 # Only needed for easy_swap.py (Google AI Studio key)
 # export GOOGLE_API_KEY="your-key-here"
-
-pip install -r requirements.txt
 ```
 
 ## Examples

@@ -11,19 +11,18 @@ In lab040 Step 1 (`RAG_01.py`), you indexed local text files. Here, the LlamaInd
 
 ## Prerequisites
 
-You need two API keys:
+This addendum runs inside the lab040 virtual environment. Complete the [lab040 setup](../../lab040_RAG/README.md#set-up-your-environment) first, then install the additional dependencies:
 
 ```bash
-export OPENAI_API_KEY="your-key-here"
-export GITHUB_TOKEN="your-github-token"
+cd ../lab040_RAG
+source .lab040/bin/activate
+pip install -r ../lab990_addendum/llama_index/requirements.txt
 ```
 
-Get a GitHub personal access token at [github.com/settings/tokens](https://github.com/settings/tokens). No special scopes are needed for public repositories.
-
-Install dependencies:
+You also need a GitHub personal access token. Get one at [github.com/settings/tokens](https://github.com/settings/tokens) (no special scopes needed for public repos).
 
 ```bash
-pip install -r requirements.txt --break-system-packages
+export GITHUB_TOKEN="your-github-token"
 ```
 
 ## Run
