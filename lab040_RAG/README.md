@@ -193,7 +193,38 @@ curl https://api.openai.com/v1/vector_stores/$VS_ID/files \
   }'
 ```
 
-Optionally upload a PDF or a second file and link it the same way to see multi-document retrieval.
+**3b. (Optional) Add a second document, e.g. a PDF**
+
+Download the "Attention Is All You Need" paper and upload it as a second file:
+
+```bash
+curl -o ./data/attention.pdf https://arxiv.org/pdf/1706.03762
+```
+
+```bash
+FILE_ID2=$(curl https://api.openai.com/v1/files \
+  -H "Authorization: Bearer $OPENAI_API_KEY" \
+  -F purpose="assistants" \
+  -F file="@data/attention.pdf" | jq -r .id)
+```
+
+```bash
+echo $FILE_ID2
+```
+
+Link it to the same vector store:
+
+```bash
+curl https://api.openai.com/v1/vector_stores/$VS_ID/files \
+  -H "Authorization: Bearer $OPENAI_API_KEY" \
+  -H "Content-Type: application/json" \
+  -H "OpenAI-Beta: assistants=v2" \
+  -d '{
+    "file_id": "'$FILE_ID2'"
+  }'
+```
+
+The vector store now contains two documents. Queries will retrieve chunks from whichever document is most relevant.
 
 **4. Query the Responses API**
 
@@ -221,6 +252,10 @@ curl -X DELETE https://api.openai.com/v1/vector_stores/$VS_ID \
   -H "OpenAI-Beta: assistants=v2"
 
 curl -X DELETE https://api.openai.com/v1/files/$FILE_ID \
+  -H "Authorization: Bearer $OPENAI_API_KEY"
+
+# If you uploaded the PDF in step 3b:
+curl -X DELETE https://api.openai.com/v1/files/$FILE_ID2 \
   -H "Authorization: Bearer $OPENAI_API_KEY"
 ```
 
