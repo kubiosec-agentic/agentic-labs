@@ -43,19 +43,19 @@ class TestLab035Smoke:
         assert (LAB_DIR / "lab_cleanup.sh").is_file()
 
     def test_chat_py_exists(self):
-        assert (LAB_DIR / "chat.py").is_file()
+        assert (LAB_DIR / "lc01_chat.py").is_file()
 
     def test_prompt_py_exists(self):
-        assert (LAB_DIR / "prompt.py").is_file()
+        assert (LAB_DIR / "lc02_prompt.py").is_file()
 
     def test_advanced_prompting_py_exists(self):
-        assert (LAB_DIR / "advanced_prompting.py").is_file()
+        assert (LAB_DIR / "lc03_advanced_prompting.py").is_file()
 
     def test_multi_turn_py_exists(self):
-        assert (LAB_DIR / "multi-turn.py").is_file()
+        assert (LAB_DIR / "lc04_multi_turn.py").is_file()
 
     def test_hf_local_py_exists(self):
-        assert (LAB_DIR / "hf_local.py").is_file()
+        assert (LAB_DIR / "lc05_hf_local.py").is_file()
 
     def test_doc_directory_exists(self):
         assert (LAB_DIR / "doc").is_dir()
@@ -70,8 +70,8 @@ class TestLab035Smoke:
     # -- syntax validation --------------------------------------------------
 
     @pytest.mark.parametrize("script", [
-        "chat.py", "prompt.py", "advanced_prompting.py",
-        "multi-turn.py", "hf_local.py",
+        "lc01_chat.py", "lc02_prompt.py", "lc03_advanced_prompting.py",
+        "lc04_multi_turn.py", "lc05_hf_local.py",
     ])
     def test_script_valid_syntax(self, script):
         source = (LAB_DIR / script).read_text()
@@ -88,7 +88,7 @@ class TestLab035Smoke:
     # -- model references ---------------------------------------------------
 
     def test_chat_uses_gpt4o(self):
-        src = (LAB_DIR / "chat.py").read_text()
+        src = (LAB_DIR / "lc01_chat.py").read_text()
         # Active (uncommented) model instantiation should be gpt-4o
         for line in src.splitlines():
             if line.strip().startswith("#"):
@@ -97,7 +97,7 @@ class TestLab035Smoke:
                 assert "gpt-4o" in line, f"Expected gpt-4o, got: {line}"
 
     def test_prompt_uses_gpt4o(self):
-        src = (LAB_DIR / "prompt.py").read_text()
+        src = (LAB_DIR / "lc02_prompt.py").read_text()
         for line in src.splitlines():
             if line.strip().startswith("#"):
                 continue
@@ -127,43 +127,43 @@ class TestLab035Smoke:
     # -- structural content checks ------------------------------------------
 
     def test_chat_uses_langchain_openai(self):
-        src = (LAB_DIR / "chat.py").read_text()
+        src = (LAB_DIR / "lc01_chat.py").read_text()
         assert "from langchain_openai" in src
 
     def test_chat_uses_invoke(self):
-        src = (LAB_DIR / "chat.py").read_text()
+        src = (LAB_DIR / "lc01_chat.py").read_text()
         assert ".invoke(" in src
 
     def test_prompt_uses_prompt_template(self):
-        src = (LAB_DIR / "prompt.py").read_text()
+        src = (LAB_DIR / "lc02_prompt.py").read_text()
         assert "PromptTemplate" in src
 
     def test_prompt_uses_pipe_operator(self):
-        src = (LAB_DIR / "prompt.py").read_text()
+        src = (LAB_DIR / "lc02_prompt.py").read_text()
         assert "|" in src
 
     def test_advanced_uses_chat_prompt_template(self):
-        src = (LAB_DIR / "advanced_prompting.py").read_text()
+        src = (LAB_DIR / "lc03_advanced_prompting.py").read_text()
         assert "ChatPromptTemplate" in src
 
     def test_advanced_uses_system_message(self):
-        src = (LAB_DIR / "advanced_prompting.py").read_text()
+        src = (LAB_DIR / "lc03_advanced_prompting.py").read_text()
         assert "SystemMessagePromptTemplate" in src
 
     def test_multi_turn_uses_message_history(self):
-        src = (LAB_DIR / "multi-turn.py").read_text()
+        src = (LAB_DIR / "lc04_multi_turn.py").read_text()
         assert "RunnableWithMessageHistory" in src
 
     def test_multi_turn_uses_session_id(self):
-        src = (LAB_DIR / "multi-turn.py").read_text()
+        src = (LAB_DIR / "lc04_multi_turn.py").read_text()
         assert "session_id" in src
 
     def test_hf_local_uses_huggingface_pipeline(self):
-        src = (LAB_DIR / "hf_local.py").read_text()
+        src = (LAB_DIR / "lc05_hf_local.py").read_text()
         assert "HuggingFacePipeline" in src
 
     def test_hf_local_uses_qwen(self):
-        src = (LAB_DIR / "hf_local.py").read_text()
+        src = (LAB_DIR / "lc05_hf_local.py").read_text()
         assert "Qwen" in src
 
     # -- requirements checks ------------------------------------------------
@@ -198,8 +198,8 @@ class TestLab035Smoke:
 
     def test_readme_documents_all_scripts(self):
         readme = (LAB_DIR / "README.md").read_text()
-        for script in ["chat.py", "prompt.py", "advanced_prompting.py",
-                        "multi-turn.py", "hf_local.py"]:
+        for script in ["lc01_chat.py", "lc02_prompt.py", "lc03_advanced_prompting.py",
+                        "lc04_multi_turn.py", "lc05_hf_local.py"]:
             assert script in readme, f"{script} not mentioned in README"
 
     def test_readme_has_step_numbering(self):
@@ -253,7 +253,7 @@ class TestLab035Slow:
     def test_chat_runs(self):
         """chat.py should produce output."""
         result = subprocess.run(
-            [sys.executable, str(LAB_DIR / "chat.py")],
+            [sys.executable, str(LAB_DIR / "lc01_chat.py")],
             capture_output=True, text=True, timeout=30,
             env={**os.environ, "PYTHONDONTWRITEBYTECODE": "1"},
         )
@@ -263,7 +263,7 @@ class TestLab035Slow:
     def test_prompt_runs(self):
         """prompt.py should produce an analysis."""
         result = subprocess.run(
-            [sys.executable, str(LAB_DIR / "prompt.py")],
+            [sys.executable, str(LAB_DIR / "lc02_prompt.py")],
             capture_output=True, text=True, timeout=60,
             env={**os.environ, "PYTHONDONTWRITEBYTECODE": "1"},
         )
@@ -273,7 +273,7 @@ class TestLab035Slow:
     def test_advanced_prompting_runs(self):
         """advanced_prompting.py should return a joke."""
         result = subprocess.run(
-            [sys.executable, str(LAB_DIR / "advanced_prompting.py")],
+            [sys.executable, str(LAB_DIR / "lc03_advanced_prompting.py")],
             capture_output=True, text=True, timeout=30,
             env={**os.environ, "PYTHONDONTWRITEBYTECODE": "1"},
         )
@@ -283,7 +283,7 @@ class TestLab035Slow:
     def test_multi_turn_runs(self):
         """multi-turn.py should produce multiple responses and message history."""
         result = subprocess.run(
-            [sys.executable, str(LAB_DIR / "multi-turn.py")],
+            [sys.executable, str(LAB_DIR / "lc04_multi_turn.py")],
             capture_output=True, text=True, timeout=60,
             env={**os.environ, "PYTHONDONTWRITEBYTECODE": "1"},
         )
