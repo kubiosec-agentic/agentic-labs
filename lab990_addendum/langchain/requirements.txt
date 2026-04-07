@@ -14,5 +14,8 @@ geopy
 # GitLoader (review_with_gitloader.py)
 GitPython
 
+# sample.py (vulnerable Flask app, target for security_review.py)
+flask
+
 # Optional: for better data handling
 numpy
