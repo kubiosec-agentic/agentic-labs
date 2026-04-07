@@ -40,7 +40,7 @@ security_prompt = PromptTemplate(
 )
 
 # Initialize the language model (ensure OPENAI_API_KEY is set in env)
-llm = ChatOpenAI(model="gpt-5", temperature=1)
+llm = ChatOpenAI(model="gpt-4o", temperature=1)
 
 # Compose the chain using LCEL
 security_chain = security_prompt | llm | parser

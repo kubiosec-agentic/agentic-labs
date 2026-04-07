@@ -9,7 +9,7 @@ This directory contains advanced LangChain examples that demonstrate practical, 
 export OPENAI_API_KEY="xxxxxxxxx"
 ```
 For multi-provider examples, also set: <br>
-Use the API key from **Goole AI Studio**.
+Use the API key from **Google AI Studio**.
 ```
 export GOOGLE_API_KEY="xxxxxxxxx"
 ```
@@ -36,8 +36,10 @@ python3 weather_forecast.py
 #### Example 2: Multi-Provider LLM Swapping
 This script shows how to easily swap between different LLM providers (OpenAI GPT and Google Gemini) using a simple configuration switch. Perfect for comparing outputs or building provider-agnostic applications.
 
+> **Note:** A copy of this script also lives in **lab035** as `lc06_easy_swap.py`, where it serves as a hands-on exercise for provider abstraction.
+
 Features:
-- Switch between OpenAI GPT-3.5 and Google Gemini
+- Switch between OpenAI GPT-4o and Google Gemini
 - Terraform code generation example
 - Environment variable configuration
 - Error handling for missing API keys

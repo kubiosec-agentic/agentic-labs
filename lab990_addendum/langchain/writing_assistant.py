@@ -8,7 +8,7 @@ from langchain_openai.chat_models import ChatOpenAI
 
 
 LLM = ChatOpenAI(
-    model="gpt-3.5-turbo",  # Fixed deprecated model_name parameter
+    model="gpt-4o",  # Fixed deprecated model_name parameter
     temperature=0.0,
     api_key=os.getenv("OPENAI_API_KEY")
 )
@@ -32,7 +32,7 @@ def suggest_improvements(input_text: str, temperature: float) -> str:
     """Suggest improvements to the text."""
     # Create a new LLM instance with the specified temperature
     llm_with_temp = ChatOpenAI(
-        model="gpt-3.5-turbo",
+        model="gpt-4o",
         temperature=temperature,
         api_key=os.getenv("OPENAI_API_KEY")
     )

@@ -57,6 +57,9 @@ class TestLab035Smoke:
     def test_hf_local_py_exists(self):
         assert (LAB_DIR / "lc05_hf_local.py").is_file()
 
+    def test_easy_swap_py_exists(self):
+        assert (LAB_DIR / "lc06_easy_swap.py").is_file()
+
     def test_doc_directory_exists(self):
         assert (LAB_DIR / "doc").is_dir()
 
@@ -71,7 +74,7 @@ class TestLab035Smoke:
 
     @pytest.mark.parametrize("script", [
         "lc01_chat.py", "lc02_prompt.py", "lc03_advanced_prompting.py",
-        "lc04_multi_turn.py", "lc05_hf_local.py",
+        "lc04_multi_turn.py", "lc05_hf_local.py", "lc06_easy_swap.py",
     ])
     def test_script_valid_syntax(self, script):
         source = (LAB_DIR / script).read_text()
@@ -199,13 +202,30 @@ class TestLab035Smoke:
     def test_readme_documents_all_scripts(self):
         readme = (LAB_DIR / "README.md").read_text()
         for script in ["lc01_chat.py", "lc02_prompt.py", "lc03_advanced_prompting.py",
-                        "lc04_multi_turn.py", "lc05_hf_local.py"]:
+                        "lc04_multi_turn.py", "lc05_hf_local.py", "lc06_easy_swap.py"]:
             assert script in readme, f"{script} not mentioned in README"
 
     def test_readme_has_step_numbering(self):
         readme = (LAB_DIR / "README.md").read_text()
         assert "Step 1" in readme
-        assert "Step 5" in readme
+        assert "Step 6" in readme
+
+    def test_readme_references_addendum(self):
+        readme = (LAB_DIR / "README.md").read_text()
+        assert "lab990_addendum" in readme
+
+    def test_easy_swap_uses_both_providers(self):
+        src = (LAB_DIR / "lc06_easy_swap.py").read_text()
+        assert "ChatOpenAI" in src
+        assert "ChatGoogleGenerativeAI" in src
+
+    def test_easy_swap_uses_gpt4o(self):
+        src = (LAB_DIR / "lc06_easy_swap.py").read_text()
+        for line in src.splitlines():
+            if line.strip().startswith("#"):
+                continue
+            if "ChatOpenAI(" in line and "model=" in line:
+                assert "gpt-4o" in line
 
     def test_readme_references_lab064_for_langgraph(self):
         readme = (LAB_DIR / "README.md").read_text()

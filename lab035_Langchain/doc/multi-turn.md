@@ -1,5 +1,5 @@
 
-# Multi-Turn Conversation with LangChain in `multi-turn.py`
+# Multi-Turn Conversation with LangChain (`lc04_multi_turn.py`)
 
 ## Introduction
 This example demonstrates how to handle **multi-turn conversations** using LangChain without agents.  

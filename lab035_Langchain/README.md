@@ -93,6 +93,19 @@ The first run downloads the model (~1 GB). Subsequent runs use the cached versio
 
 For details, see [doc/huggingface.md](./doc/huggingface.md).
 
+### Step 6: Swapping providers with a config switch (`lc06_easy_swap.py`)
+
+This script makes the provider abstraction concrete. A single boolean (`use_gemini = True/False`) switches the entire pipeline between OpenAI and Google Gemini. The prompt, chain, and output code stay identical.
+
+```bash
+# Requires GOOGLE_API_KEY for the Gemini path
+export GOOGLE_API_KEY="your-key-here"
+
+python3 ./lc06_easy_swap.py
+```
+
+Try flipping `use_gemini` to `False` and running again with the same prompt. Compare the Terraform output from both providers. This is exactly the kind of flexibility LangChain gives you: write once, swap providers without touching your business logic.
+
 ## Cleanup environment
 
 ```bash
@@ -102,6 +115,10 @@ rm -rf ~/.cache/huggingface
 deactivate
 ./lab_cleanup.sh
 ```
+
+## Going further
+
+The [lab990_addendum/langchain](../lab990_addendum/langchain/) folder contains more advanced LangChain examples that build on what you learned here: a weather tool with real API integration, shell script security analysis (both local and via GitLoader), a Pydantic-based code security reviewer, a CLI tool executor, and a Gradio writing assistant.
 
 ## What's next
 
