@@ -29,11 +29,11 @@ print(f"      File ID: {uploaded.id}")
 # 3. Link the file to the vector store and wait for indexing
 # ------------------------------------------------------------------
 print("[3/5] Indexing (this may take a few seconds) ...")
-client.vector_stores.files.create(vs.id, file_id=uploaded.id)
+client.vector_stores.files.create(vector_store_id=vs.id, file_id=uploaded.id)
 
 # Poll until the file is indexed
 for _ in range(30):
-    vs_file = client.vector_stores.files.retrieve(vs.id, uploaded.id)
+    vs_file = client.vector_stores.files.retrieve(vector_store_id=vs.id, file_id=uploaded.id)
     if vs_file.status == "completed":
         break
     time.sleep(1)
@@ -66,6 +66,6 @@ print(response.output_text)
 # 5. Cleanup: delete vector store and uploaded file
 # ------------------------------------------------------------------
 print(f"\n[5/5] Cleaning up ...")
-client.vector_stores.delete(vs.id)
-client.files.delete(uploaded.id)
+client.vector_stores.delete(vector_store_id=vs.id)
+client.files.delete(file_id=uploaded.id)
 print("      Done. Vector store and file deleted.")
