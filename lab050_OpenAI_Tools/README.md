@@ -1,86 +1,100 @@
-![OpenAI](https://img.shields.io/badge/OpenAI-lightblue)
-![Tools](https://img.shields.io/badge/Tools-purple)
-![Python](https://img.shields.io/badge/Python-blue) 
-
+![OpenAI](https://img.shields.io/badge/OpenAI-lightblue) ![Tools](https://img.shields.io/badge/Tools-purple) ![Python](https://img.shields.io/badge/Python-blue)
 
 # LAB050: OpenAI Function Calling and Tool Integration
-## Introduction
-This lab demonstrates OpenAI's function calling capabilities with custom tools. You'll learn:
-- Directory analysis with function calling
-- SQL simulation with tool integration
-- Advanced tool execution patterns
-- API call inspection using mitmproxy
 
-Perfect for understanding how to integrate custom tools with OpenAI's chat completion API.
+## Introduction
+
+LLMs can generate text, but they cannot execute code, query databases, or call APIs on their own. **Function calling** (tool use) bridges this gap: you define tools as JSON schemas, the model decides when to call them, and your code executes the actual function. The model then uses the result to produce a final answer.
+
+These examples use the **Chat Completions API** with the `tools` parameter. While we use OpenAI's GPT-4o here, the same pattern works with any provider that supports the Chat Completions format with tool use: Azure OpenAI, Mistral, Groq, Together AI, and local models served through OpenAI-compatible endpoints (Ollama, vLLM, LM Studio). To switch providers, set the `OPENAI_BASE_URL` environment variable to point at a different endpoint.
+
+This lab walks through four examples of increasing complexity, plus a bonus step that uses mitmproxy to inspect the raw API traffic.
+
+| Step | Script | Tool | What it demonstrates |
+|------|--------|------|---------------------|
+| 1 | `OA_01.py` | `summarize_directory` | Basic tool-call flow: model calls a local function, gets results, answers |
+| 2 | `OA_02.py` | `find_product` (SQL) | Simulated SQL execution; model generates a query, tool returns mock data |
+| 3 | `OA_03.py` | `check_package_vulnerabilities` | DevSecOps: pip-audit as a tool; real vulnerability scanning |
+| 4 | `OA_04.py` | `search_security_innovators` | External API: Wikipedia search as a tool |
+| 5 | mitmproxy | (inspection) | Intercept and inspect OpenAI API calls |
 
 ## Set up your environment
-### Prerequisites
-- Python 3.7+ with pip
-- OpenAI API key (for LLM integration)
-- pip-audit (automatically installed via requirements.txt)
 
-### Setup Commands
 ```bash
-export OPENAI_API_KEY="xxxxxxxxx"
+export OPENAI_API_KEY="your-key-here"
 ```
+
 ```bash
 ./lab_setup.sh
-```
-```bash
 source .lab050/bin/activate
 ```
 
 ## Lab instructions
-#### Example 1: Directory Analysis Tool
-This script demonstrates OpenAI function calling with a directory analysis tool. The model can automatically call the `summarize_directory` function to analyze file types in any directory path.
-```
+
+### Step 1: Directory analysis tool (`OA_01.py`)
+
+The simplest possible tool-call example. The model receives a user question about directory contents, decides to call `summarize_directory`, gets back a file-type summary, and produces a natural-language answer.
+
+```bash
 python3 OA_01.py
 ```
 
-#### Example 2: SQL Simulation with Custom Tools
-This example shows advanced tool integration with a simulated SQL database. It demonstrates:
-- Custom tool schema definition
-- Local function execution
-- Tool result processing
-- Multi-step conversation flow
-```
+**What to observe:**
+- The three-phase flow: (1) model emits a `tool_calls` response, (2) your code runs the function, (3) model gets the result and answers
+- The `tool_choice="auto"` parameter lets the model decide whether to call the tool or answer directly
+- The JSON arguments the model generates for the tool call (check the `arguments` field)
+
+### Step 2: SQL simulation with tool use (`OA_02.py`)
+
+The model generates a SQL query based on a natural-language request. A local function "executes" it (returns mock data), and the model summarizes the result. This pattern is common in database-backed agents.
+
+```bash
 python3 OA_02.py
 ```
 
-#### Example 3: DevSecOps Dependency Vulnerability Scanner
-This example demonstrates a security-focused tool that scans Python dependencies for known vulnerabilities. It showcases:
-- Integration with security scanning tools (pip-audit)
-- Security-focused system prompts
-- DevSecOps workflow automation
-- Dual mode operation (with/without OpenAI API key)
+**What to observe:**
+- The model generates syntactically valid SQL from a plain English request
+- The tool returns structured data (JSON), not natural language
+- The model's final response incorporates the tool output naturally
+- The `OPENAI_BASE_URL` env var is supported: set it to route requests through a proxy (see Step 5)
 
-**Features:**
-- **With API Key**: Full LLM-powered vulnerability analysis and remediation advice
-- **Without API Key**: Direct vulnerability scanning with detailed CVE information
+### Step 3: DevSecOps vulnerability scanner (`OA_03.py`)
+
+A security-focused example where the tool is `pip-audit`, a real dependency scanner. The model decides to scan `requirements-vulnerable.txt` (which contains `pillow==6.2.0` with known CVEs), receives the JSON vulnerability report, and provides a security assessment.
 
 ```bash
 python3 OA_03.py
 ```
 
-**Test with vulnerable packages:**
-The script is pre-configured to scan `requirements-vulnerable.txt` which contains `pillow==6.2.0` with 41 known vulnerabilities.
+The script works in two modes: with `OPENAI_API_KEY` set, the LLM analyzes the scan results and provides remediation advice. Without the key, it runs pip-audit directly and prints formatted output.
 
-**DevSecOps Tip**: pip-audit sends summary messages to stderr while JSON data goes to stdout. This is normal behavior, the tool handles both streams correctly to extract vulnerability details.
+**What to observe:**
+- The tool executes a real subprocess (`pip-audit`), not a mock function
+- pip-audit sends summary messages to stderr and JSON data to stdout; the tool handles both
+- The LLM's system prompt is tuned for security analysis: it asks the model to present actual findings, not generic advice
+- The `requirements-vulnerable.txt` file is intentionally insecure (for testing only)
 
-#### Example 4: Security Innovators Wikipedia Research
-This example demonstrates Wikipedia integration for researching cybersecurity pioneers and innovators. It showcases:
-- Wikipedia API integration with function calling
-- Information retrieval and summarization
-- Educational research workflow
+### Step 4: Wikipedia research tool (`OA_04.py`)
+
+Demonstrates tool use with an external API. The model searches Wikipedia for cybersecurity pioneers, retrieves page summaries, and synthesizes a research overview. Unlike Steps 1-3 where the tool runs locally, this tool makes network calls to Wikipedia.
+
 ```bash
 python3 OA_04.py
 ```
 
-#### Example 5: API Call Inspection with Mitmproxy
-This setup enables deep inspection of OpenAI API calls by routing them through a local MITM proxy in reverse mode.
+**What to observe:**
+- The model may issue multiple tool calls in one turn (searching for different people)
+- The tool handles Wikipedia disambiguation pages gracefully
+- The response includes URLs to Wikipedia pages for further reading
+- Compare with Step 1: same tool-call pattern, but the tool itself calls an external API
 
-#### Open a new terminal_2
-```
+### Step 5: API call inspection with mitmproxy
+
+This is not a script but a setup that lets you intercept and inspect the HTTP traffic between your code and OpenAI. It uses mitmproxy in reverse mode to sit between your client and `api.openai.com`.
+
+**Terminal 1:** Start the mitmproxy container:
+
+```bash
 docker run --rm -it \
     -v ~/.mitmproxy:/home/mitmproxy/.mitmproxy \
     -p 8080:8080 \
@@ -89,24 +103,34 @@ docker run --rm -it \
         --web-host 0.0.0.0 \
         --mode reverse:https://api.openai.com:443
 ```
-You can now connect to `http://127.0.0.1:8081/?token=<see_your_terminal>`
 
-#### Continue in terminal_1
-```
+Open the web UI at `http://127.0.0.1:8081` (the token is shown in Terminal 1 output).
+
+**Terminal 2:** Point the OpenAI client at the proxy and run any script:
+
+```bash
 export OPENAI_BASE_URL="http://127.0.0.1:8080/v1"
-```
-```
 python3 OA_02.py
 ```
 
-## Cleanup environment
+**What to observe:**
+- The full request/response cycle in the mitmproxy web UI
+- The `tools` array in the request body: this is how tool schemas are sent to the model
+- The `tool_calls` field in the response: the model's decision to call a function
+- The second request with the `tool` role message: feeding results back to the model
+- Headers, tokens, and latency information
+
+When done, reset the base URL:
+
 ```bash
 unset OPENAI_BASE_URL
 ```
+
+## Cleanup environment
+
 ```bash
 deactivate
-```
-```bash
 ./lab_cleanup.sh
 ```
+
 Back to [Lab Overview](https://github.com/kubiosec-agentic/agentic-labs/blob/master/README.md#-lab-overview)

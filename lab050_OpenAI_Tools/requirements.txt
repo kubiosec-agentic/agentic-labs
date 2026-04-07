@@ -1,5 +1,3 @@
-openai
-logging
-flask
-wikipedia
-pip-audit
+openai>=1.40
+wikipedia>=1.4
+pip-audit>=2.7
