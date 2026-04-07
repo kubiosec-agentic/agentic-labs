@@ -1,15 +1,18 @@
-from langchain_openai import ChatOpenAI
-from langchain_core.messages import HumanMessage, ToolMessage
+"""
+Basic LangChain LLM query without tools.
 
-# Initialize the LLM with a specific model
+Sends a single user message to gpt-4o via LangChain's ChatOpenAI wrapper.
+No tools, no chains, just a bare invoke to show the simplest possible call.
+"""
+
+from langchain_openai import ChatOpenAI
+from langchain_core.messages import HumanMessage
+
 llm = ChatOpenAI(model="gpt-4o")
 
-# Pass the result back to the model
 messages = [
     HumanMessage(content="What is the weather in SF?"),
 ]
 
-final_response = llm.invoke(messages)
-print(f"\nFinal response: {final_response}")
-
-
+response = llm.invoke(messages)
+print(f"\nResponse: {response}")

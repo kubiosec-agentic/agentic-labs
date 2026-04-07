@@ -1,6 +1,4 @@
-openai
-logging
-langchain-core
-langchain-community
-langchain_openai
-langchain_experimental
+openai>=1.40
+langchain-core>=0.3
+langchain-openai>=0.3
+pydantic>=2.0
