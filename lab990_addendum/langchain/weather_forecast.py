@@ -20,8 +20,8 @@ def get_weather(location: str) -> str:
     """Get current weather and forecast at a location using Open-Meteo API."""
     try:
         # Geocode the location to get coordinates
-        geolocator = Nominatim(user_agent="weather_app")
-        geo_location = geolocator.geocode(location)
+        geolocator = Nominatim(user_agent="agentic_labs_weather")
+        geo_location = geolocator.geocode(location, timeout=10)
         
         if not geo_location:
             return f"Could not find coordinates for {location}. Please try a more specific location."
