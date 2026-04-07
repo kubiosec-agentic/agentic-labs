@@ -101,6 +101,7 @@ docker run --rm -it \
     -p 127.0.0.1:8081:8081 \
     mitmproxy/mitmproxy mitmweb \
         --web-host 0.0.0.0 \
+        --set block_global=false \
         --mode reverse:https://api.openai.com:443
 ```
 
