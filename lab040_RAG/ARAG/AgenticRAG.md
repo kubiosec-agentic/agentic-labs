@@ -1,8 +1,8 @@
 # Simple Agentic-RAG Demo with OpenAI SDK
 
-This Python script demonstrates **Agentic Retrieval-Augmented Generation (Agentic-RAG)** — an advanced form of RAG where the **LLM itself actively decides when to use tools like retrieval** in order to produce better, grounded answers.
+This Python script demonstrates **Agentic Retrieval-Augmented Generation (Agentic-RAG)**, an advanced form of RAG where the **LLM itself actively decides when to use tools like retrieval** in order to produce better, grounded answers.
 
-> ✅ Unlike traditional RAG systems where the retrieval step is pre-programmed and static, Agentic-RAG empowers the model to **think, decide, retrieve, and respond** — making it more autonomous and adaptive.
+> ✅ Unlike traditional RAG systems where the retrieval step is pre-programmed and static, Agentic-RAG empowers the model to **think, decide, retrieve, and respond**, making it more autonomous and adaptive.
 
 ---
 
@@ -55,7 +55,7 @@ This flow enables **agent-like behavior**: the model can dynamically decide to r
 | Retrieval                     | Pre-programmed     | Chosen dynamically by LLM    |
 | Reasoning steps               | One-shot           | Multi-turn decision loop     |
 | Tool use                      | External, static   | Invoked via tool calls       |
-| Autonomy                      | No                 | Yes — the model decides flow |
+| Autonomy                      | No                 | Yes, the model decides flow  |
 | Flexibility                   | Limited            | Adaptive to query complexity |
 
 ---

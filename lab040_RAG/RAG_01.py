@@ -19,7 +19,8 @@ PERSIST_DIR = "./storage"
 USE_LLM = True
 
 # Define embedding model explicitly
-embed_model = OpenAIEmbedding(model="text-embedding-ada-002")
+# text-embedding-3-small is cheaper and more accurate than the older ada-002
+embed_model = OpenAIEmbedding(model="text-embedding-3-small")
 
 # Load or create the vector index
 if not os.path.exists(PERSIST_DIR):
@@ -33,14 +34,14 @@ else:
  # Create a query engine based on whether we want LLM-generated answers or just retrieval
 if USE_LLM:
     # Use OpenAI's GPT model to synthesize a natural-language answer from the retrieved documents
-    # You can choose different models like "gpt-4", "gpt-3.5-turbo", or the faster "gpt-4o"
+    # You can choose different models like "gpt-4o-mini" for lower cost or "gpt-4o" for higher quality
     llm = OpenAI(model="gpt-4o")
     # Create a query engine that retrieves the top-2 most relevant documents
     # and uses the specified LLM to generate a full-text response
     query_engine = index.as_query_engine(similarity_top_k=2, llm=llm)
 
 else:
-    # Skip LLMs — use pure vector search only
+    # Skip LLMs, use pure vector search only
     # This means the user will see only the most similar document chunks without a generated answer
     # Create a retriever to fetch top-2 similar document chunks based on vector similarity
     retriever = VectorIndexRetriever(index=index, similarity_top_k=2)
