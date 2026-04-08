@@ -10,8 +10,9 @@ import os
 from google.adk.agents import Agent
 from google.adk.tools.mcp_tool.mcp_toolset import MCPToolset, StdioServerParameters
 
-# Change this to the absolute path of the folder you want the agent to manage.
-TARGET_FOLDER = os.path.expanduser("~")
+# SECURITY: Change this to the specific directory you want the agent to access.
+# Defaults to ~/Documents. Using ~ (home) would expose SSH keys, dotfiles, etc.
+TARGET_FOLDER = os.path.expanduser("~/Documents")
 
 root_agent = Agent(
     model="gemini-2.0-flash",

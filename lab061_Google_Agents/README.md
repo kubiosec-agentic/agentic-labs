@@ -6,14 +6,16 @@
 
 Google's Agent Development Kit (ADK) is a framework for building agents powered by Gemini models. An ADK agent is a Python module that defines a `root_agent` with a model, instructions, and optional tools. The `adk` CLI discovers agents automatically and serves them through a web UI and a REST API.
 
-This lab contains three agents that demonstrate different tool-integration patterns, plus a standalone script that shows how to run an agent programmatically (without the `adk` CLI). The agents cover plain function tools, MCP filesystem access, and MCP flight search.
+This lab contains five agents that demonstrate different tool-integration and multi-agent patterns, plus a standalone script that shows how to run an agent programmatically (without the `adk` CLI).
 
-| Directory | Agent | Tools | Model |
-|-----------|-------|-------|-------|
-| `adk/multi_tool_agent/` | Weather and time lookup | Python functions (mock data) | gemini-2.0-flash |
-| `adk/mcp_agent/` | Filesystem manager | MCP `@modelcontextprotocol/server-filesystem` | gemini-2.0-flash |
-| `adk/flight_assistant/` | Flight search | MCP `mcp-flight-search` | gemini-2.0-flash |
-| `adk_standalone/flight_schedule/` | Flight search (standalone) | MCP `mcp-flight-search` via Runner API | gemini-2.0-flash |
+| Directory | Agent | Pattern | Model |
+|-----------|-------|---------|-------|
+| `adk/multi_tool_agent/` | Weather and time lookup | Plain Python functions as tools | gemini-2.0-flash |
+| `adk/mcp_agent/` | Filesystem manager | MCP server integration | gemini-2.0-flash |
+| `adk/flight_assistant/` | Flight search | MCP server with API key injection | gemini-2.0-flash |
+| `adk/llm_red_team_agent/` | AI safety red team | 3 sub-agents as tools (attack, target, evaluate) | gemini-2.0-flash |
+| `adk/cyber_guardian/` | Incident response | 4 sub-agents with planner + extended thinking | gemini-2.0-flash |
+| `adk_standalone/flight_schedule/` | Flight search (standalone) | Runner API without `adk` CLI | gemini-2.0-flash |
 
 ## Set up your environment
 
@@ -30,7 +32,7 @@ source .lab061/bin/activate
 
 **Google API Key** (required for all agents): get one from [Google AI Studio](https://aistudio.google.com/). Click "Get API Key" and create a new key. Google AI Studio offers free quotas for Gemini models.
 
-**SERP API Key** (optional, only for the flight assistant): sign up at [SerpApi](https://serpapi.com/) and get your key from the dashboard. The multi_tool_agent and mcp_agent work without it.
+**SERP API Key** (optional, only for the flight assistant): sign up at [SerpApi](https://serpapi.com/) and get your key from the dashboard. All other agents work without it.
 
 ### Environment file
 
@@ -59,7 +61,7 @@ sudo apt install nodejs npm
 node --version   # v18+ recommended
 ```
 
-The multi_tool_agent does not need Node.js.
+The multi_tool_agent, llm_red_team_agent, and cyber_guardian do not need Node.js.
 
 ## Lab instructions
 
@@ -94,7 +96,7 @@ Select **filesystem_assistant_agent** in the web UI and ask:
 **What to observe:**
 - `MCPToolset` wraps an MCP server and exposes its tools as ADK tools. The agent does not know it is talking to an MCP server; it sees regular function tools.
 - `StdioServerParameters` configures the child process (command, args). The MCP server must be available via `npx` or as a local binary.
-- The `TARGET_FOLDER` path must be absolute. A common mistake is passing a relative path, which the MCP server cannot resolve.
+- The `TARGET_FOLDER` defaults to `~/Documents`. Note the security comment: defaulting to `~` would expose SSH keys, dotfiles, and other sensitive data. Think about what happens when an agent framework auto-discovers tools that grant filesystem access.
 
 ### Step 3: Flight assistant (`adk/flight_assistant/`)
 
@@ -104,14 +106,52 @@ Select **flight_assistant_agent** in the web UI and ask:
 
 > "Find flights from San Francisco to Tokyo next month."
 
-This requires `SERP_API_KEY` in your `.env`. Without it the MCP server will fail to start and the agent will have no tools.
+This requires `SERP_API_KEY` in your `.env`. Without it the agent will refuse to start (clear error message).
 
 **What to observe:**
 - Same `MCPToolset` + `StdioServerParameters` pattern as Step 2, but with a different MCP server.
 - The `env` parameter passes environment variables to the child process. This is how you inject secrets without hardcoding them.
-- If the SERP key is missing, the agent starts but has no tools. Compare with the standalone version (Step 5) which handles this gracefully.
+- The agent validates the SERP key at import time and fails fast with a clear error. Compare with the original version that silently passed an empty string, leading to confusing runtime errors.
 
-### Step 4: Standalone agent (`adk_standalone/flight_schedule/`)
+### Step 4: LLM Red Team agent (`adk/llm_red_team_agent/`)
+
+An automated adversarial testing pipeline with three sub-agents working as tools. The orchestrator chains them in sequence: generate attack, simulate target response, evaluate.
+
+Select **security_orchestrator** in the web UI and ask:
+
+> "Test the target for Prompt Injection vulnerabilities."
+
+Or try other risk categories: "PII Leakage", "Financial Advice", "AML", "Toxicity".
+
+**What to observe:**
+- The pipeline has three stages, each running a separate sub-agent: a Red Team agent (temperature 0.9, creative attacks), a Target banking chatbot (temperature 0.1, strict safety rules), and an Evaluator (temperature 0.0, deterministic JSON verdict).
+- Each sub-agent runs in an isolated session via `ThreadPoolExecutor` to prevent context leakage between attacker and target. This mimics a real-world stateless API call.
+- The safety constitution in `safety_rules.py` defines the rules the target must follow. The evaluator grades against these same rules. Try modifying the constitution and observe how the verdicts change.
+- The orchestrator uses temperature 0.0 for reliable tool chaining. Compare with the red team agent's 0.9 for creative diversity.
+- Retry logic (`tenacity`) handles 429 rate limits automatically.
+- Read `config.py` to see how different models can be assigned to different roles. In production, you might use a stronger model for evaluation and a cheaper one for the target.
+
+Based on [google/adk-samples/ai-security-agent](https://github.com/google/adk-samples/tree/main/python/agents/ai-security-agent) (Apache 2.0).
+
+### Step 5: Cyber Guardian (`adk/cyber_guardian/`)
+
+A multi-agent incident response system with 4 specialized sub-agents orchestrated by a planner that uses Gemini's extended thinking capability.
+
+Select **cyber_guardian_orchestrator** in the web UI and paste this alert:
+
+> "ALERT: IOC_MATCH detected on host srv-web-prod-01 by user svc-apache. Outbound connection to 185.220.101.42:443 flagged by network IDS. Process: certutil.exe downloading from 185.220.101.42."
+
+**What to observe:**
+- The orchestrator delegates to 4 sub-agents: **triage** (deduplication, asset enrichment), **threat intel** (IOC lookup), **investigation** (process trees, network logs), and **response** (playbook selection, action execution).
+- The `BuiltInPlanner` with `ThinkingConfig(thinking_budget=512)` enables extended thinking. The orchestrator reasons about which sub-agent to call next, rather than following a hardcoded sequence.
+- Each sub-agent uses `output_key` to store its results in a shared state, allowing downstream agents to access upstream findings.
+- The mock tools in `tools.py` return realistic incident data (Cobalt Strike C2, certutil abuse, lateral movement indicators). In production, these would query BigQuery, a SIEM, or a SOAR platform.
+- The response agent flags actions that `requires_approval: true` (e.g., host isolation), demonstrating the Human-In-The-Loop (HITL) pattern for high-impact actions.
+- Try submitting the same alert twice. The triage agent should detect the duplicate and stop processing.
+
+Based on [google/adk-samples/cyber-guardian-agent](https://github.com/google/adk-samples/tree/main/python/agents/cyber-guardian-agent) (Apache 2.0).
+
+### Step 6: Standalone agent (`adk_standalone/flight_schedule/`)
 
 Runs the same flight search agent without the `adk` CLI. This script uses the ADK Runner API directly: it creates an `InMemorySessionService`, builds a session, and iterates over events from `runner.run_async`.
 
@@ -171,11 +211,14 @@ agent_name/
 
 `adk web` scans subdirectories for modules that export a `root_agent`. See `adk/instructions.md` for templates when creating your own agents.
 
+For multi-agent architectures (llm_red_team_agent, cyber_guardian), the pattern extends with `sub_agents/` directories containing specialized agents, shared `tools.py`, and configuration/prompt modules.
+
 ## Resources
 
 - [Google ADK documentation](https://google.github.io/adk-docs/)
 - [ADK quickstart](https://google.github.io/adk-docs/get-started/quickstart/)
 - [ADK sample agents](https://github.com/google/adk-samples)
+- [ADK Python source](https://github.com/google/adk-python)
 - [Model Context Protocol](https://modelcontextprotocol.io/)
 - [Google AI Studio](https://aistudio.google.com/)
 
