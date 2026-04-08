@@ -1,98 +1,35 @@
-from agents import Agent, Runner
-import asyncio
-import json
+"""
+Security trace analysis with the Responses API.
 
-# Load the document
+Uses the OpenAI Responses API directly (not the Agent SDK) to analyze
+a sysdig system call trace. This is the "raw client" approach for
+comparison with the Agent SDK version in agent_07.
+
+Input: data/docker-curl-https.txt (sysdig capture of curl inside Docker).
+"""
+
+from openai import OpenAI
+
+client = OpenAI()  # reads OPENAI_API_KEY from env
+
 with open("data/docker-curl-https.txt", "r", encoding="utf-8") as f:
     text = f.read()
 
-# Create security analysis agent with JSON output
-security_agent = Agent(
-    name="Security Trace Analyst",
-    model="gpt-4.1-mini",
-    instructions="""You are a security and malware analyst. 
+instructions = """You are a security and malware analyst.
+- First provide a concise summary of the process being traced.
+- Then list the key points and phases in the trace (5-10 bullets).
+- Avoid opinions or speculation; stick to the facts.
+"""
 
-Analyze the sysdig system call trace and provide your analysis in the following JSON format:
-
-{
-  "summary": "Concise summary of the process being traced",
-  "process_info": {
-    "command": "executed command",
-    "arguments": "command arguments", 
-    "pid": "process ID if identifiable",
-    "line_numbers": [1051, 1052]
-  },
-  "phases": [
-    {
-      "phase": "phase name",
-      "description": "what happens in this phase",
-      "key_syscalls": ["list of important system calls"],
-      "line_range": {"start": 1051, "end": 1200},
-      "key_lines": [1051, 1055, 1062]
-    }
-  ],
-  "network_activity": {
-    "dns_queries": "DNS resolution details",
-    "connections": "network connections made",
-    "data_transfer": "data transfer summary",
-    "line_references": [2500, 2501, 2502]
-  },
-  "file_operations": {
-    "libraries_loaded": ["list of key libraries"],
-    "config_files": ["configuration files accessed"],
-    "certificates": "certificate handling details",
-    "line_references": [1062, 1070, 1091]
-  },
-  "security_observations": [
-    {
-      "observation": "factual security-relevant observation",
-      "line_number": 1234,
-      "evidence": "specific trace line content"
-    }
-  ]
-}
-
-IMPORTANT: Each trace starts with a number (like 1051, 1052, etc.). Always include these line numbers in your analysis for reference. Use the actual line numbers from the trace data to make it easy to review specific events.
-
-Stick to facts from the trace data. Avoid speculation."""
+response = client.responses.create(
+    model="gpt-4o-mini",
+    instructions=instructions,
+    input=f'Text:\n"""\n{text}\n"""',
 )
 
-async def main():
-    print("🔍 Security Trace Analysis with OpenAI Agents (JSON Output)")
-    print("=" * 60)
-    
-    # Run the security analysis with the loaded trace data
-    result = await Runner.run(
-        security_agent,
-        f"Analyze this sysdig system call trace data:\n\n{text}"
-    )
-    
-    # Try to parse and pretty-print the JSON output
-    try:
-        # Extract JSON from the response (in case there's extra text)
-        response_text = result.final_output
-        
-        # Find JSON content (look for opening brace)
-        json_start = response_text.find('{')
-        json_end = response_text.rfind('}') + 1
-        
-        if json_start != -1 and json_end > json_start:
-            json_content = response_text[json_start:json_end]
-            parsed_json = json.loads(json_content)
-            
-            # Pretty print the JSON
-            print(json.dumps(parsed_json, indent=2, ensure_ascii=False))
-        else:
-            # Fallback: print raw output
-            print("Raw output (JSON parsing failed):")
-            print(response_text)
-            
-    except json.JSONDecodeError as e:
-        print("JSON parsing error:", e)
-        print("\nRaw output:")
-        print(result.final_output)
-    
-    print("\n" + "=" * 60)
-
-if __name__ == "__main__":
-    asyncio.run(main())
+summary = response.output_text or "".join(
+    msg.content[0].text
+    for msg in response.output
+    if msg.role == "assistant"
+)
+print(summary)

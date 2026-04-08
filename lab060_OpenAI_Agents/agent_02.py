@@ -1,3 +1,11 @@
+"""
+Multi-agent language handoff.
+
+A triage agent inspects the user's input language and hands off to
+either a Spanish-speaking or English-speaking agent. Demonstrates
+the handoffs parameter and automatic routing.
+"""
+
 from agents import Agent, Runner
 import asyncio
 
@@ -19,10 +27,9 @@ triage_agent = Agent(
 
 
 async def main():
-    result = await Runner.run(triage_agent, input="Hola, ¿cómo estás?")
+    result = await Runner.run(triage_agent, input="Hola, como estas?")
     print(result.final_output)
     print(result)
-    # ¡Hola! Estoy bien, gracias por preguntar. ¿Y tú, cómo estás?
 
 
 if __name__ == "__main__":
