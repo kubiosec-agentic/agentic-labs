@@ -1,3 +1,5 @@
+"""Multi-tool agent: weather and time lookups (mock data)."""
+
 import datetime
 from zoneinfo import ZoneInfo
 from google.adk.agents import Agent
@@ -65,5 +67,3 @@ root_agent = Agent(
     ),
     tools=[get_weather, get_current_time],
 )
-
-print(root_agent)

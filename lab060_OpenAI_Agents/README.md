@@ -71,6 +71,19 @@ python3 agent_03.py
 - Compare with lab050's manual JSON schema approach and lab054's LangChain `@tool` decorator. The Agent SDK's `@function_tool` is the most concise: type hints are enough.
 - The tool runs locally. The SDK handles the tool-call loop: model requests tool, code executes it, result goes back, model answers.
 
+### Guardrails: screening agent inputs and outputs
+
+Steps 4 and 5 introduce guardrails, a mechanism built into the Agent SDK for filtering what goes into and comes out of an agent. Without guardrails, the agent will happily answer any question and return any content the model generates, including content you would rather not expose to the user (shell commands, credentials, harmful instructions).
+
+The SDK supports two guardrail types:
+
+- **Input guardrails** run before the main agent processes the request. If the input is flagged, the agent never executes, saving tokens and preventing the model from reasoning about dangerous content in the first place.
+- **Output guardrails** run after the agent produces a response but before it reaches the caller. If the output is flagged, the SDK raises an exception and the response is suppressed.
+
+Both types follow the same pattern: a small "guardrail agent" acts as a classifier (returning a boolean verdict), and a decorated function (`@input_guardrail` or `@output_guardrail`) wires the classifier into the pipeline. When the tripwire fires, the SDK raises `InputGuardrailTripwireTriggered` or `OutputGuardrailTripwireTriggered`, which your code can catch and handle.
+
+This is not a silver bullet. The guardrail agents are themselves LLMs, so they can be fooled by adversarial input. In production, you would combine LLM-based guardrails with deterministic checks (regex blocklists, allow-listed tool names, rate limits).
+
 ### Step 4: Output guardrail (`agent_04.py`)
 
 A secondary "guardrail agent" inspects the main agent's output and flags dangerous OS commands. If the tripwire fires, the SDK raises `OutputGuardrailTripwireTriggered` before the response reaches the user.

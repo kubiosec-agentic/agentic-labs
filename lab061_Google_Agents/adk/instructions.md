@@ -1,97 +1,76 @@
-# Instructions
+# Creating a new ADK agent
 
-### Introduction
-These are  working example of a Google ADK example. Using GOOGLE API and MCP.
-When asked, create a new folder with the requested name of the agent.
+These are working examples of Google ADK agents using the Google Generative AI API and MCP.
 
-###  Create an `.env` file 
-Minimally add these lines
+## Skeleton
+
+Every ADK agent lives in its own subdirectory under `adk/` and requires three files.
+
+### 1. `.env` (in the `adk/` root, shared by all agents)
+
 ```
 GOOGLE_GENAI_USE_VERTEXAI=FALSE
+GOOGLE_API_KEY=your_google_api_key_here
 ```
 
-###  Create an `__init__.py` file 
-Minimally add these lines
-```
+### 2. `__init__.py`
+
+```python
 from . import agent
 ```
 
+### 3. `agent.py`
 
-###  Create an `agent.py`
-Your task is to create an agent as examples provided here, but adapted to the users requirements.
-The user will provide you with MCP servers and small additional instructions.
+Define a `root_agent` at module level. `adk web` discovers it automatically.
 
-#### Example 1
-```
-# ./agent.py
-import os # Required for path operations
-from google.adk.agents import LlmAgent
+**Example: MCP filesystem agent**
+
+```python
+import os
+from google.adk.agents import Agent
 from google.adk.tools.mcp_tool.mcp_toolset import MCPToolset, StdioServerParameters
 
-# It's good practice to define paths dynamically if possible,
-# or ensure the user understands the need for an ABSOLUTE path.
-# For this example, we'll construct a path relative to this file,
-# assuming '/path/to/your/folder' is in the same directory as agent.py.
-# REPLACE THIS with an actual absolute path if needed for your setup.
-TARGET_FOLDER_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "/Users/xxradar/testing/adk")
-# Ensure TARGET_FOLDER_PATH is an absolute path for the MCP server.
-# If you created ./adk_agent_samples/mcp_agent/your_folder,
+# Change this to the folder you want the agent to manage.
+TARGET_FOLDER = os.path.expanduser("~/projects")
 
-root_agent = LlmAgent(
-    model='gemini-2.0-flash',
-    name='filesystem_assistant_agent',
-    instruction='Help the user manage their files. You can list files, read files, etc.',
+root_agent = Agent(
+    model="gemini-2.0-flash",
+    name="filesystem_assistant_agent",
+    instruction="Help the user manage their files. You can list files, read files, etc.",
     tools=[
         MCPToolset(
             connection_params=StdioServerParameters(
-                command='npx',
+                command="npx",
                 args=[
-                    "-y",  # Argument for npx to auto-confirm install
+                    "-y",
                     "@modelcontextprotocol/server-filesystem",
-                    # IMPORTANT: This MUST be an ABSOLUTE path to a folder the
-                    # npx process can access.
-                    # Replace with a valid absolute path on your system.
-                    # For example: "/Users/youruser/accessible_mcp_files"
-                    # or use a dynamically constructed absolute path:
-                    os.path.abspath(TARGET_FOLDER_PATH),
+                    os.path.abspath(TARGET_FOLDER),
                 ],
             ),
-            # Optional: Filter which tools from the MCP server are exposed
-            # tool_filter=['list_directory', 'read_file']
-        )
+        ),
     ],
 )
 ```
 
+**Example: MCP flight search agent**
 
-#### Example 2
-```
-import os # Required for path operations
-from google.adk.agents import LlmAgent
+```python
+import os
+from google.adk.agents import Agent
 from google.adk.tools.mcp_tool.mcp_toolset import MCPToolset, StdioServerParameters
 
-
-root_agent = LlmAgent(
-    model='gemini-2.0-flash',
-    name='flight_assistant_agent',
-    instruction='Help the user search for flights. You can search for flights, check schedules, find deals, and provide flight recommendations.',
+root_agent = Agent(
+    model="gemini-2.0-flash",
+    name="flight_assistant_agent",
+    instruction="Help the user search for flights.",
     tools=[
         MCPToolset(
             connection_params=StdioServerParameters(
-                command='mcp-flight-search',
-                args=[
-                    "--connection_type", "stdio"
-                ],
-                env={
-                    "SERP_API_KEY": os.getenv("SERP_API_KEY", "")
-                }
+                command="mcp-flight-search",
+                args=["--connection_type", "stdio"],
+                env={"SERP_API_KEY": os.getenv("SERP_API_KEY", "")},
             ),
-            # Optional: Filter which tools from the MCP server are exposed
-            # tool_filter=['search_flights', 'get_flight_details']
-        )
+        ),
     ],
 )
 ```
-
-
-
