@@ -180,7 +180,7 @@ def investigationQueryTool(
     return json.dumps({"error": "No matching investigation type."})
 
 
-def threatIntelQueryTool(indicators: list) -> str:
+def threatIntelQueryTool(indicators: list[str]) -> str:
     """Enrich indicators of compromise using the threat intelligence knowledge base.
 
     Args:
