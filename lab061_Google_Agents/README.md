@@ -6,12 +6,11 @@
 
 Google's Agent Development Kit (ADK) is a framework for building agents powered by Gemini models. An ADK agent is a Python module that defines a `root_agent` with a model, instructions, and optional tools. The `adk` CLI discovers agents automatically and serves them through a web UI and a REST API.
 
-This lab contains four agents that demonstrate different tool-integration patterns, plus a standalone script that shows how to run an agent programmatically (without the `adk` CLI). The agents cover plain function tools, Google Search, MCP filesystem access, and MCP flight search.
+This lab contains three agents that demonstrate different tool-integration patterns, plus a standalone script that shows how to run an agent programmatically (without the `adk` CLI). The agents cover plain function tools, MCP filesystem access, and MCP flight search.
 
 | Directory | Agent | Tools | Model |
 |-----------|-------|-------|-------|
 | `adk/multi_tool_agent/` | Weather and time lookup | Python functions (mock data) | gemini-2.0-flash |
-| `adk/google_search_agent/` | Web research assistant | `google_search` (built-in) | gemini-2.5-flash |
 | `adk/mcp_agent/` | Filesystem manager | MCP `@modelcontextprotocol/server-filesystem` | gemini-2.0-flash |
 | `adk/flight_assistant/` | Flight search | MCP `mcp-flight-search` | gemini-2.0-flash |
 | `adk_standalone/flight_schedule/` | Flight search (standalone) | MCP `mcp-flight-search` via Runner API | gemini-2.0-flash |
@@ -31,7 +30,7 @@ source .lab061/bin/activate
 
 **Google API Key** (required for all agents): get one from [Google AI Studio](https://aistudio.google.com/). Click "Get API Key" and create a new key. Google AI Studio offers free quotas for Gemini models.
 
-**SERP API Key** (optional, only for the flight assistant): sign up at [SerpApi](https://serpapi.com/) and get your key from the dashboard. The other three agents work without it.
+**SERP API Key** (optional, only for the flight assistant): sign up at [SerpApi](https://serpapi.com/) and get your key from the dashboard. The multi_tool_agent and mcp_agent work without it.
 
 ### Environment file
 
@@ -60,7 +59,7 @@ sudo apt install nodejs npm
 node --version   # v18+ recommended
 ```
 
-The multi_tool_agent and google_search_agent do not need Node.js.
+The multi_tool_agent does not need Node.js.
 
 ## Lab instructions
 
@@ -82,20 +81,7 @@ Open `http://localhost:8000`, select **weather_time_agent** from the agent picke
 - The functions return mock data. In production you would call a real weather API.
 - `adk web` discovers all agent directories automatically; you do not register them anywhere.
 
-### Step 2: Google Search agent (`adk/google_search_agent/`)
-
-Uses the built-in `google_search` tool from `google.adk.tools`. This is a hosted tool: the search runs server-side on Google's infrastructure, similar to OpenAI's `web_search_preview` in lab054.
-
-Still in the `adk web` session, select **basic_search_agent** and ask:
-
-> "What are the latest developments in agentic AI security?"
-
-**What to observe:**
-- The `google_search` tool is imported as a module-level object, not instantiated. It can only be the sole tool on an agent (ADK limitation).
-- The agent instruction ("stick to the facts") shapes how the model uses the search results. Without it, the model might speculate beyond the retrieved content.
-- Compare with lab054 Step 3 (LangChain + Responses API web search): same concept, different framework.
-
-### Step 3: MCP filesystem agent (`adk/mcp_agent/`)
+### Step 2: MCP filesystem agent (`adk/mcp_agent/`)
 
 Connects to the `@modelcontextprotocol/server-filesystem` MCP server via `MCPToolset`. The MCP server runs as a child process (via `npx`), and ADK discovers its tools automatically.
 
@@ -110,7 +96,7 @@ Select **filesystem_assistant_agent** in the web UI and ask:
 - `StdioServerParameters` configures the child process (command, args). The MCP server must be available via `npx` or as a local binary.
 - The `TARGET_FOLDER` path must be absolute. A common mistake is passing a relative path, which the MCP server cannot resolve.
 
-### Step 4: Flight assistant (`adk/flight_assistant/`)
+### Step 3: Flight assistant (`adk/flight_assistant/`)
 
 An MCP agent that connects to `mcp-flight-search`, a third-party MCP server that searches flights via the SerpApi Google Flights API.
 
@@ -121,11 +107,11 @@ Select **flight_assistant_agent** in the web UI and ask:
 This requires `SERP_API_KEY` in your `.env`. Without it the MCP server will fail to start and the agent will have no tools.
 
 **What to observe:**
-- Same `MCPToolset` + `StdioServerParameters` pattern as Step 3, but with a different MCP server.
+- Same `MCPToolset` + `StdioServerParameters` pattern as Step 2, but with a different MCP server.
 - The `env` parameter passes environment variables to the child process. This is how you inject secrets without hardcoding them.
 - If the SERP key is missing, the agent starts but has no tools. Compare with the standalone version (Step 5) which handles this gracefully.
 
-### Step 5: Standalone agent (`adk_standalone/flight_schedule/`)
+### Step 4: Standalone agent (`adk_standalone/flight_schedule/`)
 
 Runs the same flight search agent without the `adk` CLI. This script uses the ADK Runner API directly: it creates an `InMemorySessionService`, builds a session, and iterates over events from `runner.run_async`.
 
@@ -141,6 +127,9 @@ python3 agent.py
 - `runner.run_async` yields events with `content.parts` (text or function calls). This is the Gemini content format (`google.genai.types`).
 - If `SERP_API_KEY` is missing, the agent degrades gracefully: it still runs but gives general travel advice instead of live data.
 - Compare with `adk web`: the CLI handles all the session management for you, but you lose control over the conversation flow.
+- The `mcp-flight-search` server writes debug logs to stdout, which the MCP client tries (and fails) to parse as JSON-RPC. These "Failed to parse JSONRPC message" errors are harmless; the client skips bad lines and still connects. The script suppresses them by raising the log level for `mcp.client.stdio`. If you see them when using `adk web`, they can be safely ignored.
+- You may also see a deprecation warning about `StdioServerParameters`. ADK is migrating to `StdioConnectionParams`, but both work at the time of writing.
+- If you hit a 429 RESOURCE_EXHAUSTED error, wait a minute. The free Google AI Studio tier has per-minute rate limits that reset quickly.
 
 ### API server
 

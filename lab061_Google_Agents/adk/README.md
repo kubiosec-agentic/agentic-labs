@@ -1,11 +1,10 @@
 # ADK Agents
 
-This directory contains four ADK agent modules discovered by `adk web`:
+This directory contains three ADK agent modules discovered by `adk web`:
 
 | Directory | Agent | Description |
 |-----------|-------|-------------|
 | `multi_tool_agent/` | weather_time_agent | Weather and time lookup (mock data, plain Python functions) |
-| `google_search_agent/` | basic_search_agent | Web research using the built-in `google_search` tool |
 | `mcp_agent/` | filesystem_assistant_agent | File management via MCP filesystem server |
 | `flight_assistant/` | flight_assistant_agent | Flight search via MCP flight search server |
 

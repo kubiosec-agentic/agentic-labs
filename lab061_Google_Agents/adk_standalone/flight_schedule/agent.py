@@ -24,6 +24,11 @@ logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s",
 )
+# The mcp-flight-search server writes debug logs to stdout, which the
+# MCP client tries to parse as JSON-RPC. These parse failures are harmless
+# (the client skips bad lines and still connects), but they flood the console.
+# Suppress them by raising the log level for the MCP client module.
+logging.getLogger("mcp.client.stdio").setLevel(logging.CRITICAL)
 
 
 async def get_tools_async():
