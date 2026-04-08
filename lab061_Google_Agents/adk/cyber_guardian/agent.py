@@ -1,8 +1,8 @@
 """Cyber Guardian: multi-agent cybersecurity incident response.
 
 Orchestrates 4 specialized sub-agents (triage, threat intel, investigation,
-response) using ADK's built-in planner with extended thinking. The planner
-reasons about which sub-agent to delegate to at each step.
+response). The orchestrator delegates to sub-agents via ADK's transfer
+mechanism; each sub-agent has its own tools and returns findings via output_key.
 
 Uses mock tools that return realistic simulated data, so no external
 infrastructure (BigQuery, SIEM, SOAR) is needed.
@@ -19,8 +19,6 @@ import logging
 import os
 
 from google.adk.agents import Agent
-from google.adk.planners import BuiltInPlanner
-from google.genai import types
 
 from .prompt import root_agent_instruction
 from .sub_agents.investigation.agent import investigation_agent
@@ -35,11 +33,5 @@ root_agent = Agent(
     name="cyber_guardian_orchestrator",
     description="Orchestrates a multi-agent cybersecurity incident response workflow",
     instruction=root_agent_instruction,
-    planner=BuiltInPlanner(
-        thinking_config=types.ThinkingConfig(
-            include_thoughts=True,
-            thinking_budget=512,
-        )
-    ),
     sub_agents=[threatintel_agent, investigation_agent, triage_agent, response_agent],
 )

@@ -14,7 +14,7 @@ This lab contains five agents that demonstrate different tool-integration and mu
 | `adk/mcp_agent/` | Filesystem manager | MCP server integration | gemini-2.0-flash |
 | `adk/flight_assistant/` | Flight search | MCP server with API key injection | gemini-2.0-flash |
 | `adk/llm_red_team_agent/` | AI safety red team | 3 sub-agents as tools (attack, target, evaluate) | gemini-2.0-flash |
-| `adk/cyber_guardian/` | Incident response | 4 sub-agents with planner + extended thinking | gemini-2.5-flash |
+| `adk/cyber_guardian/` | Incident response | 4 sub-agents with transfer mechanism | gemini-2.5-flash |
 | `adk_standalone/flight_schedule/` | Flight search (standalone) | Runner API without `adk` CLI | gemini-2.0-flash |
 | `adk_standalone/cyber_guardian/` | Incident response (standalone) | Runner API, multi-agent + planner | gemini-2.5-flash |
 
@@ -144,7 +144,7 @@ Select **cyber_guardian_orchestrator** in the web UI and paste this alert:
 
 **What to observe:**
 - The orchestrator delegates to 4 sub-agents: **triage** (deduplication, asset enrichment), **threat intel** (IOC lookup), **investigation** (process trees, network logs), and **response** (playbook selection, action execution).
-- The `BuiltInPlanner` with `ThinkingConfig(thinking_budget=512)` enables extended thinking. The orchestrator reasons about which sub-agent to call next, rather than following a hardcoded sequence.
+- The orchestrator delegates to sub-agents via ADK's transfer mechanism. The model decides which sub-agent to call next based on the instruction, rather than following a hardcoded sequence.
 - Each sub-agent uses `output_key` to store its results in a shared state, allowing downstream agents to access upstream findings.
 - The mock tools in `tools.py` return realistic incident data (Cobalt Strike C2, certutil abuse, lateral movement indicators). In production, these would query BigQuery, a SIEM, or a SOAR platform.
 - The response agent flags actions that `requires_approval: true` (e.g., host isolation), demonstrating the Human-In-The-Loop (HITL) pattern for high-impact actions.
@@ -189,7 +189,7 @@ ALERT_TEXT="ALERT: EDR_DETECTION on ws-dev-042. Process tree: w3wp.exe -> powers
 
 **What to observe:**
 - Compare the output with Step 5 (`adk web` version). The agent reasoning and tool calls are the same, but here you see them as raw events from `runner.run_async`.
-- The planner's extended thinking (512 token budget) is visible in the logs. Watch how it decides which sub-agent to delegate to at each step.
+- Watch how the orchestrator decides which sub-agent to delegate to at each step based on the alert classification.
 - The standalone version gives you full control over the conversation loop: you could inject follow-up messages, branch on tool results, or feed the output into another system.
 - No external dependencies needed. Only `google-adk` and `python-dotenv`.
 

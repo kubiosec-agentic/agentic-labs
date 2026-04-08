@@ -25,7 +25,6 @@ import uuid
 
 from dotenv import load_dotenv
 from google.adk.agents import Agent
-from google.adk.planners import BuiltInPlanner
 from google.adk.runners import Runner
 from google.adk.sessions import InMemorySessionService
 from google.adk.tools import FunctionTool
@@ -250,8 +249,6 @@ def createIncidentTool(alert_type: str, hostname: str, user: str, severity: str)
 # Sub-agent definitions
 # ---------------------------------------------------------------------------
 
-# Sub-agents use gemini-2.0-flash (cheaper, no thinking needed).
-# The orchestrator uses gemini-2.5-flash (supports extended thinking).
 MODEL = os.getenv("MODEL_ID", "gemini-2.0-flash")
 ORCHESTRATOR_MODEL = os.getenv("ORCHESTRATOR_MODEL", "gemini-2.5-flash")
 
@@ -335,12 +332,6 @@ root_agent = Agent(
     name="cyber_guardian_orchestrator",
     description="Orchestrates multi-agent cybersecurity incident response",
     instruction=ORCHESTRATOR_INSTRUCTION,
-    planner=BuiltInPlanner(
-        thinking_config=types.ThinkingConfig(
-            include_thoughts=True,
-            thinking_budget=512,
-        )
-    ),
     sub_agents=[threatintel_agent, investigation_agent, triage_agent, response_agent],
 )
 
