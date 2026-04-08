@@ -31,7 +31,7 @@ from .sub_agents.triage.agent import triage_agent
 logging.basicConfig(level=logging.INFO)
 
 root_agent = Agent(
-    model=os.getenv("MODEL_ID", "gemini-2.0-flash"),
+    model=os.getenv("MODEL_ID", "gemini-2.5-flash"),
     name="cyber_guardian_orchestrator",
     description="Orchestrates a multi-agent cybersecurity incident response workflow",
     instruction=root_agent_instruction,

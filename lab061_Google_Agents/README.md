@@ -14,8 +14,9 @@ This lab contains five agents that demonstrate different tool-integration and mu
 | `adk/mcp_agent/` | Filesystem manager | MCP server integration | gemini-2.0-flash |
 | `adk/flight_assistant/` | Flight search | MCP server with API key injection | gemini-2.0-flash |
 | `adk/llm_red_team_agent/` | AI safety red team | 3 sub-agents as tools (attack, target, evaluate) | gemini-2.0-flash |
-| `adk/cyber_guardian/` | Incident response | 4 sub-agents with planner + extended thinking | gemini-2.0-flash |
+| `adk/cyber_guardian/` | Incident response | 4 sub-agents with planner + extended thinking | gemini-2.5-flash |
 | `adk_standalone/flight_schedule/` | Flight search (standalone) | Runner API without `adk` CLI | gemini-2.0-flash |
+| `adk_standalone/cyber_guardian/` | Incident response (standalone) | Runner API, multi-agent + planner | gemini-2.5-flash |
 
 ## Set up your environment
 
@@ -170,6 +171,27 @@ python3 agent.py
 - The `mcp-flight-search` server writes debug logs to stdout, which the MCP client tries (and fails) to parse as JSON-RPC. These "Failed to parse JSONRPC message" errors are harmless; the client skips bad lines and still connects. The script suppresses them by raising the log level for `mcp.client.stdio`. If you see them when using `adk web`, they can be safely ignored.
 - You may also see a deprecation warning about `StdioServerParameters`. ADK is migrating to `StdioConnectionParams`, but both work at the time of writing.
 - If you hit a 429 RESOURCE_EXHAUSTED error, wait a minute. The free Google AI Studio tier has per-minute rate limits that reset quickly.
+
+### Step 7: Standalone Cyber Guardian (`adk_standalone/cyber_guardian/`)
+
+Same multi-agent incident response pipeline as Step 5, but running from the command line without `adk web`. Everything is in a single file: mock tools, sub-agents, orchestrator, and the Runner loop.
+
+```bash
+cd ../adk_standalone/cyber_guardian
+python3 agent.py
+```
+
+The script ships with a sample IOC_MATCH alert (Cobalt Strike C2 via certutil on srv-web-prod-01). You can override it with the `ALERT_TEXT` environment variable:
+
+```bash
+ALERT_TEXT="ALERT: EDR_DETECTION on ws-dev-042. Process tree: w3wp.exe -> powershell.exe -> cmd.exe. Suspicious encoded command detected." python3 agent.py
+```
+
+**What to observe:**
+- Compare the output with Step 5 (`adk web` version). The agent reasoning and tool calls are the same, but here you see them as raw events from `runner.run_async`.
+- The planner's extended thinking (512 token budget) is visible in the logs. Watch how it decides which sub-agent to delegate to at each step.
+- The standalone version gives you full control over the conversation loop: you could inject follow-up messages, branch on tool results, or feed the output into another system.
+- No external dependencies needed. Only `google-adk` and `python-dotenv`.
 
 ### API server
 
