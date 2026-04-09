@@ -1,141 +1,151 @@
-![LangGraph](https://img.shields.io/badge/LangGraph-blue) ![Python](https://img.shields.io/badge/Python-blue) ![StateGraph](https://img.shields.io/badge/StateGraph-green) ![Workflows](https://img.shields.io/badge/Workflows-orange)
+![LangGraph](https://img.shields.io/badge/LangGraph-blue) ![Python](https://img.shields.io/badge/Python-blue) ![StateGraph](https://img.shields.io/badge/StateGraph-green) ![Security](https://img.shields.io/badge/Security-red)
 
-# LAB064: LangGraph - Stateful Workflow Orchestration
+# LAB064: LangGraph, from Hello-World to Vulnerable Agent
 
 ## Introduction
-This lab demonstrates how to build stateful, multi-step workflows and intelligent agents using LangGraph. LangGraph is a powerful framework for creating stateful, graph-based workflows that can handle complex decision-making, conditional routing, and multi-agent coordination. It builds on top of LangChain to provide stateful graphs, conditional routing, agent orchestration, memory management, and tool integration. With LangGraph, you can build sophisticated AI systems that go beyond simple request-response patterns to create intelligent, adaptive workflows.
+
+LangGraph is the graph-based successor to the classic LangChain `AgentExecutor`. Instead of a blackbox executor loop, you define your agent as an explicit `StateGraph`: nodes are functions that mutate a typed state, edges decide where to go next (linear, conditional, or cyclic), and the whole thing runs with a single `.invoke()` or `.astream()` call. A checkpointer (`MemorySaver`, `SqliteSaver`, or a custom one) turns any graph into a stateful, multi-turn agent without you writing a single line of session management.
+
+This lab walks through the LangGraph building blocks on a simple tool-calling agent, then flips the same pattern into a security exercise. By the end you should understand both how to build a LangGraph agent and how to attack one.
 
 ## Set up your environment
 
-### Setup Commands
 ```bash
 export OPENAI_API_KEY="xxxxxxxxx"
-export ANTHROPIC_API_KEY="xxxxxxxxx"
-export GOOGLE_API_KEY="xxxxxxxxx"
 ```
+
 ```bash
 ./lab_setup.sh
-```
-```bash
 source .lab064/bin/activate
 ```
+
+The CTF stage also uses `flask` and `RestrictedPython`, both already in `requirements.txt`.
+
 ## Lab instructions
 
-#### Example 1: Basic LangGraph Workflow
-Introduction to StateGraph with simple nodes and edges:
+### Example 1: Tool-calling agent with LangGraph (`LG_01.py`)
+
+The canonical LangGraph agent. A `StateGraph` with two nodes:
+
+- `agent` calls the LLM (`ChatOpenAI` with `bind_tools`) on the current message history.
+- `tools` executes any tool calls the LLM emitted and appends `ToolMessage` results to the state.
+
+The edges wire it into a loop: `START -> agent`, then a conditional edge from `agent` that either routes to `tools` (if the last message contains tool calls) or to `END`. After `tools`, a plain edge goes back to `agent` so the LLM can see the tool results and either produce more tool calls or a final answer.
+
+Two tools are exposed. `search_web` uses DuckDuckGo for current information, `calculate` evaluates math expressions in a whitelisted namespace. Both are defined with `@tool` and Pydantic input schemas so LangChain auto-generates the JSON schema that the LLM sees.
+
 ```bash
 python3 ./LG_01.py
 ```
 
-#### Example 2: Agent with Tools
-Demonstrates agent creation with web search and calculation tools:
+**What to observe:**
+
+- The question ("current US president's age times 2 square rooted") forces the agent to chain tools: first `search_web` to get the age, then `calculate` on the result. Watch the `🔧 Calling ...` lines print in order.
+- State flows through `MessagesState`, which is a `TypedDict` with an `add`-reducer on the `messages` field. Every node returns `{"messages": [new_message]}` and LangGraph appends, not replaces.
+- `should_continue` is the routing function. It returns either `"tools"` or `END`. This is the smallest possible conditional edge, and it's the heart of a ReAct loop expressed as a graph.
+- There is no `MemorySaver` here yet, so each `.invoke()` starts fresh. Add one and suddenly you have multi-turn chat without changing the nodes. The CTF stage does exactly this.
+
+### Example 2: Visualizing the graph (`LG_02.py`)
+
+Same agent as above, plus two extra lines at the end that dump the compiled graph as Mermaid. When you're designing workflows with conditional routing, this is how you sanity-check the topology without running it.
+
 ```bash
 python3 ./LG_02.py
 ```
 
-#### Example 3: Graph Visualization
-Shows how to visualize and save workflow graphs:
+The script writes `graph.mermaid` to disk and also prints it to stdout. Since mermaid is hard to read as raw text in a terminal, here is the rendered diagram for the agent:
+
+```mermaid
+---
+config:
+  flowchart:
+    curve: linear
+---
+graph TD;
+	__start__(<p>__start__</p>)
+	agent(agent)
+	tools(tools)
+	__end__(<p>__end__</p>)
+	__start__ --> agent;
+	agent --> __end__;
+	classDef default fill:#f2f0ff,line-height:1.2
+	classDef first fill-opacity:0
+	classDef last fill:#bfb6fc
+```
+
+Note that the mermaid renderer only shows unconditional edges by default. The real topology also has an `agent -> tools -> agent` cycle through the conditional edge, which is the interesting part. You can paste the file into [mermaid.live](https://mermaid.live) to explore; for complex production graphs, the visualization becomes essential.
+
+**What to observe:**
+
+- `graph.get_graph().draw_mermaid()` is the quickest way to get a shareable diagram of any compiled graph. There's also `draw_png()` if you have graphviz installed.
+- Mermaid syntax is plain text, so you can commit the diagram alongside the code and it will render natively in GitHub, GitLab, VS Code, and most markdown viewers.
+- For agents that grow beyond 5-6 nodes (multi-agent systems, human-in-the-loop workflows), the visualization is often the first thing you reach for when something routes incorrectly.
+
+### Example 3: Typed-state workflow with conditional routing (`LG_03.py`)
+
+A larger, genuinely different example: automated job application review. Instead of `MessagesState`, it defines a custom `JobApplicationState` `TypedDict` with typed fields (`job_description`, `candidate_name`, `is_suitable`, `review_score`, etc.) and an `add`-reduced action log. The graph has five nodes: analyze the job, generate a letter, review it, reject unsuitable candidates, and an entry node that routes conditionally based on `is_suitable`.
+
 ```bash
 python3 ./LG_03.py
 ```
 
-#### Example 4: Job Application Review System
-Advanced workflow demonstrating AI-powered job application processing with conditional routing and state management:
-```bash
-python3 ./LG_04.py
-```
+**What to observe:**
 
-#### Example 5: CTF - Attacking and Hardening a Vulnerable Agent
-A staged security exercise built on the LangGraph pattern. A deliberately-weak agent with a Python code execution tool is exposed as an OpenAI-compatible `/v1/chat/completions` endpoint with multi-turn sessions (server-side via `MemorySaver`). You attack the same agent four times, each time against a stronger set of defenses: no guardrails, regex output filter, hardened system prompt, and `RestrictedPython` sandbox. Each layer has a bypass, and the point is to internalize the attack and defense patterns.
+- This is the pattern you'll actually use in production. `MessagesState` is great for chat-style agents but real workflows have structured state that looks more like a database row than a conversation.
+- The `Annotated[list[str], add]` reducer accumulates action-log entries across nodes. Any node that returns `{"actions_taken": ["did thing"]}` appends to the log instead of replacing it. This is how you build an audit trail.
+- Conditional routing here is not ReAct-style (loop until done). It's business logic: branch to letter generation or rejection based on one boolean. Same primitive, different use case.
+- The demo runs three candidate profiles against the same job posting. Alice is a strong match, Bob is a poor match, Carol is another strong match. Watch the scoring decisions and compare them against your own judgment. The "fallback logic" comments in the code show where the workflow degrades gracefully if the OpenAI API is unavailable.
+- The job-review example is borrowed from the LangGraph community and is not originally security-focused. It's here so you see `TypedDict` state, multi-node pipelines, and conditional business routing before you meet the CTF, which reuses these primitives in an adversarial setting.
+
+### Example 4: CTF, attacking and hardening a vulnerable agent (`ctf/`)
+
+Now that you know how to build a LangGraph agent, let's attack one.
+
+A four-stage security exercise built on the same pattern you saw in `LG_01.py`, but with a deliberately-weak Python code execution tool and a `MemorySaver` checkpointer that gives you multi-turn conversations. The agent is exposed as an OpenAI-compatible `/v1/chat/completions` endpoint, so you can attack it with `curl`, the `openai` Python client, or any other OpenAI-compatible tool.
+
+Each stage adds one layer of defense. Each layer has a bypass. The lesson is not "how do I extract the flag", it's "how does each defense technique actually work, and what's its failure mode".
+
+| Stage | Defense added | What you learn |
+|-------|---------------|----------------|
+| 1 | None | How cheap a dangerous tool makes the attack. Under two minutes to solve. |
+| 2 | Regex output filter | Why filtering the output of a Turing-complete tool is a losing game (base64, ord, chunking). |
+| 3 | Hardened system prompt | Prompt injection. The richest stage pedagogically. System prompts are suggestions, not access controls. |
+| 4 | RestrictedPython sandbox | The attack surface shifts from the tool to the architecture: DoS, persistent checkpointer leakage, prompt-level extraction of context. |
 
 ```bash
 cd ctf
 python3 stage1_no_guardrails.py   # then stage2, stage3, stage4
 ```
 
-See [ctf/README.md](./ctf/README.md) for the full walkthrough and discussion questions.
+See [ctf/README.md](./ctf/README.md) for the full walkthrough, attack techniques to try, and discussion questions for each stage.
 
-#### Example 6: Job Application Review Workflow
-This example showcases a sophisticated real-world application of LangGraph for automating job application reviews with:
+## Key concepts across the lab
 
-- **Multi-Node Workflow:** Complex pipeline with analysis, generation, and review phases
-- **Conditional Routing:** Smart decision-making based on candidate suitability assessment
-- **State Management:** Comprehensive state tracking with action logging using `add` reducers
-- **LLM Integration:** Multiple OpenAI model calls for different specialized tasks
-- **Error Handling:** Robust fallback mechanisms for offline or API failure scenarios
-- **TypedDict States:** Strongly-typed state definitions for better code reliability
+**State management.** `MessagesState` for chat-style agents, `TypedDict` for structured workflows, reducers (`add`, custom merge) for accumulating state across nodes.
 
-**Key Features:**
-- **Job Requirement Analysis:** AI-powered matching of candidate experience to job requirements
-- **Automated Letter Generation:** Personalized application letters based on candidate profile and job description
-- **Application Scoring:** Intelligent review system with numerical scoring (1-10) and detailed feedback
-- **Smart Routing:** Conditional workflow that either processes suitable candidates or handles rejections
-- **Action Tracking:** Complete audit trail of all workflow steps and decisions
-- **Fallback Logic:** Graceful degradation with template responses when AI services are unavailable
+**Graph topology.** Nodes are plain Python functions that take and return state. Edges are either unconditional (`add_edge`) or conditional (`add_conditional_edges` with a router function). Cycles are fine and expected (ReAct loops).
 
-**Workflow Steps:**
-1. **analyze_job:** Evaluates candidate fit against job requirements
-2. **Conditional Router:** Routes to application generation or rejection based on suitability
-3. **generate_application:** Creates personalized cover letters for suitable candidates
-4. **review_application:** Scores and provides feedback on generated applications
-5. **reject_application:** Handles unsuitable candidates with appropriate messaging
+**Tool calling.** `ChatOpenAI.bind_tools([@tool-decorated functions])` produces an LLM that emits tool calls. A `tools` node in the graph dispatches them. The ReAct cycle is just a conditional edge that checks `last_message.tool_calls`.
 
-**Demo Scenarios:**
-The demo processes three different candidate profiles against a software engineering job posting:
-- **Alice Johnson:** Highly qualified Python/Django expert (Expected: High score)
-- **Bob Smith:** Java developer with limited Python experience (Expected: Lower score/rejection)
-- **Carol Chen:** Well-matched Python/FastAPI specialist (Expected: High score)
+**Checkpointers and sessions.** Pass `checkpointer=MemorySaver()` to `.compile()` and you get multi-turn memory scoped by `thread_id`. Swap for `SqliteSaver` to persist across restarts. The CTF uses this to turn a one-shot agent into a chatbot with conversational history (and attack surfaces).
 
-This example perfectly illustrates how LangGraph can orchestrate complex business workflows that require multiple AI decisions, state persistence, and conditional logic - making it ideal for enterprise automation scenarios.
+**Visualization.** `graph.get_graph().draw_mermaid()` for a topology diagram. Essential once your graph has more than a handful of nodes or any non-trivial conditional routing.
 
-## Key Concepts Demonstrated
+**Attack surfaces.** Dangerous tools (code execution, file I/O), output filtering (fundamentally limited), prompt-level guardrails (fundamentally advisory), sandboxing (necessary but not sufficient), persistent session state (a new category of secret storage). All covered in the CTF.
 
-### State Management
-- **Default Reducers:** Simple value replacement
-- **Add Reducers:** List accumulation across nodes
-- **Custom Reducers:** Flexible state handling for complex data types
+## Resources
 
-### Workflow Patterns
-- **Linear Workflows:** Sequential node execution
-- **Conditional Routing:** Dynamic paths based on state conditions
-- **Parallel Execution:** Concurrent node processing
-- **Loops and Cycles:** Iterative workflows with feedback
-
-### Agent Architecture
-- **Tool Integration:** Web search, calculations, external APIs
-- **Multi-Agent Coordination:** Multiple LLMs working together
-- **Human-in-the-Loop:** Interactive decision points
-- **Memory and Context:** Persistent conversation state
-
-### Visualization and Debugging
-- **Mermaid Diagrams:** Visual workflow representation
-- **Streaming Execution:** Real-time workflow monitoring
-- **State Inspection:** Debug state changes across nodes
-
-## Advanced Features
-
-### Configuration Management
-Runtime customization of models, tools, and parameters:
-```bash
-config = {"configurable": {"model_provider": "OpenAI", "model_name": "gpt-4o"}}
-result = graph.invoke(input_data, config=config)
-```
-
-### Streaming and Real-time Updates
-Monitor workflow execution in real-time:
-```bash
-async for chunk in graph.astream(input_data, stream_mode="values"):
-    print(f"Update: {chunk}")
-```
-
-### Error Handling and Recovery
-Built-in error handling with retry and fallback mechanisms.
+- [LangGraph documentation](https://langchain-ai.github.io/langgraph/)
+- [LangGraph conceptual guides](https://langchain-ai.github.io/langgraph/concepts/)
+- [LangGraph examples repo](https://github.com/langchain-ai/langgraph/tree/main/examples)
+- [mermaid.live](https://mermaid.live) for interactive diagram editing
+- [RestrictedPython](https://restrictedpython.readthedocs.io/) used in CTF stage 4
 
 ## Cleanup environment
-```
+
+```bash
 deactivate
-```
-```
 ./lab_cleanup.sh
 ```
+
 Back to [Lab Overview](https://github.com/kubiosec-agentic/agentic-labs/blob/master/README.md#-lab-overview)

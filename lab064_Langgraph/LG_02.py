@@ -1,48 +1,41 @@
 """
-Clean LangGraph Agent with Real Tools (Pydantic + LangGraph Compatible)
+Clean LangGraph Agent with Real Tools (Refactored with @tool decorators)
+Simple example using DuckDuckGo search and Python eval for calculations.
 """
 
 import os
 import math
 from typing import Dict, List
 
-from pydantic import BaseModel
-from langchain_core.tools import tool
 from langchain_core.messages import HumanMessage, ToolMessage
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langchain_core.tools import tool
 from langchain_openai import ChatOpenAI
 from langgraph.graph import MessagesState, StateGraph, START, END
 
-from ddgs import DDGS  # DuckDuckGo search wrapper
+from ddgs import DDGS
 
-# Initialize search engine
+
+# Initialize DuckDuckGo search
 search_engine = DDGS()
 
-# ==========================
-# Define Tools (Pydantic)
-# ==========================
 
-class SearchWebInput(BaseModel):
-    query: str
-
-@tool("search_web", args_schema=SearchWebInput)
+@tool
 def search_web(query: str) -> str:
     """Search the web for current information and facts."""
     try:
         results = list(search_engine.text(query, max_results=3))
         if results:
             return "\n\n".join(
-                f"Title: {r.get('title', 'N/A')}\nContent: {r.get('body', 'N/A')}" for r in results
+                f"Title: {r.get('title', 'N/A')}\nContent: {r.get('body', 'N/A')}"
+                for r in results
             )
         return "No results found"
     except Exception as e:
         return f"Search failed: {e}"
 
 
-class CalculateInput(BaseModel):
-    expression: str
-
-@tool("calculate", args_schema=CalculateInput)
+@tool
 def calculate(expression: str) -> str:
     """Perform mathematical calculations."""
     try:
@@ -56,39 +49,32 @@ def calculate(expression: str) -> str:
         return f"Calculation error: {e}"
 
 
-# ==========================
-# System Prompt + LLM
-# ==========================
-
+# System prompt
 system_prompt = """You are a helpful assistant with access to web search and calculation tools.
 
 For mathematical calculations, use the calculate tool.
 For current information, use the search_web tool.
 
-Always search for current information before making calculations with that data."""
+Always search for current information before making calculations with that data.
+"""
 
+
+# LLM setup
 llm = ChatOpenAI(
     model="gpt-3.5-turbo",
     temperature=0,
     api_key=os.getenv("OPENAI_API_KEY")
 )
 
+# Prompt template
 prompt = ChatPromptTemplate.from_messages([
     ("system", system_prompt),
     MessagesPlaceholder(variable_name="messages"),
 ])
 
+# Bind tools using decorated functions (schema auto-extracted)
 llm_with_tools = prompt | llm.bind_tools([search_web, calculate])
 
-# Registry for dispatch
-tool_registry = {
-    "search_web": search_web,
-    "calculate": calculate,
-}
-
-# ==========================
-# LangGraph Node Functions
-# ==========================
 
 def invoke_llm(state: MessagesState) -> Dict[str, List]:
     """Call the LLM with current messages."""
@@ -107,9 +93,10 @@ def call_tools(state: MessagesState) -> Dict[str, List]:
 
         print(f"🔧 Calling {tool_name} with args: {args}")
 
-        tool = tool_registry.get(tool_name)
-        if tool:
-            result = tool.invoke(args)
+        if tool_name == "search_web":
+            result = search_web.invoke(args)
+        elif tool_name == "calculate":
+            result = calculate.invoke(args)
         else:
             result = f"Unknown tool: {tool_name}"
 
@@ -123,32 +110,35 @@ def call_tools(state: MessagesState) -> Dict[str, List]:
 def should_continue(state: MessagesState) -> str:
     """Decide whether to continue with tools or end."""
     last_message = state["messages"][-1]
-    if hasattr(last_message, "tool_calls") and last_message.tool_calls:
+    if hasattr(last_message, 'tool_calls') and last_message.tool_calls:
         return "tools"
     return END
 
 
-# ==========================
-# Build LangGraph Agent
-# ==========================
-
 def create_agent():
+    """Create the LangGraph agent."""
     workflow = StateGraph(MessagesState)
+
+    # Add nodes
     workflow.add_node("agent", invoke_llm)
     workflow.add_node("tools", call_tools)
+
+    # Add edges
     workflow.add_edge(START, "agent")
     workflow.add_conditional_edges("agent", should_continue)
     workflow.add_edge("tools", "agent")
-    return workflow.compile()
+
+    return workflow.compile(), workflow
 
 
-# ==========================
-# Run it!
-# ==========================
+
 
 def main():
-    agent = create_agent()
-    question = "What is the current US president's age multiplied by 2 and then square rooted? we are in the year 2025"
+    """Run the agent with a test question."""
+    agent, workflow = create_agent()
+
+    question = "How many people live in France? How many live in Belgium? What is the difference?"
+
     print(f"Question: {question}\n")
 
     result = agent.invoke({
@@ -159,6 +149,28 @@ def main():
     print("Final Answer:")
     print(result["messages"][-1].content)
 
+    # Save the graph as Mermaid diagram
+    try:
+        graph_data = agent.get_graph()
+        mermaid_code = graph_data.draw_mermaid()
+        
+        # Save Mermaid diagram to file
+        with open("graph.mermaid", "w") as f:
+            f.write(mermaid_code)
+        print("Graph saved as Mermaid diagram: graph.mermaid")
+        
+        # Also print the diagram to console
+        print("\nMermaid diagram:")
+        print(mermaid_code)
+        
+    except Exception as e:
+        print(f"Could not generate Mermaid diagram: {e}")
+        # Fallback to ASCII representation
+        try:
+            print("\nGraph structure (ASCII):")
+            graph_data.print_ascii()
+        except Exception as e2:
+            print(f"Could not print ASCII graph: {e2}")
 
 if __name__ == "__main__":
     main()
