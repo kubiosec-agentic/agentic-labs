@@ -11,7 +11,7 @@ possible without the server holding any model credentials.
 
 Run:
     python3 server_sampling_http.py
-    # serves MCP at http://0.0.0.0:8000/mcp/
+    # serves MCP at http://0.0.0.0:8000/mcp
 """
 import random
 from fastmcp import FastMCP, Context

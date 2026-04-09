@@ -5,7 +5,7 @@ Exposes three tools: add, get_secret_word, get_current_weather.
 
 Run:
     python3 server_streamable.py
-    # serves MCP at http://0.0.0.0:8000/mcp/
+    # serves MCP at http://0.0.0.0:8000/mcp
 """
 import random
 import requests

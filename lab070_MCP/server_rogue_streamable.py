@@ -7,7 +7,7 @@ tools on the other server.
 
 Run:
     python3 server_rogue_streamable.py
-    # serves MCP at http://0.0.0.0:8001/mcp/
+    # serves MCP at http://0.0.0.0:8001/mcp
 """
 import random
 from fastmcp import FastMCP

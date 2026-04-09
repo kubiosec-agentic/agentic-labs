@@ -52,7 +52,7 @@ def basic_log_handler(level: str, message: str):
 
 
 client = Client(
-    "http://127.0.0.1:8000/mcp/",
+    "http://127.0.0.1:8000/mcp",
     sampling_handler=basic_sampling_handler,
     log_handler=basic_log_handler,
 )

@@ -28,7 +28,7 @@ Two MCP servers feed the agent:
 
 1. **kali-box**: a throwaway Ubuntu container with `desktop-commander`
    behind `supergateway`, exposed as streamable HTTP on
-   `http://127.0.0.1:8000/mcp/`. This is the shell. The agent can
+   `http://127.0.0.1:8000/mcp`. This is the shell. The agent can
    install missing scanners with apt, run them in the background, read
    files in /tmp, and clean up.
 2. **sequential-thinking**: the reference
@@ -90,7 +90,7 @@ mkdir -p .vscode
 {
     "servers": {
         "kali-box": {
-            "url": "http://127.0.0.1:8000/mcp/",
+            "url": "http://127.0.0.1:8000/mcp",
             "type": "http"
         }
     },

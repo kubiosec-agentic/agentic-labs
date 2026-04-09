@@ -216,9 +216,36 @@ your MCP server gives you a full view of every message the agent sends
 and receives. This is the low-tech way to audit an agent in flight; the
 richer path is MCP Inspector in lab071.
 
+Make sure the streamable server from exercise 2 is running in another
+terminal (mitmproxy needs something to reverse-proxy to):
+
+```bash
+python3 server_streamable.py
+```
+
+Because mitmproxy runs in Docker, `127.0.0.1` inside the container is
+the container itself, not your Mac. You need the host's LAN IP so the
+reverse-proxy can reach `server_streamable.py` running on the host.
+Grab it into an env var:
+
+```bash
+# macOS (Wi-Fi); use en0 for Ethernet or adjust the interface:
+export HOST_IP=$(ipconfig getifaddr en0)
+
+# Linux:
+# export HOST_IP=$(hostname -I | awk '{print $1}')
+
+echo "host ip: $HOST_IP"
+```
+
+Point the OpenAI SDK at the mitm reverse-proxy:
+
 ```bash
 export OPENAI_BASE_URL="http://127.0.0.1:8080/v1/"
 ```
+
+Start mitmproxy with two reverse-proxy modes, one for the OpenAI API
+and one for the local MCP server:
 
 ```bash
 docker run --rm -it \
@@ -230,8 +257,11 @@ docker run --rm -it \
         --web-host 0.0.0.0 \
         --set block_global=false \
         --mode reverse:https://api.openai.com:443@8080 \
-        --mode reverse:http://192.168.0.246:8000@8089
+        --mode reverse:http://${HOST_IP}:8000@8089
 ```
+
+Then run the client, which talks to the MCP server through mitm on
+port 8089:
 
 ```bash
 python mcp_06_streamable_mitm.py

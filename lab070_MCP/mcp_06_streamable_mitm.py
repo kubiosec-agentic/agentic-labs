@@ -33,7 +33,7 @@ async def run(mcp_server: MCPServer):
 async def init_server():
     server_a = MCPServerStreamableHttp(
         name="Server A",
-        params={"url": "http://localhost:8089/mcp/"},
+        params={"url": "http://localhost:8089/mcp"},
     )
     return server_a
 
