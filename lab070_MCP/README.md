@@ -196,37 +196,20 @@ python3 sampling/server_sampling_sse.py
 python3 sampling/client_sampling_sse.py
 ```
 
-### 6. Stateful memory: knowledge-graph server
-
-`@modelcontextprotocol/server-memory` is a reference stateful MCP
-server that stores a small knowledge graph (entities, relations,
-observations) and exposes read/write tools over it. Running an agent
-against it is the cleanest way to see how an MCP tool server can hold
-state that persists across turns, and it is a much more honest mental
-model for "agent memory" than "stuff in the context window".
-
-```bash
-python3 mcp_07_memory_graph.py
-```
-
-The example walks an agent through a short dialogue where it builds up
-a graph about Alice, her team, and the tools they use, then asks
-questions that require it to read the graph back. Set
-`MEMORY_FILE_PATH` to persist the graph to disk between runs.
-
-### 7. YouTube transcriber (remote hosted MCP)
+### 6. YouTube transcriber (remote hosted MCP)
 
 Example of connecting to a hosted MCP server deployed on
 [mcp-cloud.ai](https://mcp-cloud.ai). Get a token, deploy the
-youtube-transcribe server, then:
+youtube-transcribe server, then point the client at it over Streamable
+HTTP:
 
 ```bash
+export MCP_HTTP_URL="https://youtube-transcribe-2-XXXX.server.mcp-cloud.ai/mcp"
 export MCPCLOUD_API_TOKEN="xxxxxx"
-export MCP_SSE_URL="xxxxxxx"
-python3 mcp_05_youtube-transcribe.py
+python3 mcp_05_youtube_transcribe.py
 ```
 
-### 8. MITM debugging with mitmproxy
+### 7. MITM debugging with mitmproxy
 
 A reverse-proxied mitmproxy sitting in front of both the OpenAI API and
 your MCP server gives you a full view of every message the agent sends
@@ -253,6 +236,24 @@ docker run --rm -it \
 ```bash
 python mcp_06_streamable_mitm.py
 ```
+
+### 8. Stateful memory: knowledge-graph server
+
+`@modelcontextprotocol/server-memory` is a reference stateful MCP
+server that stores a small knowledge graph (entities, relations,
+observations) and exposes read/write tools over it. Running an agent
+against it is the cleanest way to see how an MCP tool server can hold
+state that persists across turns, and it is a much more honest mental
+model for "agent memory" than "stuff in the context window".
+
+```bash
+python3 mcp_07_memory_graph.py
+```
+
+The example walks an agent through a short dialogue where it builds up
+a graph about Alice, her team, and the tools they use, then asks
+questions that require it to read the graph back. Set
+`MEMORY_FILE_PATH` to persist the graph to disk between runs.
 
 ### 9. Hacking bot teaser
 
