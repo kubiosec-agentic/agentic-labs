@@ -1,10 +1,10 @@
 # Creating a new ADK agent
 
-These are working examples of Google ADK agents using the Google Generative AI API and MCP.
+These are working examples of Google ADK agents using the Google Generative AI API.
 
 ## Skeleton
 
-Every ADK agent lives in its own subdirectory under `adk/` and requires three files.
+Every ADK agent lives in its own subdirectory under `adk/` and requires at minimum two files.
 
 ### 1. `.env` (in the `adk/` root, shared by all agents)
 
@@ -23,54 +23,26 @@ from . import agent
 
 Define a `root_agent` at module level. `adk web` discovers it automatically.
 
-**Example: MCP filesystem agent**
+**Example: agent with Python function tools**
 
 ```python
 import os
 from google.adk.agents import Agent
-from google.adk.tools.mcp_tool.mcp_toolset import MCPToolset, StdioServerParameters
 
-# Change this to the folder you want the agent to manage.
-TARGET_FOLDER = os.path.expanduser("~/projects")
+def my_tool(query: str) -> str:
+    """Look up something. ADK infers the schema from type hints and docstring.
+
+    Args:
+        query: The search query.
+    """
+    return f"Result for {query}"
 
 root_agent = Agent(
-    model="gemini-2.0-flash",
-    name="filesystem_assistant_agent",
-    instruction="Help the user manage their files. You can list files, read files, etc.",
-    tools=[
-        MCPToolset(
-            connection_params=StdioServerParameters(
-                command="npx",
-                args=[
-                    "-y",
-                    "@modelcontextprotocol/server-filesystem",
-                    os.path.abspath(TARGET_FOLDER),
-                ],
-            ),
-        ),
-    ],
+    model=os.getenv("MODEL_ID", "gemini-2.0-flash"),
+    name="my_agent",
+    instruction="Help the user by calling your tools.",
+    tools=[my_tool],
 )
 ```
 
-**Example: MCP flight search agent**
-
-```python
-import os
-from google.adk.agents import Agent
-from google.adk.tools.mcp_tool.mcp_toolset import MCPToolset, StdioServerParameters
-
-root_agent = Agent(
-    model="gemini-2.0-flash",
-    name="flight_assistant_agent",
-    instruction="Help the user search for flights.",
-    tools=[
-        MCPToolset(
-            connection_params=StdioServerParameters(
-                command="mcp-flight-search",
-                args=["--connection_type", "stdio"],
-                env={"SERP_API_KEY": os.getenv("SERP_API_KEY", "")},
-            ),
-        ),
-    ],
-)
-```
+ADK wraps plain Python functions as tools automatically. Type hints must be specific (use `list[str]`, not bare `list`). The docstring becomes the tool description.

@@ -1,12 +1,11 @@
 """
-Standalone Cyber Guardian: multi-agent incident response with Runner API.
+Standalone Cyber Guardian: incident response with Runner API.
 
-Unlike the adk/ version (loaded by `adk web`), this script runs the full
-4-agent pipeline from the command line. It demonstrates:
-  - Building a multi-agent system with sub-agents and a planner
-  - Using the Runner API for programmatic control
+Unlike the adk/ version (loaded by `adk web`), this script runs the
+orchestrator from the command line. It demonstrates:
+  - An agent with multiple tools representing IR workflow stages
+  - The Runner API for programmatic control
   - Mock security tools returning realistic incident data
-  - Extended thinking via BuiltInPlanner + ThinkingConfig
 
 Requires:
   - GOOGLE_API_KEY in the environment (or .env file)
@@ -27,7 +26,6 @@ from dotenv import load_dotenv
 from google.adk.agents import Agent
 from google.adk.runners import Runner
 from google.adk.sessions import InMemorySessionService
-from google.adk.tools import FunctionTool
 from google.genai import types
 
 load_dotenv()
@@ -126,66 +124,39 @@ MOCK_PLAYBOOKS = {
     ],
 }
 
-MOCK_INCIDENTS = []
+MOCK_INCIDENTS: list[dict] = []
 
 
 # ---------------------------------------------------------------------------
 # Tool functions
 # ---------------------------------------------------------------------------
 
-def triageQueryTool(hostname: str, alert_type: str) -> str:
-    """Check for duplicate incidents and enrich a host with business context.
+def triage_alert(hostname: str, alert_type: str) -> str:
+    """Step 1: Check for duplicate incidents and enrich a host with business context.
+
+    Call this FIRST. If is_duplicate is true, stop processing.
 
     Args:
         hostname: The hostname from the alert.
         alert_type: The type of the alert (e.g., 'IOC_MATCH', 'EDR_DETECTION').
     """
+    print(f"\n  [Triage] Checking {hostname} for {alert_type}...")
     for incident in MOCK_INCIDENTS:
         if incident["hostname"] == hostname and incident["alert_type"] == alert_type:
             return json.dumps({"is_duplicate": True, "existing_incident": incident["incident_id"]})
-
     asset = MOCK_ASSETS.get(hostname)
     if asset:
         return json.dumps({"is_duplicate": False, "asset_context": asset})
     return json.dumps({"is_duplicate": False, "asset_context": {"Owner": "Unknown", "BusinessCriticality": "Unknown"}})
 
 
-def investigationQueryTool(
-    alert_type: str,
-    hostname: str,
-    parent_process: str = None,
-    destination_ip: str = None,
-) -> str:
-    """Investigate an alert by querying endpoint and network logs.
+def enrich_threat_intel(indicators: list[str]) -> str:
+    """Step 2: Enrich IOCs using threat intelligence.
 
     Args:
-        alert_type: The type of alert ('EDR_DETECTION', 'IOC_MATCH').
-        hostname: The hostname to investigate.
-        parent_process: (Optional) The parent process for EDR alerts.
-        destination_ip: (Optional) The malicious IP for IOC_MATCH alerts.
+        indicators: List of IOC values (IPs, hashes, domains).
     """
-    if alert_type == "EDR_DETECTION":
-        events = [e for e in MOCK_PROCESS_EVENTS if e["Hostname"] == hostname]
-        if parent_process:
-            events = [e for e in events if e["ParentProcessName"] == parent_process]
-        return json.dumps(events)
-
-    if alert_type == "IOC_MATCH" and destination_ip:
-        connections = [
-            c for c in MOCK_NETWORK_CONNECTIONS
-            if c["source_host"] == hostname and c["destination_ip"] == destination_ip
-        ]
-        return json.dumps(connections)
-
-    return json.dumps({"error": "No matching investigation type."})
-
-
-def threatIntelQueryTool(indicators: list[str]) -> str:
-    """Enrich indicators of compromise using the threat intelligence knowledge base.
-
-    Args:
-        indicators: List of IOC values (IPs, hashes, domains) to look up.
-    """
+    print(f"\n  [Threat Intel] Enriching {len(indicators)} indicator(s)...")
     results = []
     for ioc in indicators:
         intel = MOCK_THREAT_INTEL.get(ioc)
@@ -196,148 +167,108 @@ def threatIntelQueryTool(indicators: list[str]) -> str:
     return json.dumps(results)
 
 
-def getPlaybookTool(triggering_condition: str) -> str:
-    """Retrieve the response playbook for a given threat.
+def investigate_alert(alert_type: str, hostname: str, parent_process: str = "", destination_ip: str = "") -> str:
+    """Step 3: Query endpoint and network logs.
 
     Args:
-        triggering_condition: The threat name (e.g., 'Cobalt Strike C2').
+        alert_type: 'EDR_DETECTION' or 'IOC_MATCH'.
+        hostname: The hostname to investigate.
+        parent_process: Parent process name for EDR alerts (optional).
+        destination_ip: Malicious IP for IOC_MATCH alerts (optional).
     """
-    playbook = MOCK_PLAYBOOKS.get(triggering_condition)
+    print(f"\n  [Investigation] Analyzing {alert_type} on {hostname}...")
+    if alert_type == "EDR_DETECTION":
+        events = [e for e in MOCK_PROCESS_EVENTS if e["Hostname"] == hostname]
+        if parent_process:
+            events = [e for e in events if e["ParentProcessName"] == parent_process]
+        return json.dumps(events)
+    if alert_type == "IOC_MATCH" and destination_ip:
+        return json.dumps([c for c in MOCK_NETWORK_CONNECTIONS if c["source_host"] == hostname and c["destination_ip"] == destination_ip])
+    return json.dumps({"error": "Provide parent_process (EDR) or destination_ip (IOC_MATCH)."})
+
+
+def get_response_playbook(threat_name: str) -> str:
+    """Step 4: Get the response playbook for a threat.
+
+    Args:
+        threat_name: The identified threat (e.g., 'Cobalt Strike C2').
+    """
+    print(f"\n  [Response] Playbook for '{threat_name}'...")
+    playbook = MOCK_PLAYBOOKS.get(threat_name)
     if not playbook:
         for key, value in MOCK_PLAYBOOKS.items():
-            if key.lower() in triggering_condition.lower():
+            if key.lower() in threat_name.lower():
                 playbook = value
                 break
-    if playbook:
-        return json.dumps(playbook)
-    return json.dumps({"error": f"No playbook found for: {triggering_condition}"})
+    return json.dumps(playbook) if playbook else json.dumps({"error": f"No playbook for: {threat_name}"})
 
 
-def responseExecutionTool(action: str, target: str) -> str:
-    """Simulate executing a response action (IP block, host isolation, etc.).
+def execute_response_action(action: str, target: str) -> str:
+    """Execute a response action (simulated). Only for actions NOT requiring approval.
 
     Args:
-        action: The action command (e.g., 'block-ip', 'isolate-host').
+        action: The action (e.g., 'block-ip', 'collect-forensics').
         target: The target of the action.
     """
-    logger.info(f"[SIMULATED] Executing '{action}' on target '{target}'")
+    print(f"\n  [Response] Executing '{action}' on '{target}' (simulated)")
     return json.dumps({"status": "success", "action": action, "target": target, "note": "simulated"})
 
 
-def createIncidentTool(alert_type: str, hostname: str, user: str, severity: str) -> str:
-    """Create a new incident record.
+def create_incident(alert_type: str, hostname: str, user: str, severity: str) -> str:
+    """Create an incident record.
 
     Args:
-        alert_type: The type of the alert.
-        hostname: The primary host involved.
-        user: The primary user involved.
-        severity: The severity (e.g., 'Critical', 'High').
+        alert_type: The alert type.
+        hostname: The primary host.
+        user: The primary user.
+        severity: 'Critical', 'High', 'Medium', or 'Low'.
     """
     incident_id = f"INC-{str(uuid.uuid4())[:8]}"
-    MOCK_INCIDENTS.append({
-        "incident_id": incident_id,
-        "alert_type": alert_type,
-        "hostname": hostname,
-        "user": user,
-        "severity": severity,
-    })
-    logger.info(f"[SIMULATED] Created incident {incident_id}")
+    MOCK_INCIDENTS.append({"incident_id": incident_id, "alert_type": alert_type, "hostname": hostname, "user": user, "severity": severity})
+    print(f"\n  [Incident] Created {incident_id}")
     return json.dumps({"status": "success", "incident_id": incident_id})
 
 
 # ---------------------------------------------------------------------------
-# Sub-agent definitions
-# ---------------------------------------------------------------------------
-
-MODEL = os.getenv("MODEL_ID", "gemini-2.0-flash")
-ORCHESTRATOR_MODEL = os.getenv("ORCHESTRATOR_MODEL", "gemini-2.5-flash")
-
-triage_agent = Agent(
-    model=MODEL,
-    name="triage_agent",
-    description="Assesses alert severity, deduplication, and asset context",
-    instruction=(
-        "You are the Triage Agent. Check for duplicates and enrich with asset context.\n"
-        "Tool: triageQueryTool(hostname, alert_type).\n"
-        "Return JSON with is_duplicate, asset_context, summary.\n"
-        "ALWAYS transfer back to the root agent after returning findings."
-    ),
-    tools=[FunctionTool(triageQueryTool)],
-    output_key="triage_agent_output",
-)
-
-threatintel_agent = Agent(
-    model=MODEL,
-    name="threat_intel_agent",
-    description="Enriches IPs, domains, and hashes with threat intelligence context",
-    instruction=(
-        "You are the Threat Intel Agent. Assess IOC maliciousness.\n"
-        "Tool: threatIntelQueryTool(indicators).\n"
-        "Return JSON list with ioc, is_malicious, threat_name, confidence.\n"
-        "ALWAYS transfer back to the root agent after returning findings."
-    ),
-    tools=[FunctionTool(threatIntelQueryTool)],
-    output_key="threatintel_agent_output",
-)
-
-investigation_agent = Agent(
-    model=MODEL,
-    name="investigation_agent",
-    description="Performs incident investigation using endpoint and network logs",
-    instruction=(
-        "You are the Investigation Agent. Build attack timelines and find IOCs.\n"
-        "Tool: investigationQueryTool(alert_type, hostname, parent_process, destination_ip).\n"
-        "Return JSON with attack_timeline, confirmed_connections, derived_iocs.\n"
-        "ALWAYS transfer back to the root agent after returning findings."
-    ),
-    tools=[FunctionTool(investigationQueryTool)],
-    output_key="investigation_agent_output",
-)
-
-response_agent = Agent(
-    model=MODEL,
-    name="response_agent",
-    description="Recommends and triggers incident response actions",
-    instruction=(
-        "You are the Response Agent. Select playbooks and recommend actions.\n"
-        "Tools: getPlaybookTool(triggering_condition), responseExecutionTool(action, target).\n"
-        "Return JSON with recommended_actions. Flag requires_approval for dangerous actions.\n"
-        "ALWAYS transfer back to the root agent after returning findings."
-    ),
-    tools=[FunctionTool(responseExecutionTool), FunctionTool(getPlaybookTool)],
-    output_key="response_agent_output",
-)
-
-# ---------------------------------------------------------------------------
-# Root orchestrator
+# Orchestrator agent
 # ---------------------------------------------------------------------------
 
 ORCHESTRATOR_INSTRUCTION = """
-Role: You are the Cyber Guardian orchestrator for cybersecurity incident response.
+You are a cybersecurity incident response orchestrator. Parse the alert,
+classify it, and use your tools to run the full workflow:
 
-Objective: Parse raw alert text, classify it, and delegate to sub-agents:
-  1. triage_agent: check duplicates, enrich with asset context (call FIRST)
-  2. threat_intel_agent: enrich IOCs with threat intelligence
-  3. investigation_agent: deep technical analysis (process trees, network logs)
-  4. response_agent: recommend and simulate response actions (call LAST)
+1. triage_alert: check duplicates and asset context (ALWAYS FIRST)
+2. enrich_threat_intel: look up IOCs in threat intelligence
+3. investigate_alert: query endpoint/network logs
+4. get_response_playbook: find the matching playbook
+5. execute_response_action: run actions that don't need approval
+6. create_incident: log the incident
 
-For IOC-heavy alerts: triage -> threat_intel -> investigation -> response.
-For EDR alerts: triage -> investigation -> threat_intel -> response.
-If triage finds a duplicate, STOP and report it.
-Flag any response actions that require human approval.
+For IOC-heavy alerts: triage -> threat_intel -> investigate -> playbook -> execute -> create.
+For EDR alerts: triage -> investigate -> threat_intel -> playbook -> execute -> create.
+If triage finds a duplicate, STOP.
+Flag actions requiring human approval.
 """
 
+MODEL = os.getenv("MODEL_ID", "gemini-2.0-flash")
+
 root_agent = Agent(
-    model=ORCHESTRATOR_MODEL,
+    model=MODEL,
     name="cyber_guardian_orchestrator",
-    description="Orchestrates multi-agent cybersecurity incident response",
+    description="Cybersecurity incident response orchestrator",
     instruction=ORCHESTRATOR_INSTRUCTION,
-    sub_agents=[threatintel_agent, investigation_agent, triage_agent, response_agent],
+    tools=[
+        triage_alert,
+        enrich_threat_intel,
+        investigate_alert,
+        get_response_playbook,
+        execute_response_action,
+        create_incident,
+    ],
 )
 
-
 # ---------------------------------------------------------------------------
-# Main: run with Runner API
+# Main
 # ---------------------------------------------------------------------------
 
 SAMPLE_ALERT = (
