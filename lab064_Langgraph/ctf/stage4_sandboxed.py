@@ -95,18 +95,35 @@ def _safe_globals() -> dict:
     # Make builtins.print land in a captured list
     captured = []
 
-    def safe_print(*args, **kwargs):
-        captured.append(" ".join(str(a) for a in args))
+    class _PrintCollector:
+        """Drop-in replacement for RestrictedPython's PrintCollector.
+
+        RestrictedPython compiles `print(x)` into roughly
+        `_print = _print_(_getattr_); _print(x); print(_print)`.
+        The `_print_` factory is called with the current `_getattr_` hook as
+        its only positional argument, so a zero-arg lambda blows up at runtime.
+        This class accepts the hook and ignores it, then exposes a callable
+        that appends to the captured list.
+        """
+
+        def __init__(self, _getattr_=None):
+            self._getattr_ = _getattr_
+
+        def __call__(self, *args, **kwargs):
+            captured.append(" ".join(str(a) for a in args))
+
+        def _call_print(self, *args, **kwargs):
+            captured.append(" ".join(str(a) for a in args))
 
     builtins = dict(safe_builtins)
-    builtins["_print_"] = lambda: safe_print  # RestrictedPython's print hook
+    builtins["_print_"] = _PrintCollector  # RestrictedPython's print hook
     builtins["_getattr_"] = getattr
     builtins["_getiter_"] = iter
     builtins["_getitem_"] = default_guarded_getitem
     builtins["_iter_unpack_sequence_"] = guarded_iter_unpack_sequence
     builtins["_unpack_sequence_"] = guarded_unpack_sequence
 
-    return {"__builtins__": builtins, "_captured_": captured, "_print": safe_print}
+    return {"__builtins__": builtins, "_captured_": captured}
 
 
 @tool
