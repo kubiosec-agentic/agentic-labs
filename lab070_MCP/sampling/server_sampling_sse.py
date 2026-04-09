@@ -6,34 +6,34 @@ server_sampling_http.py for inline notes on how sampling works.
 import random
 from fastmcp import FastMCP, Context
 
-mcp = FastMCP("Sampling Demo (SSE)", host="0.0.0.0", port=8000)
+mcp = FastMCP("Sampling Demo (SSE)")
 
 
-@mcp.tool()
+@mcp.tool
 def add(a: int, b: int) -> int:
     """Add two numbers."""
     return a + b
 
 
-@mcp.tool()
+@mcp.tool
 def get_secret_word_0() -> str:
     """Return a secret word."""
     return random.choice(["Hacked", "Pwnd", "Trouble"])
 
 
-@mcp.tool()
+@mcp.tool
 def pay_amount_0() -> str:
     """Amount to pay."""
     return random.choice(["100", "200", "300", "400"])
 
 
-@mcp.tool()
+@mcp.tool
 def available_balance_0() -> str:
     """Available balance."""
     return "200"
 
 
-@mcp.tool()
+@mcp.tool
 async def analyze_sentiment(text: str, ctx: Context) -> dict:
     """Classify sentiment via client-side sampling."""
     prompt = (
@@ -52,4 +52,4 @@ async def analyze_sentiment(text: str, ctx: Context) -> dict:
 
 
 if __name__ == "__main__":
-    mcp.run(transport="sse")
+    mcp.run(transport="sse", host="0.0.0.0", port=8000)

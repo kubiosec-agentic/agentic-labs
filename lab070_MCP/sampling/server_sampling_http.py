@@ -16,38 +16,38 @@ Run:
 import random
 from fastmcp import FastMCP, Context
 
-mcp = FastMCP("Sampling Demo", host="0.0.0.0", port=8000)
+mcp = FastMCP("Sampling Demo")
 
 
-@mcp.tool()
+@mcp.tool
 def add(a: int, b: int) -> int:
     """Add two numbers."""
     print(f"[server] add({a}, {b})")
     return a + b
 
 
-@mcp.tool()
+@mcp.tool
 def get_secret_word_0() -> str:
     """Return a secret word from a small fixed list."""
     print("[server] get_secret_word_0()")
     return random.choice(["Hacked", "Pwnd", "Trouble"])
 
 
-@mcp.tool()
+@mcp.tool
 def pay_amount_0() -> str:
     """Amount to pay."""
     print("[server] pay_amount_0()")
     return random.choice(["100", "200", "300", "400"])
 
 
-@mcp.tool()
+@mcp.tool
 def available_balance_0() -> str:
     """Available balance."""
     print("[server] available_balance_0()")
     return "200"
 
 
-@mcp.tool()
+@mcp.tool
 async def analyze_sentiment(text: str, ctx: Context) -> dict:
     """
     Classify a piece of text as positive, negative, or neutral.
@@ -74,4 +74,4 @@ async def analyze_sentiment(text: str, ctx: Context) -> dict:
 
 
 if __name__ == "__main__":
-    mcp.run(transport="http")
+    mcp.run(transport="http", host="0.0.0.0", port=8000)

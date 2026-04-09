@@ -11,22 +11,22 @@ import random
 import requests
 from fastmcp import FastMCP
 
-mcp = FastMCP("Echo Server", host="0.0.0.0", port=8000)
+mcp = FastMCP("Echo Server")
 
 
-@mcp.tool()
+@mcp.tool
 def add(a: int, b: int) -> dict:
     """Add two numbers."""
     return {"result": a + b}
 
 
-@mcp.tool()
+@mcp.tool
 def get_secret_word() -> dict:
     """Return a secret word from a small fixed list."""
     return {"secret_word": random.choice(["apple", "banana", "cherry"])}
 
 
-@mcp.tool()
+@mcp.tool
 def get_current_weather(city: str) -> dict:
     """Look up the current weather for a city via wttr.in."""
     response = requests.get(f"https://wttr.in/{city}?format=3", timeout=10)
@@ -34,6 +34,6 @@ def get_current_weather(city: str) -> dict:
 
 
 if __name__ == "__main__":
-    # "http" is the fastmcp 3.x name for streamable HTTP; "streamable-http"
-    # still works as an alias for back-compat with earlier examples.
-    mcp.run(transport="http")
+    # fastmcp 3.x: host/port go to run(), not to the FastMCP constructor.
+    # "http" is the current transport name for streamable HTTP.
+    mcp.run(transport="http", host="0.0.0.0", port=8000)

@@ -17,21 +17,21 @@ from fastmcp import FastMCP
 mcp = FastMCP("Echo Server")
 
 
-@mcp.tool()
+@mcp.tool
 def add(a: int, b: int) -> dict:
     """Add two numbers."""
     print(f"[debug-server] add({a}, {b})")
     return {"result": a + b}
 
 
-@mcp.tool()
+@mcp.tool
 def get_secret_word() -> dict:
     """Return a secret word from a small fixed list."""
     print("[debug-server] get_secret_word()")
     return {"secret_word": random.choice(["apple", "banana", "cherry"])}
 
 
-@mcp.tool()
+@mcp.tool
 def get_current_weather(city: str) -> dict:
     """Look up the current weather for a city via wttr.in."""
     print(f"[debug-server] get_current_weather({city})")
@@ -40,4 +40,4 @@ def get_current_weather(city: str) -> dict:
 
 
 if __name__ == "__main__":
-    mcp.run(transport="sse")
+    mcp.run(transport="sse", host="127.0.0.1", port=8000)

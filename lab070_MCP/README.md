@@ -78,6 +78,14 @@ directory you pick at runtime.
 python3 mcp_01_stdio.py
 ```
 
+Interactive variant with a REPL so you can keep asking follow-up
+questions about the same directory (uses a SQLite session, supports
+`/reset`, `/tools`, `/quit`):
+
+```bash
+python3 mcp_01_stdio_interactive.py
+```
+
 ### 2. MCP Streamable HTTP
 
 Streamable HTTP is the current default transport in the MCP spec. The
