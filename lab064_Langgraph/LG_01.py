@@ -137,7 +137,15 @@ def create_agent():
     workflow.add_node("agent", invoke_llm)
     workflow.add_node("tools", call_tools)
     workflow.add_edge(START, "agent")
-    workflow.add_conditional_edges("agent", should_continue)
+    # Pass an explicit path_map so the graph (and `draw_mermaid()`) knows
+    # what node names the router can return. Without this, LangGraph can't
+    # statically resolve the conditional edges and the mermaid diagram
+    # will be missing the agent -> tools and tools -> agent edges.
+    workflow.add_conditional_edges(
+        "agent",
+        should_continue,
+        {"tools": "tools", END: END},
+    )
     workflow.add_edge("tools", "agent")
     return workflow.compile()
 

@@ -141,7 +141,9 @@ def build_graph():
     workflow.add_node("agent", invoke_llm)
     workflow.add_node("tools", call_tools)
     workflow.add_edge(START, "agent")
-    workflow.add_conditional_edges("agent", should_continue)
+    workflow.add_conditional_edges(
+        "agent", should_continue, {"tools": "tools", END: END}
+    )
     workflow.add_edge("tools", "agent")
     # MemorySaver keeps per-thread history across Flask requests
     return workflow.compile(checkpointer=MemorySaver())

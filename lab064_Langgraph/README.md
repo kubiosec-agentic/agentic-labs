@@ -53,7 +53,7 @@ Same agent as above, plus two extra lines at the end that dump the compiled grap
 python3 ./LG_02.py
 ```
 
-The script writes `graph.mermaid` to disk and also prints it to stdout. Since mermaid is hard to read as raw text in a terminal, here is the rendered diagram for the agent:
+The script writes `graph.mermaid` to disk and also prints it to stdout. Here is what the rendered diagram looks like for the tool-calling agent:
 
 ```mermaid
 ---
@@ -67,13 +67,17 @@ graph TD;
 	tools(tools)
 	__end__(<p>__end__</p>)
 	__start__ --> agent;
-	agent --> __end__;
+	agent -. &nbsp;tools&nbsp; .-> tools;
+	agent -. &nbsp;__end__&nbsp; .-> __end__;
+	tools --> agent;
 	classDef default fill:#f2f0ff,line-height:1.2
 	classDef first fill-opacity:0
 	classDef last fill:#bfb6fc
 ```
 
-Note that the mermaid renderer only shows unconditional edges by default. The real topology also has an `agent -> tools -> agent` cycle through the conditional edge, which is the interesting part. You can paste the file into [mermaid.live](https://mermaid.live) to explore; for complex production graphs, the visualization becomes essential.
+The dotted edges from `agent` are the conditional ones: `should_continue` returns either `"tools"` (if the LLM emitted tool calls) or `END` (if it produced a final answer). The solid `tools -> agent` edge closes the ReAct loop. You can paste the file into [mermaid.live](https://mermaid.live) to explore interactively.
+
+**Heads-up on a common gotcha.** If you call `add_conditional_edges` without an explicit `path_map`, LangGraph cannot statically resolve which node names the router returns, and `draw_mermaid()` will drop the conditional edges from the diagram entirely. Look at `create_agent()` in `LG_02.py` (and `LG_01.py`) for the fix: passing `{"tools": "tools", END: END}` as the third argument. Runtime behavior is unchanged either way, but the diagram becomes accurate.
 
 **What to observe:**
 
