@@ -43,31 +43,76 @@ Two MCP servers feed the agent:
 
 ## Getting started
 
-Build the hacking container:
+The whole lab (hacking box + nginx target) is wired up in
+[`docker-compose.yml`](./docker-compose.yml). One command brings
+everything online:
 
 ```bash
-docker build -t ubuntu-node-python .
+docker compose up -d --build
 ```
 
-Start it as a remote MCP server:
+This builds `ubuntu-node-python` from the local Dockerfile, starts an
+`nginx:alpine` container named `target-nginx` as the authorized lab
+host, starts `kali-box` with supergateway + desktop-commander exposed
+on `http://127.0.0.1:8000/mcp`, and puts both containers on a private
+docker network. The agent reaches the target by name
+(`http://target-nginx:80`), so the lab works identically on macOS and
+Linux with no host IP plumbing.
+
+Watch the logs:
 
 ```bash
-docker run -p 8000:8000 \
-    -v ./traces:/tmp \
-    -d ubuntu-node-python \
-    npx -y supergateway --outputTransport streamableHttp \
-        --stdio "npx -y @wonderwhy-er/desktop-commander@latest"
+docker compose logs -f
 ```
 
-Interactive shell (if you want to peek inside):
+Quick smoke test that the hacking box can actually see the target:
 
 ```bash
-docker run -it ubuntu-node-python bash
+docker compose exec kali-box curl -sI http://target-nginx/ | head -n1
+# expected: HTTP/1.1 200 OK
 ```
+
+Interactive shell (if you want to poke around inside the hacking box):
+
+```bash
+docker compose exec kali-box bash
+```
+
+Tear the lab down when you are done:
+
+```bash
+docker compose down
+```
+
+## Sanity-check the MCP server first
+
+Before you blame the agent, confirm port 8000 actually belongs to
+desktop-commander and not to `server_streamable.py` left over from
+exercise 2 or 7. Both bind to :8000 and the first one wins; docker's
+port publish silently falls through to whatever grabbed the port first.
+
+```bash
+curl -sS -X POST http://127.0.0.1:8000/mcp \
+    -H "Content-Type: application/json" \
+    -H "Accept: application/json, text/event-stream" \
+    -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"probe","version":"0"}}}'
+```
+
+Look at `serverInfo.name` in the response:
+
+- `desktop-commander` → correct, you're good to go.
+- `Echo Server` → fastmcp from exercise 2/7 is squatting the port.
+  Kill it (`lsof -iTCP:8000 -sTCP:LISTEN`, then `kill <pid>`), restart
+  the docker container, and re-run this check.
 
 ## Run a scan
 
+If you did exercise 7 (MITM) in the same shell, unset the leftover
+base URL first, otherwise the openai SDK will try to talk to the
+mitmproxy reverse-proxy and fail with `APIConnectionError`:
+
 ```bash
+unset OPENAI_BASE_URL
 python3 ./OA_pentester.py
 ```
 

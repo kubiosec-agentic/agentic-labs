@@ -298,10 +298,7 @@ the architecture, run instructions, and a list of obvious next steps
 
 ```bash
 cd hacking_bot
-docker build -t ubuntu-node-python .
-docker run -p 8000:8000 -v ./traces:/tmp -d ubuntu-node-python \
-    npx -y supergateway --outputTransport streamableHttp \
-    --stdio "npx -y @wonderwhy-er/desktop-commander@latest"
+docker compose up -d --build
 python3 OA_pentester.py
 ```
 

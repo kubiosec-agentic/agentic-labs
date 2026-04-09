@@ -1,0 +1,32 @@
+# Self-contained hacking_bot lab.
+#
+# Two services on a shared docker network so the agent running inside
+# kali-box can reach the authorized target by name ("target-nginx")
+# without anyone having to know the host IP. Works identically on
+# macOS and Linux.
+#
+#   docker compose up -d      start everything
+#   docker compose logs -f    watch supergateway + nginx
+#   docker compose down       stop and remove
+
+services:
+  target-nginx:
+    image: nginx:alpine
+    container_name: target-nginx
+    # No ports published on the host; the target is only reachable
+    # from inside the docker network, which is the point.
+
+  kali-box:
+    build: .
+    image: ubuntu-node-python
+    container_name: kali-box
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./traces:/tmp
+    command: >
+      npx -y supergateway
+        --outputTransport streamableHttp
+        --stdio "npx -y @wonderwhy-er/desktop-commander@latest"
+    depends_on:
+      - target-nginx
