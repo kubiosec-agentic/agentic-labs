@@ -264,6 +264,6 @@ if __name__ == "__main__":
         raise SystemExit(f"Missing flag file at {FLAG_PATH}")
     print("=" * 60)
     print("CTF Stage 3: regex filter + hardened system prompt")
-    print("Endpoint: http://127.0.0.1:5000/v1/chat/completions")
+    print("Endpoint: http://127.0.0.1:5055/v1/chat/completions")
     print("=" * 60)
-    app.run(host="127.0.0.1", port=5000, debug=False)
+    app.run(host="127.0.0.1", port=5055, debug=False)

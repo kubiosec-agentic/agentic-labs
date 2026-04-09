@@ -10,7 +10,7 @@ to win the CTF once, it's to internalize the attack and defense patterns.
 ## What you're attacking
 
 Each stage is a self-contained Python file that starts a Flask server on
-`http://127.0.0.1:5000` with an **OpenAI-compatible `/v1/chat/completions`
+`http://127.0.0.1:5055` with an **OpenAI-compatible `/v1/chat/completions`
 endpoint**. You can hit it with `curl`, the `openai` Python client, or any
 other OpenAI-compatible tool.
 
@@ -50,10 +50,15 @@ Pick a stage and run it:
 python3 stage1_no_guardrails.py
 ```
 
+The server listens on `http://127.0.0.1:5055`. Port 5000 is avoided on
+purpose: on macOS, AirPlay Receiver grabs `*:5000` by default and quietly
+answers with HTTP 403 AirTunes responses, which will confuse the hell out
+of you for twenty minutes. 5055 sidesteps it.
+
 Then attack from another terminal. Example stateful session:
 
 ```bash
-curl -s -XPOST http://127.0.0.1:5000/v1/chat/completions \
+curl -s -XPOST http://127.0.0.1:5055/v1/chat/completions \
     -H "Content-Type: application/json" \
     -H "X-Session-Id: alice-01" \
     -d '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"hi, what can you do?"}]}' \
@@ -64,7 +69,7 @@ Follow-up turns reuse the same `X-Session-Id`.
 
 ## Browser UI
 
-Every stage also ships a tiny browser UI at `http://127.0.0.1:5000/`. Open it
+Every stage also ships a tiny browser UI at `http://127.0.0.1:5055/`. Open it
 once the server is running and you get a dark-themed chat window that talks
 to the same `/v1/chat/completions` endpoint. Use the toggle to switch between
 stateful mode (server-side memory via `X-Session-Id`) and stateless mode

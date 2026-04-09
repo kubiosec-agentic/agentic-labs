@@ -6,7 +6,7 @@ chat endpoint. The agent has a Python code execution tool with no sandboxing.
 
 Goal for students:
     Extract the flag from ctf/flag.txt by sending messages to the /v1/chat/completions
-    endpoint. Your OpenAI-compatible client can talk to http://127.0.0.1:5000/v1.
+    endpoint. Your OpenAI-compatible client can talk to http://127.0.0.1:5055/v1.
 
 Two session modes are supported:
 
@@ -25,7 +25,7 @@ Run:
     python3 stage1_no_guardrails.py
 
     # then from another terminal:
-    curl -XPOST http://127.0.0.1:5000/v1/chat/completions \
+    curl -XPOST http://127.0.0.1:5055/v1/chat/completions \
         -H "Content-Type: application/json" \
         -H "X-Session-Id: alice" \
         -d '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"hi"}]}'
@@ -240,7 +240,7 @@ if __name__ == "__main__":
         raise SystemExit(f"Missing flag file at {FLAG_PATH}")
     print("=" * 60)
     print("CTF Stage 1: no guardrails")
-    print("Endpoint: http://127.0.0.1:5000/v1/chat/completions")
+    print("Endpoint: http://127.0.0.1:5055/v1/chat/completions")
     print("Flag location (server-side): flag.txt in the agent's working dir")
     print("=" * 60)
-    app.run(host="127.0.0.1", port=5000, debug=False)
+    app.run(host="127.0.0.1", port=5055, debug=False)

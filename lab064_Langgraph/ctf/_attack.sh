@@ -13,7 +13,7 @@ echo "=== payload ==="
 cat "$PAYLOAD_FILE"
 echo
 echo "=== response ==="
-curl -v -m 60 -XPOST http://127.0.0.1:5000/v1/chat/completions \
+curl -s -m 60 -XPOST http://127.0.0.1:5055/v1/chat/completions \
   -H 'Content-Type: application/json' \
   -d @"$PAYLOAD_FILE" 2>&1
 echo

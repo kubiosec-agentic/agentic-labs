@@ -19,7 +19,7 @@ Techniques to explore:
 
 Run:
     python3 stage2_output_filter.py
-    # endpoint: http://127.0.0.1:5000/v1/chat/completions
+    # endpoint: http://127.0.0.1:5055/v1/chat/completions
 """
 
 import os
@@ -244,7 +244,7 @@ if __name__ == "__main__":
         raise SystemExit(f"Missing flag file at {FLAG_PATH}")
     print("=" * 60)
     print("CTF Stage 2: naive regex output filter")
-    print("Endpoint: http://127.0.0.1:5000/v1/chat/completions")
+    print("Endpoint: http://127.0.0.1:5055/v1/chat/completions")
     print("Redacts: FLAG{...}, sk-internal-*, INTERNAL_API_KEY=*")
     print("=" * 60)
-    app.run(host="127.0.0.1", port=5000, debug=False)
+    app.run(host="127.0.0.1", port=5055, debug=False)
