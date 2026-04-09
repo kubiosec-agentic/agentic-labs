@@ -45,7 +45,17 @@ Advanced workflow demonstrating AI-powered job application processing with condi
 python3 ./LG_04.py
 ```
 
-#### Example 5: Job Application Review Workflow
+#### Example 5: CTF - Attacking and Hardening a Vulnerable Agent
+A staged security exercise built on the LangGraph pattern. A deliberately-weak agent with a Python code execution tool is exposed as an OpenAI-compatible `/v1/chat/completions` endpoint with multi-turn sessions (server-side via `MemorySaver`). You attack the same agent four times, each time against a stronger set of defenses: no guardrails, regex output filter, hardened system prompt, and `RestrictedPython` sandbox. Each layer has a bypass, and the point is to internalize the attack and defense patterns.
+
+```bash
+cd ctf
+python3 stage1_no_guardrails.py   # then stage2, stage3, stage4
+```
+
+See [ctf/README.md](./ctf/README.md) for the full walkthrough and discussion questions.
+
+#### Example 6: Job Application Review Workflow
 This example showcases a sophisticated real-world application of LangGraph for automating job application reviews with:
 
 - **Multi-Node Workflow:** Complex pipeline with analysis, generation, and review phases

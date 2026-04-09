@@ -69,8 +69,7 @@ Each lab is structured to gradually build your understanding and capabilities, f
 | [lab054_LangChain_Tools](./lab054_LangChain_Tools) | LangChain tools and agents | python, LangChain, tool integration |
 | [lab060_OpenAI_Agents](./lab060_OpenAI_Agents) | Multi-agent orchestration | python, OpenAI Agents SDK, MCP integration |
 | [lab061_Google_Agents](./lab061_Google_Agents) | Google ADK | python, Google ADK, Gemini, agents |
-| [lab062_LangChain_Agents](./lab062_LangChain_Agents) | LangChain ReAct Agents | python, LangChain, ReAct, tools |
-| [lab064_Langgraph](./lab064_Langgraph) | LangGraph stateful workflows | python, LangGraph, StateGraph, conditional routing |
+| [lab064_Langgraph](./lab064_Langgraph) | LangGraph stateful workflows + agent CTF | python, LangGraph, StateGraph, CTF, prompt injection |
 | [lab070_MCP](./lab070_MCP) | Model Context Protocol (MCP) | python, MCP, SSE, streamable HTTP |
 | [lab080_MAS](./lab080_MAS) | Multi-agent frameworks | python, AutoGen, CrewAI, Agno, FastAgent, PydanticAI |
 | [lab085_OpenAI_Memory](./lab085_OpenAI_Memory) | OpenAI Agents with memory | python, OpenAI Agents SDK, SQLiteSession |
