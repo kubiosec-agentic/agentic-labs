@@ -49,7 +49,10 @@ async def main():
             "analyze_sentiment",
             {"text": "What a great day!"},
         )
-        print(f"Tool result -> {result[0].text}")
+        # fastmcp 3.x: CallToolResult, not a list. Use .data / .content.
+        print(f"Tool result (structured) -> {result.data}")
+        if result.content:
+            print(f"Tool result (text block) -> {result.content[0].text}")
 
 
 if __name__ == "__main__":

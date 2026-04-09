@@ -69,7 +69,11 @@ async def main():
             "analyze_sentiment",
             {"text": "I really hate this world !!!!!!!1"},
         )
-        print(f"Tool result -> {result[0].text}")
+        # fastmcp 3.x: call_tool returns a CallToolResult, not a list.
+        # .data is the parsed structured return; .content holds raw blocks.
+        print(f"Tool result (structured) -> {result.data}")
+        if result.content:
+            print(f"Tool result (text block) -> {result.content[0].text}")
 
 
 if __name__ == "__main__":
