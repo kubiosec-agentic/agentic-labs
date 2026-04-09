@@ -62,6 +62,21 @@ curl -s -XPOST http://127.0.0.1:5000/v1/chat/completions \
 
 Follow-up turns reuse the same `X-Session-Id`.
 
+## Browser UI
+
+Every stage also ships a tiny browser UI at `http://127.0.0.1:5000/`. Open it
+once the server is running and you get a dark-themed chat window that talks
+to the same `/v1/chat/completions` endpoint. Use the toggle to switch between
+stateful mode (server-side memory via `X-Session-Id`) and stateless mode
+(full history sent from the browser). The "New session" button mints a fresh
+session id so you can compare attacks across isolated threads.
+
+The UI is intentionally simple. It's here so you can feel what it's like to
+poke at a web-exposed agent without dropping into `curl`, and so you have a
+mental model of how a real web chat client interacts with one of these
+OpenAI-compatible proxies. For scripted attacks, stick with `curl` or the
+`openai` Python client.
+
 ---
 
 ## Stage 1: No guardrails

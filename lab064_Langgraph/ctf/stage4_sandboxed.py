@@ -46,6 +46,8 @@ from langchain_openai import ChatOpenAI
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import END, START, MessagesState, StateGraph
 
+from _ui import render_ui
+
 try:
     from RestrictedPython import compile_restricted, safe_builtins
     from RestrictedPython.Eval import default_guarded_getitem
@@ -272,6 +274,15 @@ def chat_completions():
 def health():
     return jsonify(
         {"status": "ok", "stage": 4, "guardrails": "regex+hardened-prompt+sandbox"}
+    )
+
+
+@app.route("/", methods=["GET"])
+def index():
+    return render_ui(
+        stage=4,
+        title="RestrictedPython sandbox",
+        guardrails="regex+hardened-prompt+sandbox",
     )
 
 

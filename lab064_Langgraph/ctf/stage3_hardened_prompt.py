@@ -37,6 +37,8 @@ from langchain_openai import ChatOpenAI
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import END, START, MessagesState, StateGraph
 
+from _ui import render_ui
+
 CTF_DIR = os.path.dirname(os.path.abspath(__file__))
 FLAG_PATH = os.path.join(CTF_DIR, "flag.txt")
 
@@ -245,6 +247,15 @@ def chat_completions():
 def health():
     return jsonify(
         {"status": "ok", "stage": 3, "guardrails": "regex+hardened-system-prompt"}
+    )
+
+
+@app.route("/", methods=["GET"])
+def index():
+    return render_ui(
+        stage=3,
+        title="Hardened system prompt",
+        guardrails="regex+hardened-system-prompt",
     )
 
 

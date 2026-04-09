@@ -44,6 +44,8 @@ from langchain_openai import ChatOpenAI
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import END, START, MessagesState, StateGraph
 
+from _ui import render_ui
+
 # ---------------------------------------------------------------------------
 # Paths and secrets the agent can reach
 # ---------------------------------------------------------------------------
@@ -226,6 +228,11 @@ def chat_completions():
 @app.route("/health", methods=["GET"])
 def health():
     return jsonify({"status": "ok", "stage": 1, "guardrails": "none"})
+
+
+@app.route("/", methods=["GET"])
+def index():
+    return render_ui(stage=1, title="No guardrails", guardrails="none")
 
 
 if __name__ == "__main__":

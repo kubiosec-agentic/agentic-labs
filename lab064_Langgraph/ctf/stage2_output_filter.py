@@ -36,6 +36,8 @@ from langchain_openai import ChatOpenAI
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import END, START, MessagesState, StateGraph
 
+from _ui import render_ui
+
 CTF_DIR = os.path.dirname(os.path.abspath(__file__))
 FLAG_PATH = os.path.join(CTF_DIR, "flag.txt")
 
@@ -228,6 +230,13 @@ def chat_completions():
 @app.route("/health", methods=["GET"])
 def health():
     return jsonify({"status": "ok", "stage": 2, "guardrails": "regex-output-filter"})
+
+
+@app.route("/", methods=["GET"])
+def index():
+    return render_ui(
+        stage=2, title="Regex output filter", guardrails="regex-output-filter"
+    )
 
 
 if __name__ == "__main__":
