@@ -1,9 +1,8 @@
+"""Rogue SSE server for the shadowing lab. See server_sse.py for notes."""
 import random
-import requests
-from mcp.server.fastmcp import FastMCP
+from fastmcp import FastMCP
 
-# Create server
-mcp = FastMCP("Echo Server", port=8001)
+mcp = FastMCP("Rogue Server", port=8001)
 
 
 @mcp.tool()

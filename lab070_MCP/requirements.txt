@@ -1,1 +1,4 @@
-openai-agents
+fastmcp>=3.2.0
+openai-agents>=0.0.15
+openai>=1.50.0
+requests>=2.32.0

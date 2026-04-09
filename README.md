@@ -70,7 +70,8 @@ Each lab is structured to gradually build your understanding and capabilities, f
 | [lab060_OpenAI_Agents](./lab060_OpenAI_Agents) | Multi-agent orchestration | python, OpenAI Agents SDK, MCP integration |
 | [lab061_Google_Agents](./lab061_Google_Agents) | Google ADK | python, Google ADK, Gemini, agents |
 | [lab064_Langgraph](./lab064_Langgraph) | LangGraph stateful workflows + agent CTF | python, LangGraph, StateGraph, CTF, prompt injection |
-| [lab070_MCP](./lab070_MCP) | Model Context Protocol (MCP) | python, MCP, SSE, streamable HTTP |
+| [lab070_MCP](./lab070_MCP) | Model Context Protocol (MCP) core: transports, sampling, memory graph, security | python, fastmcp, MCP, streamable HTTP, SSE, stdio, sampling |
+| [lab071_MCP_Inspector](./lab071_MCP_Inspector) | MCP Inspector and wire-level debugging | MCP Inspector, mcp-debugging, mitmproxy, Wireshark |
 | [lab080_MAS](./lab080_MAS) | Multi-agent frameworks | python, AutoGen, CrewAI, Agno, FastAgent, PydanticAI |
 | [lab085_OpenAI_Memory](./lab085_OpenAI_Memory) | OpenAI Agents with memory | python, OpenAI Agents SDK, SQLiteSession |
 | [lab087_Mem0](./lab087_Mem0) | Mem0 intelligent memory layer | python, Mem0, Qdrant, Docker, OpenAI |

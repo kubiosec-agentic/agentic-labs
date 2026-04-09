@@ -1,12 +1,17 @@
+"""
+Agent example: single MCP server over streamable HTTP.
+
+Client side uses the openai-agents SDK (MCPServerStreamableHttp). The server
+is the fastmcp-based server_streamable.py running on localhost:8000.
+
+Run (in two terminals):
+    terminal 1: python3 server_streamable.py
+    terminal 2: python3 mcp_02_streamable.py
+"""
 import asyncio
-import os
-import shutil
-import subprocess
-import time
-from typing import Any
 
 from agents import Agent, Runner, gen_trace_id, trace
-from agents.mcp import MCPServer, MCPServerStreamableHttp 
+from agents.mcp import MCPServer, MCPServerStreamableHttp
 from agents.model_settings import ModelSettings
 
 
@@ -31,11 +36,11 @@ async def run(mcp_server: MCPServer):
 
 
 async def init_server():
-    server_a = MCPServerStreamableHttp(
+    return MCPServerStreamableHttp(
         name="Server A",
-        params={"url": "http://localhost:8089/mcp"},
+        params={"url": "http://localhost:8000/mcp/"},
     )
-    return server_a
+
 
 async def main():
     async with await init_server() as server:
@@ -47,4 +52,3 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
-
