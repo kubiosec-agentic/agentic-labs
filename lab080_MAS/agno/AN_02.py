@@ -17,7 +17,7 @@ from rich.pretty import pprint
 agent = Agent(
     model=OpenAIChat(id="gpt-4o"),
     # Store session history in a local SQLite file.
-    db=SqliteDb(table_name="agent_sessions", db_file="tmp/agent.db"),
+    db=SqliteDb(db_file="tmp/agent.db"),
     # Add the previous chat history to the context sent to the model.
     add_history_to_context=True,
     # Number of historical runs to include in the context.
