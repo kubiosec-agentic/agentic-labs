@@ -185,8 +185,36 @@ code entirely: any tool that speaks MCP gets persistent memory for free.
 ### Quick start
 
 ```bash
-export OPENAI_API_KEY="sk-..."
-curl -sL https://raw.githubusercontent.com/mem0ai/mem0/main/openmemory/run.sh | bash
+git clone https://github.com/mem0ai/mem0.git
+cd mem0/openmemory
+```
+
+Configure the environment files:
+
+```bash
+cp api/.env.example api/.env
+cp ui/.env.example ui/.env
+```
+
+Edit `api/.env` and set your keys:
+
+```
+OPENAI_API_KEY=sk-...
+USER=philippe
+```
+
+Edit `ui/.env`:
+
+```
+NEXT_PUBLIC_API_URL=http://localhost:8765
+NEXT_PUBLIC_USER_ID=philippe
+```
+
+Build and start the containers:
+
+```bash
+make build
+make up
 ```
 
 This starts three containers: an MCP backend (port 8765), a Qdrant
@@ -221,7 +249,8 @@ and "memory as infrastructure."
 ### Cleanup
 
 ```bash
-docker compose -f openmemory/docker-compose.yml down -v
+cd mem0/openmemory
+make down
 ```
 
 For more details, see the
