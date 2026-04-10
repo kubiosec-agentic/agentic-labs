@@ -13,7 +13,7 @@ project.
 | Framework | What it is | Why it is here |
 |-----------|-----------|----------------|
 | **CrewAI** | Role-based multi-agent workflows with built-in tool ecosystem | Most popular Python-native multi-agent framework; 45k+ GitHub stars, production-ready |
-| **Agno** | Lightweight agent runtime (formerly PhiData) | Fast instantiation, clean API, growing ecosystem |
+| **Agno** | Lightweight model-agnostic agent runtime (formerly PhiData) | Fast instantiation, clean API, MCP support, persistent history; 39k+ stars |
 | **PydanticAI** | Type-safe agent framework from the Pydantic team | First-class structured output, strong typing, weekly releases |
 | **FastAgent** | MCP-native agent framework | Deep MCP integration, agent chaining, orchestrator patterns |
 
@@ -61,24 +61,36 @@ pipeline, and how `memory=True` gives the crew cross-task context.
 
 ## 2. Agno
 
-Agno (formerly PhiData) focuses on speed and simplicity. Agents are
-plain Python objects with a model, tools, and optional memory.
+Agno (formerly PhiData, 39k+ GitHub stars) is a lightweight,
+model-agnostic agent framework. Agents are plain Python objects with a
+model, tools, and optional persistent history backed by SQLite or
+Postgres. It supports multi-agent coordination through a `Team`
+abstraction, first-class MCP tool integration, and an optional
+AgentOS/FastAPI layer to turn any agent into a REST API.
 
 ```bash
 cd agno
-python3 AN_01.py    # Team of researcher + writer agents
-python3 AN_02.py    # Agent memory with add_history_to_messages
+python3 AN_01.py             # Multi-agent Team (Researcher + Writer)
+python3 AN_02.py             # Chat history with SQLite persistence
+python3 AN_03_mcp_agent.py   # MCP tool (Agno docs) + persistent history
 cd ..
 ```
 
 Compare Agno's `Team` abstraction with CrewAI's `Crew`: both
 coordinate multiple agents, but Agno keeps the API surface smaller.
+Exercise 3 shows how Agno connects to an MCP server with a single
+`MCPTools(url=...)` call, making it a good stepping stone from lab070.
 
 ## 3. PydanticAI
 
-PydanticAI leans into type safety. Agents return Pydantic models
-instead of raw strings, and tool definitions are validated at import
-time.
+PydanticAI (from the Pydantic team, 16k+ stars) leans into type safety.
+Agents return Pydantic models instead of raw strings, and tool
+definitions are validated at import time. It is model-agnostic; these
+exercises use Anthropic Claude to demonstrate provider flexibility.
+
+```bash
+export ANTHROPIC_API_KEY="sk-ant-..."
+```
 
 ```bash
 cd pydanticai
@@ -90,6 +102,10 @@ cd ..
 If you come from a typed-Python background, PydanticAI will feel
 natural. Notice how the structured output contract is part of the
 agent definition, not an afterthought.
+
+> **Note**: PydanticAI pulls in heavy transitive dependencies
+> (OpenTelemetry, Logfire). If you see version conflicts during
+> `pip install`, they are cosmetic and do not affect the exercises.
 
 ## 4. FastAgent
 

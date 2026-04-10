@@ -4,3 +4,4 @@ sqlalchemy
 aiosqlite
 crewai
 crewai_tools
+pydantic-ai
