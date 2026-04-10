@@ -68,19 +68,45 @@ python3 traceloop_01.py
 
 Check [traceloop.com](https://www.traceloop.com/) for the dashboard.
 
-### OpenAI Agents built-in tracing
+### OpenAI Agents SDK built-in tracing
 
-The OpenAI Agents SDK has built-in tracing that logs every agent step:
-guardrail checks, handoffs, tool calls, and final output. This example
-builds a triage agent with a homework guardrail that blocks off-topic
+The OpenAI Agents SDK has built-in tracing that is enabled by default.
+Every agent run automatically logs LLM generations, tool calls,
+handoffs, and guardrail decisions. No extra code needed: just run your
+agent and the traces appear in the OpenAI dashboard.
+
+**Exercise 1: Guardrails + tracing**
+
+Builds a triage agent with a homework guardrail that blocks off-topic
 questions, then routes accepted inputs to a math or history tutor.
+Every guardrail decision and handoff is visible in the trace.
 
 ```bash
 python3 openai_trace_01.py
 ```
 
-The trace output appears in your OpenAI dashboard under the Traces
-tab. Every guardrail decision and agent handoff is visible.
+**Exercise 2: Custom traces, spans, and sensitive data control**
+
+Goes deeper into the tracing API:
+
+- `trace()` context manager to group multiple agent runs into one
+  workflow trace
+- `custom_span()` to add your own application-level spans (input
+  validation, database calls, etc.)
+- `RunConfig(trace_include_sensitive_data=False)` to redact LLM
+  inputs/outputs from traces (useful for compliance)
+
+```bash
+python3 openai_trace_02.py
+```
+
+After running either exercise, view the full traces at:
+https://platform.openai.com/traces
+
+The traces show a timeline of every step the agent took, how long each
+step lasted, which tools were called, and what the LLM generated at
+each point. This is what you use for debugging and performance
+analysis in production.
 
 ## Part 3: Access-Controlled RAG
 
