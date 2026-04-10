@@ -1,7 +1,4 @@
-autogen-agentchat
-autogen-ext[openai,azure,tools]
-autogen-ext[docker]
-openai-agents
-playwright
+agno
+duckduckgo-search
 crewai
 crewai_tools

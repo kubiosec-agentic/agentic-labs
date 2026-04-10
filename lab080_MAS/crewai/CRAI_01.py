@@ -1,8 +1,12 @@
+import os
 import warnings
+
+# Disable CrewAI tracing prompt
+os.environ["CREWAI_TRACING_ENABLED"] = "false"
+
 # Suppress specific Pydantic UserWarning
 warnings.filterwarnings("ignore", category=UserWarning, module="pydantic")
 
-import os
 from crewai import Task, Crew, Process, Agent
 from crewai_tools import SerperDevTool
 
