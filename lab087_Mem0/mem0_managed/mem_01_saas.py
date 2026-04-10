@@ -10,6 +10,7 @@ Run:
     python3 mem0_managed/mem_01_saas.py
 """
 
+import time
 import warnings
 from mem0 import MemoryClient
 
@@ -32,6 +33,11 @@ print("Adding conversation for user 'alex'...")
 result = client.add(messages, user_id="alex")
 print("Add result:", result)
 
+# The SaaS backend processes memories asynchronously.
+# Give it a few seconds before searching.
+print("\nWaiting for memories to be processed...")
+time.sleep(5)
+
 # --- Search with filters ---
 print("\n--- Search: technology-related memories ---")
 filters = {
@@ -41,12 +47,34 @@ filters = {
     ]
 }
 search_results = client.search(query="What do I like?", version="v2", filters=filters, top_k=2)
-for r in search_results:
-    print(f"  - {r['memory']}")
+
+# Handle both possible response formats (list of dicts or list of strings)
+if isinstance(search_results, list):
+    for r in search_results:
+        if isinstance(r, dict):
+            print(f"  - {r.get('memory', r)}")
+        else:
+            print(f"  - {r}")
+elif isinstance(search_results, dict):
+    for r in search_results.get("results", []):
+        print(f"  - {r.get('memory', r) if isinstance(r, dict) else r}")
+else:
+    print("  (no results)")
 
 # --- Retrieve all memories ---
 print("\n--- All memories for alex ---")
 filters = {"AND": [{"user_id": "alex"}]}
 all_memories = client.get_all(version="v2", filters=filters, page=1, page_size=50)
-for memory in all_memories.get("results", []):
-    print(f"  - {memory['memory']}")
+
+if isinstance(all_memories, dict):
+    for memory in all_memories.get("results", []):
+        if isinstance(memory, dict):
+            print(f"  - {memory.get('memory', memory)}")
+        else:
+            print(f"  - {memory}")
+elif isinstance(all_memories, list):
+    for memory in all_memories:
+        if isinstance(memory, dict):
+            print(f"  - {memory.get('memory', memory)}")
+        else:
+            print(f"  - {memory}")
