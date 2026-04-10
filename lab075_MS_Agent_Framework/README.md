@@ -29,15 +29,19 @@ Switching from OpenAI to Azure is a three-line diff:
 
 ```
  # OpenAI                                    # Azure
- from agent_framework.openai import          from agent_framework.azure import
-     OpenAIChatClient                             AzureAIAgentClient
+ from agent_framework.openai import          from agent_framework.openai import
+     OpenAIChatClient                             OpenAIChatClient
                                               from azure.identity.aio import
                                                   AzureCliCredential
 
- client = OpenAIChatClient()                  credential = AzureCliCredential()
-                                              client = AzureAIAgentClient(
-                                                  async_credential=credential)
+ client = OpenAIChatClient()                  client = OpenAIChatClient(
+                                                  model="gpt-4o",
+                                                  azure_endpoint="https://...",
+                                                  credential=AzureCliCredential())
 ```
+
+Same class, same import. Azure routing is activated by passing
+`azure_endpoint` and `credential`.
 
 Everything else (tools, instructions, middleware, workflows) stays the
 same. Compare `MAF_01_openai_agent.py` and `MAF_02_azure_agent.py`
@@ -46,26 +50,24 @@ side-by-side to see the full picture.
 ## Set up your environment
 
 ```bash
-python3 -m venv .lab075
-source .lab075/bin/activate
-pip install -r requirements.txt
+export OPENAI_API_KEY="sk-..."
+export OPENAI_CHAT_MODEL="gpt-4o-mini"
 ```
-
-### For exercises 1, 3, 4 (OpenAI)
 
 ```bash
-export OPENAI_API_KEY="sk-..."
+./lab_setup.sh
+source .lab075/bin/activate
 ```
 
-### For exercise 2 (Azure)
+### For exercise 2 (Azure, optional)
 
 ```bash
 az login
-export AZURE_AI_PROJECT_ENDPOINT="https://<your-resource>.services.ai.azure.com/api/projects/<your-project>"
-export AZURE_AI_MODEL_DEPLOYMENT_NAME="gpt-4o"
+export AZURE_OPENAI_ENDPOINT="https://<your-resource>.openai.azure.com"
+export AZURE_OPENAI_CHAT_MODEL="gpt-4o"
 ```
 
-> If you do not have an Azure AI Foundry project, skip exercise 2.
+> If you do not have an Azure OpenAI resource, skip exercise 2.
 > Exercises 1, 3, and 4 cover the same framework concepts using the
 > OpenAI backend.
 
@@ -95,9 +97,9 @@ the client setup differs.
 python3 MAF_02_azure_agent.py
 ```
 
-Key differences: `AzureCliCredential` for auth, `async with` for
-server-side agent lifecycle management, and streaming via
-`agent.run_stream()`.
+Key differences: `AzureCliCredential` for auth, explicit
+`azure_endpoint` and `model` parameters, and streaming via
+`agent.run(..., stream=True)`.
 
 ### 3. Middleware (OpenAI)
 
@@ -162,6 +164,10 @@ The directory also contains the original examples from the addendum:
 
 ```bash
 deactivate
+```
+
+```bash
+./lab_cleanup.sh
 ```
 
 Back to [Lab Overview](https://github.com/kubiosec-agentic/agentic-labs/blob/master/README.md#-lab-overview)

@@ -8,6 +8,7 @@ when you move to Azure.
 
 Prerequisites:
     export OPENAI_API_KEY="sk-..."
+    export OPENAI_CHAT_MODEL="gpt-4o-mini"
 
 Run:
     python3 MAF_01_openai_agent.py
@@ -32,12 +33,12 @@ def get_weather(
 
 
 async def main() -> None:
-    # OpenAIChatClient reads OPENAI_API_KEY from the environment.
-    # model_id defaults to gpt-4o; override with OPENAI_CHAT_MODEL_ID
-    # or pass model_id="gpt-4o-mini" here.
-    client = OpenAIChatClient()
-
-    agent = client.create_agent(
+    # OpenAIChatClient reads from the environment:
+    #   OPENAI_API_KEY       - your API key
+    #   OPENAI_CHAT_MODEL    - model to use (e.g. gpt-4o-mini)
+    #
+    # .as_agent() turns the client into a runnable agent.
+    agent = OpenAIChatClient().as_agent(
         name="WeatherAgent",
         instructions="You are a helpful weather assistant.",
         tools=get_weather,

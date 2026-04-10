@@ -5,40 +5,37 @@ This file is the Azure counterpart of MAF_01_openai_agent.py. The
 business logic (tools, instructions, query) is identical. The only
 differences are:
 
-  1. Import: AzureAIAgentClient instead of OpenAIChatClient.
+  1. Import: same OpenAIChatClient, but with Azure routing inputs.
   2. Auth:   AzureCliCredential (run `az login` first) instead of
              OPENAI_API_KEY.
-  3. Env:    AZURE_AI_PROJECT_ENDPOINT + AZURE_AI_MODEL_DEPLOYMENT_NAME
-             instead of OPENAI_API_KEY.
-  4. Lifecycle: Azure agents are created server-side and automatically
-             cleaned up with `async with ... as agent`.
+  3. Env:    AZURE_OPENAI_ENDPOINT + AZURE_OPENAI_CHAT_MODEL
+             instead of OPENAI_API_KEY + OPENAI_CHAT_MODEL.
+  4. Lifecycle: `async with` for credential cleanup.
 
 Compare the two files side-by-side to see exactly what changes when
 moving from OpenAI to Azure.
 
 Prerequisites:
     az login
-    export AZURE_AI_PROJECT_ENDPOINT="https://<your-resource>.services.ai.azure.com/api/projects/<your-project>"
-    export AZURE_AI_MODEL_DEPLOYMENT_NAME="gpt-4o"
+    export AZURE_OPENAI_ENDPOINT="https://<your-resource>.openai.azure.com"
+    export AZURE_OPENAI_CHAT_MODEL="gpt-4o"
 
 Run:
     python3 MAF_02_azure_agent.py
 """
 
 import asyncio
+import os
 from random import randint
 from typing import Annotated
 
-from agent_framework.azure import AzureAIAgentClient
+from agent_framework.openai import OpenAIChatClient
 from azure.identity.aio import AzureCliCredential
-from pydantic import Field
 
 
-# Same tool, same logic. The only difference: Azure uses
-# pydantic Field() for parameter descriptions instead of plain
-# Annotated strings. Both work, but Field() is the Azure convention.
+# Same tool, same logic, same annotation style.
 def get_weather(
-    location: Annotated[str, Field(description="The location to get the weather for.")],
+    location: Annotated[str, "The location to get the weather for."],
 ) -> str:
     """Get the weather for a given location."""
     conditions = ["sunny", "cloudy", "rainy", "stormy"]
@@ -49,19 +46,22 @@ def get_weather(
 
 
 async def main() -> None:
-    print("=== Azure AI Agent Example ===\n")
+    print("=== Azure OpenAI Agent Example ===\n")
 
-    # AzureAIAgentClient reads AZURE_AI_PROJECT_ENDPOINT and
-    # AZURE_AI_MODEL_DEPLOYMENT_NAME from the environment.
-    # The agent is created server-side and auto-deleted on exit.
-    async with (
-        AzureCliCredential() as credential,
-        AzureAIAgentClient(async_credential=credential).create_agent(
+    # Same OpenAIChatClient, but with explicit Azure routing inputs.
+    # When credential or azure_endpoint is passed, the client switches
+    # to Azure mode even if OPENAI_API_KEY is also set.
+    async with AzureCliCredential() as credential:
+        agent = OpenAIChatClient(
+            model=os.environ["AZURE_OPENAI_CHAT_MODEL"],
+            azure_endpoint=os.environ["AZURE_OPENAI_ENDPOINT"],
+            credential=credential,
+        ).as_agent(
             name="WeatherAgent",
             instructions="You are a helpful weather assistant.",
             tools=get_weather,
-        ) as agent,
-    ):
+        )
+
         # --- non-streaming ---
         query = "What's the weather like in Seattle and Brussels?"
         print(f"User: {query}")
@@ -72,7 +72,7 @@ async def main() -> None:
         query2 = "And what about Tokyo?"
         print(f"User: {query2}")
         print("Agent: ", end="", flush=True)
-        async for chunk in agent.run_stream(query2):
+        async for chunk in agent.run(query2, stream=True):
             if chunk.text:
                 print(chunk.text, end="", flush=True)
         print()

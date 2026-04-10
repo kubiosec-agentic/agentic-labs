@@ -25,9 +25,8 @@ export OPENAI_API_KEY="sk-..."
 ```
 
 ```bash
-python3 -m venv .lab085
+./lab_setup.sh
 source .lab085/bin/activate
-pip install -r requirements.txt
 ```
 
 ## Exercises
@@ -122,6 +121,10 @@ constructor and everything else stays the same.
 
 ```bash
 deactivate
+```
+
+```bash
+./lab_cleanup.sh
 rm -f conversations.db   # if created by OA_02
 ```
 

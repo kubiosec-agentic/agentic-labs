@@ -13,6 +13,7 @@ management.
 
 Prerequisites:
     export OPENAI_API_KEY="sk-..."
+    export OPENAI_CHAT_MODEL="gpt-4o-mini"
 
 Run:
     python3 MAF_04_workflow.py
