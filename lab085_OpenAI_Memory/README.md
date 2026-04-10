@@ -1,64 +1,128 @@
-![OpenAI](https://img.shields.io/badge/OpenAI-lightblue)
-![Python](https://img.shields.io/badge/Python-blue)
-![Agents](https://img.shields.io/badge/Agents-orange)
+![OpenAI](https://img.shields.io/badge/OpenAI-lightblue) ![Python](https://img.shields.io/badge/Python-blue) ![Agents](https://img.shields.io/badge/Agents-orange)
 
 # LAB085: OpenAI Agents with Memory Persistence
 
 ## Introduction
-This lab demonstrates how to implement conversation memory using OpenAI agents with SQLite session storage. You'll learn how to create agents that maintain conversation context across multiple interactions, use SQLite sessions to persist conversation history, manage different conversation sessions for different users, and handle asynchronous agent interactions.
+
+The OpenAI Agents SDK manages conversation memory through **sessions**.
+A session stores conversation history and automatically feeds it back
+into the agent on the next turn, so you never have to manually track
+`previous_response_id` or call `.to_input_list()`.
+
+This lab covers the four patterns you will use most often:
+
+| Example | File | What it covers |
+|---------|------|---------------|
+| 1 | `OA_01.py` | Basic multi-turn memory with SQLiteSession |
+| 2 | `OA_02.py` | Multiple sessions (separate users, same database) |
+| 3 | `OA_03.py` | Compaction for long conversations |
+| 4 | `OA_04.py` | Session operations: retrieve, limit, pop, clear |
 
 ## Set up your environment
 
-### Setup Commands
 ```bash
-export OPENAI_API_KEY="your_openai_api_key_here"
+export OPENAI_API_KEY="sk-..."
 ```
+
 ```bash
-./lab_setup.sh
-```
-```bash
+python3 -m venv .lab085
 source .lab085/bin/activate
+pip install -r requirements.txt
 ```
 
-## Lab instructions
+## Exercises
 
-#### Example 1: Basic Memory Usage
-Demonstrates basic conversation memory where the agent remembers previous context within a session using `OA_01.py`.
+### 1. Basic memory
+
+The simplest case: one agent, one session, three turns. The agent
+remembers previous answers without any manual state management.
 
 ```bash
-python OA_01.py
+python3 OA_01.py
 ```
 
-This example shows:
-- Creating an agent with concise response instructions
-- Using `SQLiteSession` for conversation persistence
-- Multiple conversation turns where context is maintained
-- Asynchronous agent execution
+Ask "What city is the Golden Gate Bridge in?", then "What state is it
+in?", then "What's the population?". The agent resolves "it" correctly
+because the session holds the full conversation history.
 
-#### Example 2: Multiple Sessions
-Shows how to manage separate conversation histories for different users using `OA_02.py`.
+### 2. Multiple sessions
+
+Two users, same database, separate histories. Each `SQLiteSession` is
+identified by a session ID; different IDs never see each other's
+messages.
 
 ```bash
-python OA_02.py
+python3 OA_02.py
 ```
 
-This example demonstrates:
-- Using custom SQLite database files
-- Maintaining separate conversation histories with different session IDs
-- How different sessions don't share context
+This is the pattern for multi-tenant applications: one SQLite file (or
+one Redis/Postgres instance), many session IDs.
 
-### Key Concepts
-- **Agent**: The AI assistant with specific instructions
-- **Runner**: Executes agent interactions asynchronously
-- **SQLiteSession**: Provides persistent conversation memory
-- **Session Management**: Separate conversations by user/session ID
+### 3. Compaction
 
-## Cleanup environment
+As conversations grow, raw history wastes tokens and can exceed the
+context window. `OpenAIResponsesCompactionSession` wraps any session
+and automatically summarizes older turns once a threshold is reached.
+
+```bash
+python3 OA_03.py
+```
+
+After six turns the session triggers compaction. The final
+`get_items()` call shows fewer items than you would expect, because
+the older turns have been replaced by a summary.
+
+### 4. Session operations
+
+Direct access to session contents: retrieve all items, limit how many
+are fed to the agent, pop the last item, and clear the session
+entirely.
+
+```bash
+python3 OA_04.py
+```
+
+`SessionSettings(limit=N)` is useful when you want to keep the full
+history on disk but only feed the last N items as context for a given
+run.
+
+## Session types at a glance
+
+The SDK ships several session backends. This lab uses SQLiteSession
+because it needs no infrastructure, but the API is identical across
+all backends:
+
+| Session type | Backend | When to use |
+|-------------|---------|-------------|
+| `SQLiteSession` | Local SQLite file | Development, single-process apps |
+| `AsyncSQLiteSession` | aiosqlite | Same, when you need non-blocking I/O |
+| `RedisSession` | Redis | Distributed systems, shared memory across workers |
+| `SQLAlchemySession` | Any SQLAlchemy DB | Production with Postgres, MySQL, etc. |
+| `DaprSession` | Dapr state store | Cloud-native with 30+ backend options |
+| `AdvancedSQLiteSession` | SQLite | Branching, usage analytics, turn-level queries |
+| `EncryptedSession` | Wraps any session | Encryption at rest for sensitive conversations |
+| `OpenAIConversationsSession` | OpenAI API | Server-managed storage at OpenAI |
+
+Switching backends is a one-line change: replace the session
+constructor and everything else stays the same.
+
+## Key concepts
+
+- **Session**: stores and retrieves conversation history for a given ID.
+- **Runner.run(..., session=)**: the SDK calls `session.get_items()`
+  before the run and `session.add_items()` after.
+- **Compaction**: summarizes old turns to keep the session small.
+- **SessionSettings(limit=N)**: caps how many items are retrieved,
+  without deleting anything from the session.
+- **Branching** (AdvancedSQLiteSession): create alternative
+  conversation paths from any turn, useful for A/B testing agent
+  behavior.
+
+## Cleanup
+
 ```bash
 deactivate
-```
-```bash
-./lab_cleanup.sh
+rm -f conversations.db   # if created by OA_02
 ```
 
 Back to [Lab Overview](https://github.com/kubiosec-agentic/agentic-labs/blob/master/README.md#-lab-overview)
