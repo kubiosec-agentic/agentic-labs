@@ -89,7 +89,7 @@ class Reviewer(Executor):
         ]
 
         response = await self._chat_client.get_response(
-            messages=messages, response_format=_Verdict,
+            messages=messages, options={"response_format": _Verdict},
         )
         verdict = _Verdict.model_validate_json(response.messages[-1].text)
 
