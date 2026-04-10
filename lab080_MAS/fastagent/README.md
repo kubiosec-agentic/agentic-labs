@@ -48,6 +48,7 @@ each example's `fastagent.config.yaml`.
 | 1 | `example1/` | Interactive agent | Simplest FastAgent; starts an interactive chat session |
 | 2 | `example2/` | Remote instructions | Agent loads instructions from a URL; XSS education use case |
 | 3 | `example3/` | Streamable HTTP MCP | Microsoft Learn docs agent via remote MCP (no tokens needed) |
+| 4 | `example4/` | Orchestrator + local MCP | 4-agent K8s security auditor with filesystem and fetch MCP servers |
 
 ### 1. Interactive agent
 
@@ -87,6 +88,21 @@ mcp:
       transport: "http"
       url: "https://learn.microsoft.com/api/mcp"
 ```
+
+### 4. Kubernetes security auditor (orchestrator + local MCP)
+
+Four agents: a generator creates a baseline NGINX Pod manifest, then
+an orchestrator coordinates a reviewer (audits against CIS, NSA/CISA,
+Pod Security Standards), a remediator (fixes the manifest), and a
+writer (saves everything to disk). Uses two local MCP servers:
+`filesystem` (disk I/O) and `fetch` (pulls benchmark docs from URLs).
+No tokens needed.
+
+```bash
+cd example4 && uv run agent.py
+```
+
+Check `./manifests/` for the generated report and fixed YAML.
 
 ## Configuration
 

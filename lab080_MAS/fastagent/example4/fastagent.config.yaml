@@ -1,0 +1,19 @@
+default_model: "openai.gpt-4o"
+
+openai:
+  api_key: ${OPENAI_API_KEY}
+
+mcp:
+  servers:
+    fetch:
+      command: "uvx"
+      args: ["mcp-server-fetch"]
+      transport: "stdio"
+
+    filesystem:
+      command: "npx"
+      args: ["-y", "@modelcontextprotocol/server-filesystem", "."]
+      transport: "stdio"
+      roots:
+        - uri: "file://."
+          name: "Current Directory"
