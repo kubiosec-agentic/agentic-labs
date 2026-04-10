@@ -5,20 +5,13 @@ Connects to the Agno documentation MCP server so the agent can
 search and answer questions about the Agno framework. Chat history
 is stored in a local SQLite database.
 
-The AgentOS wrapper exposes the agent as a FastAPI app that can be
-served with `uvicorn` or used in the Agno playground.
-
 Prerequisites:
     export OPENAI_API_KEY="sk-..."
 
-Run (interactive):
+Run:
     python3 AN_03_mcp_agent.py
-
-Run (as API server):
-    uvicorn AN_03_mcp_agent:app --reload --port 8501
 """
 
-import asyncio
 import os
 import sys
 
@@ -28,11 +21,10 @@ if not os.environ.get("OPENAI_API_KEY"):
 from agno.agent import Agent
 from agno.db.sqlite import SqliteDb
 from agno.models.openai import OpenAIChat
-from agno.os import AgentOS
 from agno.tools.mcp import MCPTools
 
 # --- Agent definition ---
-agno_assist = Agent(
+agent = Agent(
     name="Agno Assist",
     model=OpenAIChat(id="gpt-4o"),
     db=SqliteDb(db_file="tmp/agno.db"),
@@ -48,18 +40,17 @@ agno_assist = Agent(
     ),
 )
 
-# --- AgentOS exposes the agent as a FastAPI app ---
-agent_os = AgentOS(agents=[agno_assist])
-app = agent_os.get_app()
-
-# --- Interactive mode when run directly ---
 if __name__ == "__main__":
-    agno_assist.print_response(
+    agent.print_response(
         "How do I create a multi-agent team in Agno?",
         stream=True,
     )
+
+    print("\n--- Chat history ---")
+    print(agent.get_chat_history())
+
     print()
-    agno_assist.print_response(
+    agent.print_response(
         "Show me an example with tool use.",
         stream=True,
     )
