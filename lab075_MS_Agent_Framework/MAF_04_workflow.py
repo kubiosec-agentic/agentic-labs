@@ -31,14 +31,13 @@ if not os.environ.get("OPENAI_CHAT_MODEL"):
     sys.exit("Error: OPENAI_CHAT_MODEL is not set. Run: export OPENAI_CHAT_MODEL=\"gpt-4o-mini\"")
 
 from agent_framework import (
-    AgentRunResponseUpdate,
-    AgentRunUpdateEvent,
-    ChatMessage,
-    Contents,
+    AgentResponseUpdate,
+    Content,
     Executor,
-    Role,
+    Message,
     WorkflowBuilder,
     WorkflowContext,
+    WorkflowEvent,
     handler,
 )
 from agent_framework.openai import OpenAIChatClient
@@ -51,8 +50,8 @@ from pydantic import BaseModel
 @dataclass
 class ReviewRequest:
     request_id: str
-    user_messages: list[ChatMessage]
-    agent_messages: list[ChatMessage]
+    user_messages: list[Message]
+    agent_messages: list[Message]
 
 
 @dataclass
@@ -77,16 +76,16 @@ class Reviewer(Executor):
             approved: bool
 
         messages = [
-            ChatMessage(
-                role=Role.SYSTEM,
-                text=(
+            Message(
+                role="system",
+                contents=[
                     "You review AI agent responses. Approve only if the "
                     "answer is relevant, accurate, clear, and complete."
-                ),
+                ],
             ),
             *request.user_messages,
             *request.agent_messages,
-            ChatMessage(role=Role.USER, text="Please review the agent's response."),
+            Message(role="user", contents=["Please review the agent's response."]),
         ]
 
         response = await self._chat_client.get_response(
@@ -113,12 +112,12 @@ class Worker(Executor):
     def __init__(self, id: str, chat_client) -> None:
         super().__init__(id=id)
         self._chat_client = chat_client
-        self._pending: dict[str, tuple[ReviewRequest, list[ChatMessage]]] = {}
+        self._pending: dict[str, tuple[ReviewRequest, list[Message]]] = {}
 
     @handler
-    async def handle_user(self, user_messages: list[ChatMessage], ctx: WorkflowContext[ReviewRequest]) -> None:
+    async def handle_user(self, user_messages: list[Message], ctx: WorkflowContext[ReviewRequest]) -> None:
         messages = [
-            ChatMessage(role=Role.SYSTEM, text="You are a helpful assistant."),
+            Message(role="system", contents=["You are a helpful assistant."]),
             *user_messages,
         ]
         response = await self._chat_client.get_response(messages=messages)
@@ -137,20 +136,21 @@ class Worker(Executor):
         request, messages = self._pending.pop(review.request_id)
 
         if review.approved:
-            contents: list[Contents] = []
+            contents: list[Content] = []
             for msg in request.agent_messages:
                 contents.extend(msg.contents)
             await ctx.add_event(
-                AgentRunUpdateEvent(
-                    self.id,
-                    data=AgentRunResponseUpdate(contents=contents, role=Role.ASSISTANT),
+                WorkflowEvent(
+                    type="response",
+                    data=AgentResponseUpdate(contents=contents, role="assistant"),
+                    executor_id=self.id,
                 )
             )
             return
 
         print(f"  Worker: retrying with feedback")
-        messages.append(ChatMessage(role=Role.SYSTEM, text=review.feedback))
-        messages.append(ChatMessage(role=Role.SYSTEM, text="Regenerate the response."))
+        messages.append(Message(role="system", contents=[review.feedback]))
+        messages.append(Message(role="system", contents=["Regenerate the response."]))
         messages.extend(request.user_messages)
 
         response = await self._chat_client.get_response(messages=messages)
@@ -169,8 +169,8 @@ class Worker(Executor):
 async def main() -> None:
     print("=== Workflow: Worker / Reviewer reflection ===\n")
 
-    worker_client = OpenAIChatClient(model_id="gpt-4o-mini")
-    reviewer_client = OpenAIChatClient(model_id="gpt-4o-mini")
+    worker_client = OpenAIChatClient()
+    reviewer_client = OpenAIChatClient()
 
     worker = Worker(id="worker", chat_client=worker_client)
     reviewer = Reviewer(id="reviewer", chat_client=reviewer_client)
@@ -187,8 +187,8 @@ async def main() -> None:
     query = "Explain in three sentences why containers are useful for AI agent sandboxing."
     print(f"User: {query}\n")
 
-    async for event in agent.run_stream(query):
-        print(f"\nApproved response:\n{event}")
+    result = await agent.run(query)
+    print(f"\nApproved response:\n{result}")
 
     print("\n=== Done ===")
 

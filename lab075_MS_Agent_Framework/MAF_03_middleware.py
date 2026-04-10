@@ -36,12 +36,10 @@ if not os.environ.get("OPENAI_CHAT_MODEL"):
     sys.exit("Error: OPENAI_CHAT_MODEL is not set. Run: export OPENAI_CHAT_MODEL=\"gpt-4o-mini\"")
 
 from agent_framework import (
-    ChatAgent,
     ChatContext,
-    ChatMessage,
     ChatResponse,
     FunctionInvocationContext,
-    Role,
+    Message,
     chat_middleware,
     function_middleware,
 )
@@ -66,13 +64,13 @@ async def security_filter_middleware(
                 if term in lower:
                     context.result = ChatResponse(
                         messages=[
-                            ChatMessage(
-                                role=Role.ASSISTANT,
-                                text=(
+                            Message(
+                                role="assistant",
+                                contents=[
                                     "I cannot process requests containing "
                                     "sensitive information. Please rephrase "
                                     "without passwords, secrets, or tokens."
-                                ),
+                                ],
                             )
                         ]
                     )
@@ -116,11 +114,10 @@ def get_weather(
 # Agent wiring
 # ---------------------------------------------------------------------------
 async def main() -> None:
-    agent = ChatAgent(
+    agent = OpenAIChatClient().as_agent(
         name="SecureWeatherAgent",
         description="Weather agent with security middleware",
         instructions="You are a helpful weather assistant.",
-        chat_client=OpenAIChatClient(),
         tools=[get_weather],
         middleware=[security_filter_middleware, atlantis_filter_middleware],
     )
