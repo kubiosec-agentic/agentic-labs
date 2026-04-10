@@ -20,8 +20,15 @@ Run:
 """
 
 import asyncio
+import os
+import sys
 from dataclasses import dataclass
 from uuid import uuid4
+
+if not os.environ.get("OPENAI_API_KEY"):
+    sys.exit("Error: OPENAI_API_KEY is not set. Run: export OPENAI_API_KEY=\"sk-...\"")
+if not os.environ.get("OPENAI_CHAT_MODEL"):
+    sys.exit("Error: OPENAI_CHAT_MODEL is not set. Run: export OPENAI_CHAT_MODEL=\"gpt-4o-mini\"")
 
 from agent_framework import (
     AgentRunResponseUpdate,

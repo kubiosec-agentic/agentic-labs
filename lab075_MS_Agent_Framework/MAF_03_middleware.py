@@ -25,8 +25,15 @@ Run:
 """
 
 import asyncio
+import os
+import sys
 from typing import Annotated
 from collections.abc import Awaitable, Callable
+
+if not os.environ.get("OPENAI_API_KEY"):
+    sys.exit("Error: OPENAI_API_KEY is not set. Run: export OPENAI_API_KEY=\"sk-...\"")
+if not os.environ.get("OPENAI_CHAT_MODEL"):
+    sys.exit("Error: OPENAI_CHAT_MODEL is not set. Run: export OPENAI_CHAT_MODEL=\"gpt-4o-mini\"")
 
 from agent_framework import (
     ChatAgent,
