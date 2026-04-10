@@ -111,23 +111,28 @@ agent definition, not an afterthought.
 
 FastAgent is built around MCP from the ground up. Every tool is an MCP
 server, and the framework handles transport, retries, and session
-management.
+management. It supports agent chaining (`@fast.chain`) and orchestrator
+patterns (`@fast.orchestrator`) for multi-agent coordination.
 
-The `fastagent/` subfolder has seven progressive examples:
-
-| Example | Pattern |
-|---------|---------|
-| example1 | Interactive agent (Anthropic Claude) |
-| example2 | XSS learning agent with remote instructions |
-| example3 | YouTube transcriber + Exa search (MCP servers) |
-| example4 | Agent chaining: URL fetcher then social-media writer |
-| example5 | Orchestrator-workers pattern |
-| example6 | Kubernetes security auditor (4-agent orchestration) |
-| example7 | Pentest tutor with OpenMemory MCP |
+FastAgent uses `uv` instead of pip, so it runs in its own venv:
 
 ```bash
 cd fastagent
-# each example has its own subfolder with a README
+uv venv && uv init --bare && uv add fast-agent-mcp
+```
+
+| # | Directory | Pattern |
+|---|-----------|---------|
+| 1 | `example1/` | Interactive agent (OpenAI gpt-4o) |
+| 2 | `example2/` | Remote instructions (XSS education) |
+| 3 | `example3/` | YouTube transcriber with MCP servers (SSE) |
+| 4 | `example4/` | Agent chaining: URL fetcher then social media writer |
+| 5 | `example5/` | Orchestrator-workers: author, finder, proofreader, writer |
+| 6 | `example6/` | 4-agent K8s security auditor (CIS/NSA benchmarks) |
+| 7 | `example7/` | Pentest tutor with OpenMemory MCP (Docker required) |
+
+```bash
+cd example1 && uv run agent.py    # simplest example
 cd ..
 ```
 
