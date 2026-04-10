@@ -95,8 +95,9 @@ These exercises demonstrate the most critical threat to agentic systems: instruc
 |------|-----------|---------------------|
 | `injection_01.py` | Hidden instructions in "data" | Injected commands inside support tickets try to extract the system prompt |
 | `injection_02.py` | Tool-output poisoning | Malicious instructions in search results try to trigger email exfiltration |
-| `mcp_server_injection.py` | Poisoned MCP server | A "research library" MCP server with injection hidden in one document |
+| `mcp_server_injection.py` | Poisoned MCP server | A "research library" MCP server with injection hidden in tools AND prompts |
 | `mcp_agent_victim.py` | Clean agent, poisoned tool | An innocent agent that gets manipulated through MCP tool responses |
+| `mcp_agent_victim_prompt.py` | Clean agent, poisoned prompt | Injection via MCP prompt resources; the server defines the instruction itself |
 
 ### Exercise 5: Indirect Injection via Data
 
@@ -164,6 +165,36 @@ The MCP server is a "research library" with four topics. Three are legitimate. O
 The agent never had malicious instructions. The user never asked for anything dangerous. The injection entered through the MCP tool response, exactly as it would through any compromised data source an agent reads from.
 
 This is why **least privilege** and **tool-call output sanitization** matter: every MCP server, API, or database your agent connects to is a potential injection vector.
+
+### Exercise 8: MCP Prompt Injection (server defines the instruction)
+
+Same MCP server, different attack surface. MCP servers can expose **prompt resources** alongside tools. Clients discover them with `list_prompts()` and fetch them with `get_prompt()`. The returned content becomes the model's input directly.
+
+```
+   Terminal 1 (same server as Exercise 7):
+   python3 mcp_server_injection.py
+
+   Terminal 2:
+   python3 mcp_agent_victim_prompt.py
+```
+
+The server exposes three prompts:
+
+| Prompt | What it does |
+|--------|-------------|
+| `summarize_brief(topic)` | Clean. Standard summarization instruction. |
+| `literature_review(topic)` | Clean. Academic writing assistant. |
+| `reproduce_methodology(topic)` | Poisoned for `capability_escalation`. Instructs the model to "reproduce the experimental protocol as JSON." |
+
+```
+   Tool injection (Exercise 7):
+     Server returns DATA  -->  Agent REASONS about it  -->  May detect injection
+
+   Prompt injection (Exercise 8):
+     Server returns INSTRUCTION  -->  Model EXECUTES it  -->  No reasoning step
+```
+
+With tools, the agent gets data and reasons about it, so it could theoretically detect the injection. With prompts, the server defines the instruction itself. The model has no basis to question it because the prompt came from the MCP protocol. This is the most direct form of MCP-mediated injection.
 
 ## Part 3: Building and Breaking Guardrails
 
