@@ -137,14 +137,6 @@ FastAgent is the most MCP-native framework in this lab. If you liked
 lab070's MCP exercises, this is where those ideas scale to real
 multi-agent workflows.
 
-## AutoGen (legacy reference)
-
-The `autogen/` subfolder contains five examples (AG_01 through AG_05)
-covering MCP integration, group chat, MultimodalWebSurfer, MagenticOne,
-and Docker code execution. These still run but target AutoGen 0.4,
-which is in maintenance mode. For the current Microsoft agent story,
-see **lab075**.
-
 ## Additional resources
 
 - CrewAI docs: https://docs.crewai.com
