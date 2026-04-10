@@ -12,7 +12,6 @@ Prerequisites:
 from agno.agent import Agent
 from agno.models.openai import OpenAIChat
 from agno.db.sqlite import SqliteDb
-from rich.pretty import pprint
 
 agent = Agent(
     model=OpenAIChat(id="gpt-4o"),
@@ -28,21 +27,13 @@ agent = Agent(
 # --- First message ---
 agent.print_response("Share a 2 sentence horror story", stream=True)
 
-# Print the messages stored in the session
-pprint(
-    [
-        m.model_dump(include={"role", "content"})
-        for m in agent.get_messages_for_session()
-    ]
-)
+# Print the chat history stored in the session
+print("\n--- Chat history after first message ---")
+print(agent.get_chat_history())
 
 # --- Follow-up that relies on history ---
 agent.print_response("What was my first message?", stream=True)
 
-# Print updated session messages
-pprint(
-    [
-        m.model_dump(include={"role", "content"})
-        for m in agent.get_messages_for_session()
-    ]
-)
+# Print updated chat history
+print("\n--- Chat history after follow-up ---")
+print(agent.get_chat_history())
