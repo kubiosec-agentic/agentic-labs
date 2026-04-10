@@ -125,11 +125,7 @@ uv venv && uv init --bare && uv add fast-agent-mcp
 |---|-----------|---------|
 | 1 | `example1/` | Interactive agent (OpenAI gpt-4o) |
 | 2 | `example2/` | Remote instructions (XSS education) |
-| 3 | `example3/` | YouTube transcriber with MCP servers (SSE) |
-| 4 | `example4/` | Agent chaining: URL fetcher then social media writer |
-| 5 | `example5/` | Orchestrator-workers: author, finder, proofreader, writer |
-| 6 | `example6/` | 4-agent K8s security auditor (CIS/NSA benchmarks) |
-| 7 | `example7/` | Pentest tutor with OpenMemory MCP (Docker required) |
+| 3 | `example3/` | Microsoft Learn MCP (streamable HTTP, no tokens) |
 
 ```bash
 cd example1 && uv run agent.py    # simplest example

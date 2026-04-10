@@ -1,54 +1,33 @@
-# Example 3: YouTube Transcriber Agent
+# Example 3: Microsoft Learn MCP Agent
 
-This example demonstrates how to use FastAgent with external MCP servers for YouTube video transcription and web search capabilities.
+Connects to the Microsoft Learn documentation MCP server using
+streamable HTTP transport. The agent can search and query Microsoft
+documentation to answer technical questions.
 
-## Code Overview
+## What it demonstrates
 
-The agent integrates with multiple MCP servers to provide comprehensive video analysis:
+- Remote MCP server over **streamable HTTP** (not SSE, not stdio)
+- Minimal config: just `transport: "http"` and a URL
+- No API tokens needed; Microsoft Learn MCP is a public endpoint
 
-```python
-fast = FastAgent("My YouTube Transcriber Agent")
+## Run
 
-@fast.agent(servers=["youtube_transcribe", "exa_search"])
-async def main():
-    async with fast.run() as agent:
-        await agent("Find me a youtube video about the latest advancements in OpenAI and transcribe it in a detailed way.")
+```bash
+cd example3
+uv run agent.py
 ```
-
-### Key Components
-
-- **MCP Server Integration**: Uses `youtube_transcribe` and `exa_search` servers
-- **Multi-step Workflow**: Searches for videos AND transcribes them
-- **Detailed Analysis**: Requests comprehensive transcription output
-- **External Service Coordination**: Orchestrates multiple external tools
-
-### MCP Servers Used
-
-1. **youtube_transcribe**: Handles YouTube video transcription
-   - Extracts audio from videos
-   - Converts speech to text
-   - Provides detailed transcripts
-
-2. **exa_search**: Provides web search capabilities
-   - Finds relevant YouTube videos
-   - Searches based on content topics
-   - Helps locate specific content
 
 ## Configuration
 
-The agent relies on configuration files for MCP server setup:
+The `fastagent.config.yaml` defines one MCP server:
 
-- **`fastagent.config.yaml`**: Main configuration with server endpoints and settings
-- **`fastagent.secrets.yaml`**: API keys and authentication tokens for external services
+```yaml
+mcp:
+  servers:
+    mslearn:
+      transport: "http"
+      url: "https://learn.microsoft.com/api/mcp"
+```
 
-### Server Configuration
-The MCP servers are configured as remote SSE (Server-Sent Events) endpoints that provide real-time access to transcription and search services.
-
-## What It Does
-
-1. **Search Phase**: Uses exa_search to find relevant YouTube videos about OpenAI advancements
-2. **Transcription Phase**: Uses youtube_transcribe to extract and transcribe video content
-3. **Analysis Phase**: Provides detailed summary and insights from the transcribed content
-4. **Integrated Workflow**: Seamlessly combines search and transcription for comprehensive results
-
-This example shows how FastAgent can coordinate multiple external services to create powerful, multi-step workflows for content analysis and research.
+This is the simplest possible remote MCP setup: a single URL with no
+authentication headers.
