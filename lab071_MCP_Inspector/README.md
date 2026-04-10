@@ -29,28 +29,12 @@ All commands in this lab run **on the AWS box** over SSH. The MCP
 Inspector serves a web UI that you open **in the browser on your
 laptop**, reached through SSH port forwarding.
 
-Inspector uses two ports: **6274** (proxy) and **5173** (UI). Neither
-is in the default SSH command from the main README, so you need to add
-them. Open a dedicated terminal with the extra forwards:
-
-```bash
-ssh -i agentics-key.pem \
-    -L 6274:localhost:6274 \
-    -L 5173:localhost:5173 \
-    -L 8000:localhost:8000 \
-    -L 8001:localhost:8001 \
-    ubuntu@<YOUR_AWS_IP>
-```
-
-Ports 6274 and 5173 are for Inspector, 8000 is for the lab070 MCP
-server, and 8001 is for the rogue server used in section 5. Once
-this tunnel is up, `http://localhost:6274` in your laptop browser
-reaches Inspector running on the AWS box.
-
-> If you already have a Terminal\_1 session with the standard port
-> forwards from the main README, you can keep it. Just add this second
-> SSH session for the Inspector-specific ports. SSH is happy to forward
-> the same port from multiple sessions as long as only one is active.
+Inspector uses two ports: **6274** (proxy) and **5173** (UI). Both are
+included in the main README's SSH command (see the
+[port table](../README.md#-getting-access-to-the-lab-via-ssh)). If you
+connected with that command, the tunnels are already in place and
+`http://localhost:6274` in your laptop browser reaches Inspector on the
+AWS box.
 
 ## Prerequisites
 

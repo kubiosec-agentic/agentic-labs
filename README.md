@@ -22,13 +22,30 @@ Welcome to the lab and let's **#HACKTOLEARN** 🚀
 Each lab student has access to a virtual machine, accessible over SSH. Use the credentials provided to you and use the following pattern to connect:
 ### Terminal_1
 ```bash
-ssh -i agentics-key.pem -L 8080:localhost:8080 \
-               -L 8081:localhost:8081 \
-               -L 8000:localhost:8000 \
-               -L 5000:localhost:5000 \
-               -L 8501:localhost:8501 \
-                ubuntu@x.x.x.x.x
+ssh -i agentics-key.pem \
+    -L 5000:localhost:5000 \
+    -L 5173:localhost:5173 \
+    -L 6274:localhost:6274 \
+    -L 8000:localhost:8000 \
+    -L 8001:localhost:8001 \
+    -L 8080:localhost:8080 \
+    -L 8081:localhost:8081 \
+    -L 8089:localhost:8089 \
+    -L 8501:localhost:8501 \
+    ubuntu@x.x.x.x.x
 ```
+
+| Port | Used by |
+|------|---------|
+| 5000 | Flask / API server |
+| 5173 | MCP Inspector UI (lab071) |
+| 6274 | MCP Inspector proxy (lab071) |
+| 8000 | MCP streamable HTTP server (lab070) |
+| 8001 | Rogue MCP server for shadowing exercises (lab070/lab071) |
+| 8080 | mitmproxy reverse-proxy for OpenAI API (lab070 section 7) |
+| 8081 | mitmweb UI (lab070 section 7) |
+| 8089 | mitmproxy reverse-proxy for MCP server (lab070 section 7) |
+| 8501 | Streamlit |
 ```
 git clone https://github.com/kubiosec-agentic/agentic-labs.git
 ```
@@ -72,7 +89,8 @@ Each lab is structured to gradually build your understanding and capabilities, f
 | [lab064_Langgraph](./lab064_Langgraph) | LangGraph stateful workflows + agent CTF | python, LangGraph, StateGraph, CTF, prompt injection |
 | [lab070_MCP](./lab070_MCP) | Model Context Protocol (MCP) core: transports, sampling, memory graph, security | python, fastmcp, MCP, streamable HTTP, SSE, stdio, sampling |
 | [lab071_MCP_Inspector](./lab071_MCP_Inspector) | MCP Inspector and wire-level debugging | MCP Inspector, mcp-debugging, mitmproxy, Wireshark |
-| [lab080_MAS](./lab080_MAS) | Multi-agent frameworks | python, AutoGen, CrewAI, Agno, FastAgent, PydanticAI |
+| [lab075_MS_Agent_Framework](./lab075_MS_Agent_Framework) | Microsoft Agent Framework (GA 1.0) | python, agent-framework, OpenAI, Azure OpenAI, middleware, workflows |
+| [lab080_MAS](./lab080_MAS) | Multi-agent frameworks | python, CrewAI, Agno, PydanticAI, FastAgent |
 | [lab085_OpenAI_Memory](./lab085_OpenAI_Memory) | OpenAI Agents with memory | python, OpenAI Agents SDK, SQLiteSession |
 | [lab087_Mem0](./lab087_Mem0) | Mem0 intelligent memory layer | python, Mem0, Qdrant, Docker, OpenAI |
 | [lab090_Enterprise](./lab090_Enterprise) | Enterprise-ready agent systems | python, OAuth 2.0, tracing, RAG metadata, Chroma |

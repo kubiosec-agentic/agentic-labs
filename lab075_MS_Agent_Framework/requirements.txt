@@ -1,0 +1,4 @@
+agent-framework[openai]
+agent-framework[azure]
+azure-identity
+pydantic
