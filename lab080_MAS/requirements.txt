@@ -1,4 +1,6 @@
 agno
 duckduckgo-search
+sqlalchemy
+aiosqlite
 crewai
 crewai_tools
