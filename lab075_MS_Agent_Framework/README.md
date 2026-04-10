@@ -17,10 +17,12 @@ This lab walks through the framework from simplest to most advanced:
 | 2 | `MAF_02_azure_agent.py` | Same agent, Azure backend (side-by-side diff) |
 | 3 | `MAF_03_middleware.py` | Chat middleware + function middleware (security guardrails) |
 | 4 | `MAF_04_workflow.py` | Worker/Reviewer workflow with reflection pattern |
+| 5 | `MAF_05_mcp_agent.py` | Hosted MCP tool (Microsoft Learn docs) |
+| 6 | `MAF_06_code_interpreter.py` | Hosted code interpreter (server-side Python execution) |
 
-Exercises 1, 3, and 4 run against the OpenAI API and need only an
-`OPENAI_API_KEY`. Exercise 2 shows the Azure equivalent so you can see
-exactly what changes when migrating from OpenAI to Azure.
+Exercises 1, 3, 4, 5, and 6 run against the OpenAI API and need only
+`OPENAI_API_KEY` + `OPENAI_CHAT_MODEL`. Exercise 2 shows the Azure
+equivalent so you can see exactly what changes when migrating.
 
 ## OpenAI vs Azure: what changes
 
@@ -145,6 +147,37 @@ python3 MAF_04_workflow.py
 This demonstrates `WorkflowBuilder`, `Executor`, `@handler`, and
 `AgentRunUpdateEvent`. It is the framework's equivalent of
 "agent-to-agent handoffs" in the OpenAI Agents SDK.
+
+### 5. Hosted MCP tool (OpenAI)
+
+Connects the agent to Microsoft Learn's public MCP server using the
+framework's hosted MCP support. The MCP connection is managed
+server-side by OpenAI's Responses API; no local MCP process is needed.
+
+```bash
+python3 MAF_05_mcp_agent.py
+```
+
+The key API: `client.get_mcp_tool(name=..., url=..., approval_mode=...)`.
+The agent automatically discovers the tools exposed by the MCP server
+and uses them to answer documentation questions.
+
+> Note: exercises 5 and 6 use `OpenAIChatClient` (Responses API).
+> Hosted tools like code interpreter, MCP, file search, and web search
+> are only available through the Responses API, not Chat Completions.
+
+### 6. Hosted code interpreter (OpenAI)
+
+Gives the agent access to OpenAI's sandboxed Python runtime. The agent
+can write and execute code server-side to solve computation problems
+and analyze data.
+
+```bash
+python3 MAF_06_code_interpreter.py
+```
+
+The key API: `client.get_code_interpreter_tool()`. The sandbox comes
+with common Python libraries (numpy, pandas, matplotlib, etc.).
 
 ## Reference files
 
