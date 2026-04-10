@@ -1,52 +1,52 @@
-import os, pprint
+"""
+Exercise 1: Basic memory operations with Qdrant.
+
+Adds a short conversation about movie preferences for user "alice",
+then retrieves all stored memories.  Run mem_02.py next to see how
+retrieval works in a separate script.
+
+Prerequisites:
+    export OPENAI_API_KEY="sk-..."
+    docker run -d --name qdrant -p 6333:6333 -p 6334:6334 \
+        -v $PWD/qdrant_storage:/qdrant/storage qdrant/qdrant:latest
+
+Run:
+    python3 mem_01.py
+"""
+
 from mem0 import Memory
-
-
-# config = {
-#     "vector_store": {
-#         "provider": "qdrant",
-#         "config": {
-#             "collection_name": "mem0",                # pick a stable name
-#             "path": "/Users/xxradar/.mem0/qdrant",    # your desired folder
-#             "on_disk": True                           # persist between runs
-#         }
-#     },
-#     "llm": {"provider": "openai_structured",
-#             "config": {"model": "gpt-4o-2024-08-06", "temperature": 0.0}}
-# }
 
 config = {
     "vector_store": {
         "provider": "qdrant",
         "config": {
-            # either host/port:
             "host": "localhost",
             "port": 6333,
             "collection_name": "mem0",
-            # if you set an API key in Docker env:
-            # "api_key": "super-secret",
-        }
+        },
     },
     "llm": {
         "provider": "openai_structured",
-        "config": {"model": "gpt-4o-2024-08-06", "temperature": 0.0}
-    }
+        "config": {"model": "gpt-4o-2024-08-06", "temperature": 0.0},
+    },
 }
 
 m = Memory.from_config(config)
 
+# A sample conversation that Mem0 will distill into memories
 messages = [
     {"role": "user", "content": "I'm planning to watch a movie tonight. Any recommendations?"},
-    {"role": "assistant", "content": "How about a thriller movies? They can be quite engaging."},
-    {"role": "user", "content": "I’m not a big fan of thriller movies but I love sci-fi movies."},
-    {"role": "assistant", "content": "Got it! I'll avoid thriller recommendations and suggest sci-fi movies in the future."}
+    {"role": "assistant", "content": "How about a thriller? They can be quite engaging."},
+    {"role": "user", "content": "I'm not a big fan of thrillers but I love sci-fi movies."},
+    {"role": "assistant", "content": "Got it! I'll suggest sci-fi movies in the future."},
 ]
+
+print("Adding conversation to memory for user 'alice'...")
 m.add(messages, user_id="alice", metadata={"category": "movies"})
 
-
-print("HOME:", os.path.expanduser("~"))
-pprint.pprint(m.__dict__.get("config", {}))  # shows vector_store, history path if present
-
-
+# Retrieve what Mem0 extracted
 all_memories = m.get_all(user_id="alice")
-print(all_memories)
+print("\nMemories for alice:")
+print("-" * 50)
+for memory in all_memories.get("results", []):
+    print(f"  - {memory['memory']}")

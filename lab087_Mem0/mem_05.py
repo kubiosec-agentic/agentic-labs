@@ -1,27 +1,25 @@
-from __future__ import annotations
-import os
-import asyncio
-import warnings
-from dataclasses import dataclass
+"""
+Exercise 5: Collaborative memory across multiple agents/actors.
 
-# Suppress deprecation warning from agents library
-warnings.filterwarnings("ignore", category=DeprecationWarning, message="There is no current event loop")
+Multiple participants (Alice, Bob, and an AI assistant) share a single
+memory scope identified by a run_id.  Each participant can add
+messages and search the shared context.  The assistant can brainstorm
+using the combined knowledge of all participants.
 
+This pattern is useful for multi-agent collaboration, meeting
+summarization, or shared project context.
+
+Run:
+    python3 mem_05.py
+"""
+
+from openai import OpenAI
 from mem0 import Memory
-from agents import (
-    Agent,
-    Runner,
-    function_tool,
-    RunContextWrapper,
-    ItemHelpers,
-    MessageOutputItem,
-    ToolCallItem,
-    ToolCallOutputItem,
-)
+from collections import defaultdict
+from datetime import datetime
 
-@dataclass
-class Mem0Context:
-    user_id: str = "demo-user"
+# Shared project context: all participants use the same run_id
+RUN_ID = "project-demo"
 
 config = {
     "vector_store": {
@@ -29,70 +27,84 @@ config = {
         "config": {
             "host": "localhost",
             "port": 6333,
-            "collection_name": "mem0",
-        }
+            "collection_name": "mem0_collab",
+        },
     },
     "llm": {
         "provider": "openai_structured",
-        "config": {"model": "gpt-4o-2024-08-06", "temperature": 0.0}
-    }
+        "config": {"model": "gpt-4o-2024-08-06", "temperature": 0.0},
+    },
 }
 
-MEM0 = Memory.from_config(config)
+mem = Memory.from_config(config)
 
-# --- Tools the agent can call
-@function_tool
-def add_to_memory(ctx: RunContextWrapper[Mem0Context], content: str) -> str:
-    """Store a fact in Mem0."""
-    uid = ctx.context.user_id
-    messages = [{"role": "user", "content": content}]
-    resp = MEM0.add(messages, user_id=uid)
-    return f"Saved {len(resp) if isinstance(resp, list) else 1} item(s)."
 
-@function_tool
-def search_memory(ctx: RunContextWrapper[Mem0Context], query: str) -> str:
-    """Search facts in Mem0 relevant to the query."""
-    uid = ctx.context.user_id
-    res = MEM0.search(query, user_id=uid)
-    items = res if isinstance(res, list) else res.get("results", [])
-    memories = [it.get("memory", str(it)) for it in items]
-    return "\n".join(memories) if memories else "(no matches)"
+class CollaborativeAgent:
+    def __init__(self, run_id: str):
+        self.run_id = run_id
+        self.mem = mem
 
-@function_tool
-def get_all_memory(ctx: RunContextWrapper[Mem0Context]) -> str:
-    """Return all stored facts for this user."""
-    uid = ctx.context.user_id
-    res = MEM0.get_all(user_id=uid)
-    items = res if isinstance(res, list) else res.get("results", [])
-    memories = [it.get("memory", str(it)) for it in items]
-    return "\n".join(memories) if memories else "(empty)"
+    def add_message(self, role: str, name: str, content: str):
+        """Store a message from any participant."""
+        msg = {"role": role, "name": name, "content": content}
+        self.mem.add([msg], run_id=self.run_id, infer=False)
 
-# --- The agent
-memory_agent = Agent[Mem0Context](
-    name="Memory Assistant",
-    instructions = (
-        "You have access to three memory tools:\n"
-        "- **add_to_memory**: Use when the user says 'remember' or shares a personal/profile fact.\n"
-        "- **search_memory**: Use when the user asks about something they told you before.\n"
-        "- **get_all_memory**: Use when the user asks what you know about them.\n\n"
-        "Always call the appropriate tool first, then provide a concise natural-language response to the user.\n"
-        "Create a concise profile of the user based on what they tell you.\n"
-        "Always update the profile when they tell you something new.\n"
-    ),
+    def brainstorm(self, prompt: str) -> str:
+        """Use shared context to generate a response."""
+        memories = self.mem.search(prompt, run_id=self.run_id, limit=5)
+        items = memories if isinstance(memories, list) else memories.get("results", [])
+        context = "\n".join(
+            f"- {m['memory']} (by {m.get('actor_id', 'Unknown')})" for m in items
+        )
 
-    tools=[add_to_memory, search_memory, get_all_memory],
-)
+        client = OpenAI()
+        reply = (
+            client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[
+                    {"role": "system", "content": "You are a helpful project assistant."},
+                    {"role": "user", "content": f"Prompt: {prompt}\nContext:\n{context}"},
+                ],
+            )
+            .choices[0]
+            .message.content.strip()
+        )
+        self.add_message("assistant", "assistant", reply)
+        return reply
+
+    def get_all_messages(self):
+        res = self.mem.get_all(run_id=self.run_id)
+        return res if isinstance(res, list) else res.get("results", [])
+
+    def print_grouped_by_actor(self):
+        messages = self.get_all_messages()
+        grouped = defaultdict(list)
+        for m in messages:
+            grouped[m.get("actor_id") or "Unknown"].append(m)
+        print("\n--- Messages grouped by actor ---")
+        for actor, mems in grouped.items():
+            print(f"\n=== {actor} ===")
+            for m in mems:
+                print(f"  {m['memory']}")
+
+
+def main():
+    agent = CollaborativeAgent(RUN_ID)
+
+    # Simulate a multi-participant conversation
+    print("Adding messages from Alice and Bob...\n")
+    agent.add_message("user", "alice", "We should use FastAPI for the backend.")
+    agent.add_message("user", "bob", "I think we also need a Redis cache for sessions.")
+    agent.add_message("user", "alice", "Good idea. Let's also add rate limiting.")
+
+    # The assistant brainstorms using shared context
+    print("Assistant brainstorming...\n")
+    reply = agent.brainstorm("Summarize the project decisions so far and suggest next steps.")
+    print(f"Assistant: {reply}\n")
+
+    # Show all messages grouped by participant
+    agent.print_grouped_by_actor()
+
 
 if __name__ == "__main__":
-    async def main():
-        # Simple usage
-        ctx = Mem0Context(user_id="demo-user")
-        
-        # Run the agent with your prompt
-        result = await Runner.run(memory_agent, "search my name and write a song about it", context=ctx)
-        print(result.final_output)
-    
-    # Generated by Copilot
-    asyncio.run(main())
-
-
+    main()

@@ -1,14 +1,23 @@
+"""
+Exercise S2: OpenAI agent with Mem0 SaaS backend.
+
+Same agent pattern as exercise 3 (self-hosted), but backed by
+MemoryClient instead of a local Qdrant.  The v2 API is used
+throughout to avoid deprecation warnings.
+
+Run:
+    export MEM0_API_KEY="your_key"
+    python3 mem0_managed/mem_02_saas.py
+"""
+
 from __future__ import annotations
-import os
 import asyncio
 import warnings
 from dataclasses import dataclass
 
-# Note: Fixed the deprecation warning by explicitly setting output_format="v1.1"
-# All methods now use proper v2 API with correct parameters
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
-from mem0 import Memory, MemoryClient
+from mem0 import MemoryClient
 from agents import (
     Agent,
     Runner,
@@ -20,7 +29,7 @@ from agents import (
     ToolCallOutputItem,
 )
 
-# --- Simple context that carries a user_id for scoping memories
+
 @dataclass
 class Mem0Context:
     user_id: str = "demo-user"
@@ -29,66 +38,69 @@ class Mem0Context:
 MEM0 = MemoryClient()
 
 
-# --- Tools the agent can call
 @function_tool
 def add_to_memory(ctx: RunContextWrapper[Mem0Context], content: str) -> str:
-    """Store a fact in Mem0."""
+    """Store a fact in Mem0 (SaaS)."""
     uid = ctx.context.user_id
-    messages = [{"role": "user", "content": content}]
-    # Set output_format="v1.1" to avoid deprecation warning
-    resp = MEM0.add(messages, user_id=uid, version="v2", output_format="v1.1")
+    resp = MEM0.add(
+        [{"role": "user", "content": content}],
+        user_id=uid,
+        version="v2",
+        output_format="v1.1",
+    )
     return f"Saved {len(resp) if isinstance(resp, list) else 1} item(s)."
+
 
 @function_tool
 def search_memory(ctx: RunContextWrapper[Mem0Context], query: str) -> str:
-    """Search facts in Mem0 relevant to the query using v2 API."""
+    """Search facts in Mem0 (SaaS) relevant to the query."""
     uid = ctx.context.user_id
-    # v2 API requires filters
     res = MEM0.search(query, version="v2", filters={"user_id": uid})
     items = res if isinstance(res, list) else res.get("results", [])
     memories = [it.get("memory", str(it)) for it in items]
     return "\n".join(memories) if memories else "(no matches)"
 
+
 @function_tool
 def get_all_memory(ctx: RunContextWrapper[Mem0Context]) -> str:
-    """Return all stored facts for this user using v2 API."""
+    """Return all stored facts for this user (SaaS)."""
     uid = ctx.context.user_id
-    # v2 API requires filters
     res = MEM0.get_all(version="v2", filters={"user_id": uid})
     items = res if isinstance(res, list) else res.get("results", [])
     memories = [it.get("memory", str(it)) for it in items]
     return "\n".join(memories) if memories else "(empty)"
 
-# --- The agent
+
 memory_agent = Agent[Mem0Context](
     name="Memory Assistant",
     instructions=(
-        "You can store facts with add_to_memory, search them with search_memory, "
-        "and list everything with get_all_memory. When the user says 'remember' or shares a profile fact, "
-        "call add_to_memory with that fact. When they ask about past facts, call search_memory. "
-        "If they ask what you know, call get_all_memory. After tools, answer concisely."
+        "You have access to three memory tools:\n"
+        "- add_to_memory: store a fact the user shares.\n"
+        "- search_memory: find relevant facts.\n"
+        "- get_all_memory: list everything stored for this user.\n\n"
+        "Always call the appropriate tool first, then give a concise answer."
     ),
     tools=[add_to_memory, search_memory, get_all_memory],
 )
 
+
+async def main():
+    ctx = Mem0Context(user_id="demo-user")
+    result = await Runner.run(
+        memory_agent, "My name is Philippe. Store it.", context=ctx
+    )
+
+    for item in result.new_items:
+        if isinstance(item, MessageOutputItem):
+            print("Assistant:", ItemHelpers.text_message_output(item))
+        elif isinstance(item, ToolCallItem):
+            print(
+                "Tool called:",
+                item.raw_item.name if hasattr(item.raw_item, "name") else "unknown",
+            )
+        elif isinstance(item, ToolCallOutputItem):
+            print("Tool result:", item.output)
+
+
 if __name__ == "__main__":
-    async def main():
-        # Simple usage
-        ctx = Mem0Context(user_id="demo-user")
-        
-        # Run the agent with your prompt
-        result = await Runner.run(memory_agent, "My name is Philippe. Store it", context=ctx)
-        
-        # Print what happened
-        for item in result.new_items:
-            if isinstance(item, MessageOutputItem):
-                print("Assistant:", ItemHelpers.text_message_output(item))
-            elif isinstance(item, ToolCallItem):
-                print("Tool called:", item.raw_item.name if hasattr(item.raw_item, 'name') else 'unknown')
-            elif isinstance(item, ToolCallOutputItem):
-                print("Tool result:", item.output)
-    
-    # Generated by Copilot
     asyncio.run(main())
-
-

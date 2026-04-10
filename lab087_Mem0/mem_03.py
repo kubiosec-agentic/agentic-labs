@@ -1,11 +1,20 @@
-from __future__ import annotations
-import os
-import asyncio
-import warnings
-from dataclasses import dataclass
+"""
+Exercise 3: OpenAI agent with Mem0 memory tools.
 
-# Suppress deprecation warning from agents library
-warnings.filterwarnings("ignore", category=DeprecationWarning, message="There is no current event loop")
+Combines the OpenAI Agents SDK with Mem0 by exposing three function
+tools: add_to_memory, search_memory, and get_all_memory.  The agent
+decides when to store or retrieve facts based on the user's message.
+
+This is a single-shot example.  Exercise 4 turns it into an
+interactive chat loop.
+
+Run:
+    python3 mem_03.py
+"""
+
+from __future__ import annotations
+import asyncio
+from dataclasses import dataclass
 
 from mem0 import Memory
 from agents import (
@@ -19,12 +28,13 @@ from agents import (
     ToolCallOutputItem,
 )
 
-# --- Simple context that carries a user_id for scoping memories
+# --- Context: carries the user_id so tools know whose memories to use ---
 @dataclass
 class Mem0Context:
     user_id: str = "alice"
 
-# --- Mem0 client (self-hosted config with Qdrant)
+
+# --- Mem0 client (Qdrant backend) ---
 config = {
     "vector_store": {
         "provider": "qdrant",
@@ -32,24 +42,25 @@ config = {
             "host": "localhost",
             "port": 6333,
             "collection_name": "mem0",
-        }
+        },
     },
     "llm": {
         "provider": "openai_structured",
-        "config": {"model": "gpt-4o-2024-08-06", "temperature": 0.0}
-    }
+        "config": {"model": "gpt-4o-2024-08-06", "temperature": 0.0},
+    },
 }
 
 MEM0 = Memory.from_config(config)
 
-# --- Tools the agent can call
+
+# --- Memory tools ---
 @function_tool
 def add_to_memory(ctx: RunContextWrapper[Mem0Context], content: str) -> str:
     """Store a fact in Mem0."""
     uid = ctx.context.user_id
-    messages = [{"role": "user", "content": content}]
-    resp = MEM0.add(messages, user_id=uid)
+    resp = MEM0.add([{"role": "user", "content": content}], user_id=uid)
     return f"Saved {len(resp) if isinstance(resp, list) else 1} item(s)."
+
 
 @function_tool
 def search_memory(ctx: RunContextWrapper[Mem0Context], query: str) -> str:
@@ -60,6 +71,7 @@ def search_memory(ctx: RunContextWrapper[Mem0Context], query: str) -> str:
     memories = [it.get("memory", str(it)) for it in items]
     return "\n".join(memories) if memories else "(no matches)"
 
+
 @function_tool
 def get_all_memory(ctx: RunContextWrapper[Mem0Context]) -> str:
     """Return all stored facts for this user."""
@@ -69,40 +81,39 @@ def get_all_memory(ctx: RunContextWrapper[Mem0Context]) -> str:
     memories = [it.get("memory", str(it)) for it in items]
     return "\n".join(memories) if memories else "(empty)"
 
-# --- The agent
+
+# --- Agent definition ---
 memory_agent = Agent[Mem0Context](
     name="Memory Assistant",
-    instructions = (
+    instructions=(
         "You have access to three memory tools:\n"
-        "- **add_to_memory**: Use when the user says 'remember' or shares a personal/profile fact.\n"
-        "- **search_memory**: Use when the user asks about something they told you before.\n"
-        "- **get_all_memory**: Use when the user asks what you know about them.\n\n"
-        "Always call the appropriate tool first, then provide a concise natural-language response to the user.\n"
-        "Create a concise profile of the user based on what they tell you.\n"
-        "Always update the profile when they tell you something new.\n"
+        "- add_to_memory: store a fact the user shares.\n"
+        "- search_memory: find relevant facts.\n"
+        "- get_all_memory: list everything stored for this user.\n\n"
+        "Always call the appropriate tool first, then give a concise answer."
     ),
-
     tools=[add_to_memory, search_memory, get_all_memory],
 )
 
+
+async def main():
+    ctx = Mem0Context(user_id="alice")
+
+    # The agent should search memory and suggest a movie
+    result = await Runner.run(
+        memory_agent,
+        "Suggest a movie based on what you know about me.",
+        context=ctx,
+    )
+
+    for item in result.new_items:
+        if isinstance(item, MessageOutputItem):
+            print("Assistant:", ItemHelpers.text_message_output(item))
+        elif isinstance(item, ToolCallItem):
+            print("Tool called:", item.raw_item.name if hasattr(item.raw_item, "name") else "unknown")
+        elif isinstance(item, ToolCallOutputItem):
+            print("Tool result:", item.output)
+
+
 if __name__ == "__main__":
-    async def main():
-        # Simple usage
-        ctx = Mem0Context(user_id="alice")
-        
-        # Run the agent with your prompt
-        result = await Runner.run(memory_agent, "Suggest a hacker movie based on my profile you.", context=ctx)
-
-        # Print what happened
-        for item in result.new_items:
-            if isinstance(item, MessageOutputItem):
-                print("Assistant:", ItemHelpers.text_message_output(item))
-            elif isinstance(item, ToolCallItem):
-                print("Tool called:", item.raw_item.name if hasattr(item.raw_item, 'name') else 'unknown')
-            elif isinstance(item, ToolCallOutputItem):
-                print("Tool result:", item.output)
-    
-    # Generated by Copilot
     asyncio.run(main())
-
-

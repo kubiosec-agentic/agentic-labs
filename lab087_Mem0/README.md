@@ -1,125 +1,250 @@
 ![OpenAI](https://img.shields.io/badge/OpenAI-lightblue) ![Python](https://img.shields.io/badge/Python-blue) ![Docker](https://img.shields.io/badge/Docker-blue) ![Mem0](https://img.shields.io/badge/Mem0-pink)
 
-# LAB087: Mem0 - Intelligent Memory Layer
+# LAB087: Mem0, Intelligent Memory Layer for AI Agents
 
 ## Introduction
 
-This lab demonstrates how to use Mem0, an intelligent memory layer that enables AI agents to remember, learn, and improve over time. You'll explore both self-hosted and managed SaaS configurations.
+LLMs are stateless. Every API call starts fresh, with no memory of
+previous interactions. If you want an agent to remember that a user
+prefers sci-fi over thrillers, or that Bob is allergic to peanuts, you
+have to build that memory layer yourself.
+
+Mem0 solves this by sitting between your agent and a vector database.
+When you call `m.add(messages, user_id="alice")`, Mem0 distills the
+conversation into discrete facts ("Alice likes sci-fi movies") and
+stores them as embeddings. When you later call `m.search("movie
+recommendations", user_id="alice")`, it returns the relevant facts via
+semantic search.
+
+This lab has two tracks. The **self-hosted** track uses a local Qdrant
+container as the vector store. The **SaaS** track uses Mem0's managed
+API, which handles storage, indexing, and retrieval for you.
+
+## Why does this matter?
+
+In production agentic systems, long-term memory is what turns a
+stateless chatbot into a personalized assistant:
+
+- **Personalization**: the agent remembers user preferences across
+  sessions without you having to replay the full conversation each
+  time.
+- **Token efficiency**: instead of stuffing the entire history into the
+  prompt, the agent retrieves only the facts relevant to the current
+  query.
+- **Multi-user isolation**: each user_id gets its own memory scope.
+  Alice's preferences never leak into Bob's session.
+- **Collaboration**: a shared run_id lets multiple agents (or humans)
+  contribute to and query a common knowledge base.
 
 ## Set up your environment
 
-### Prerequisites
-
-Install Docker and Python 3.8+
-
-### Setup Commands
-
 ```bash
-export OPENAI_API_KEY="your_openai_api_key_here"
+export OPENAI_API_KEY="sk-..."
 ```
 
 ```bash
 ./lab_setup.sh
-```
-
-```bash
 source .lab087/bin/activate
 ```
 
-## Lab instructions
+## Part 1: Self-hosted with Qdrant
 
-### Self-hosted Setup with Qdrant Vector Store
+These exercises use a local Qdrant container as the vector store.
+Start it before running anything:
 
 ```bash
 docker run -d --name qdrant \
-   -p 6333:6333 -p 6334:6334 \
-   -v $PWD/qdrant_storage:/qdrant/storage \
-   qdrant/qdrant:latest
+    -p 6333:6333 -p 6334:6334 \
+    -v $PWD/qdrant_storage:/qdrant/storage \
+    qdrant/qdrant:latest
 ```
 
-### Managed SaaS Setup
+| Exercise | File | What it covers |
+|----------|------|----------------|
+| 1 | `mem_01.py` | Add a conversation to memory, retrieve extracted facts |
+| 2 | `mem_02.py` | Retrieve and semantically search stored memories |
+| 3 | `mem_03.py` | OpenAI agent with memory tools (add/search/get_all) |
+| 4 | `mem_04.py` | Interactive chat: agent stores and recalls facts across turns |
+| 5 | `mem_05.py` | Collaborative memory: multiple participants share one context |
+
+### Exercise 1: Basic memory operations
+
+The simplest case. A short conversation about movie preferences is
+passed to `m.add()`. Mem0 distills it into discrete facts and stores
+them in Qdrant. The script then retrieves all memories for that user.
 
 ```bash
-export MEM0_API_KEY="your_mem0_api_key_here"
+python3 mem_01.py
 ```
 
-### Self-hosted Examples (with Qdrant)
+### Exercise 2: Retrieval and semantic search
 
-#### Example 1: Basic Memory Operations (`mem_01.py`)
-Demonstrates adding conversation memories to Qdrant:
-```bash
-python mem_01.py
-```
-
-#### Example 2: Retrieving Memories (`mem_02.py`)
-Shows how to retrieve stored memories for a user:
-```bash
-python mem_02.py
-```
-
-#### Examples 3-5: Agent Integration (`mem_03.py`, `mem_04.py`, `mem_05.py`)
-Demonstrates integrating Mem0 with OpenAI agents:
-```bash
-python mem_03.py
-python mem_04.py
-python mem_05.py
-```
-
-#### Example 6: Collaborative Memory (`mem_06.py`)
-Shows collaborative memory sharing across multiple agents:
-```bash
-python mem_06.py
-```
-
-### Managed SaaS Examples (`mem0_managed/`)
-
-#### Example 1: Basic SaaS Usage (`mem_01_saas.py`)
-Basic memory operations using Mem0's managed service:
-```bash
-python mem0_managed/mem_01_saas.py
-```
-
-#### Example 2: Advanced SaaS Features (`mem_02_saas.py`)
-
-Advanced features with the managed service:
+Connects to the same Qdrant and retrieves the memories that exercise 1
+stored. Also demonstrates semantic search: even if you never used the
+word "genre", Mem0 finds the relevant memory because the embeddings
+capture meaning, not just keywords.
 
 ```bash
-python mem0_managed/mem_02_saas.py
+python3 mem_02.py
 ```
 
-#### Example 3: Search Functionality (`mem_03_agent.py`)
+### Exercise 3: Agent with memory tools
 
-Memory search capabilities:
+Combines the OpenAI Agents SDK with Mem0. Three `function_tool`
+functions (add_to_memory, search_memory, get_all_memory) are exposed to
+the agent. The agent decides when to call each tool based on the user's
+message. This is a single-shot example: one prompt, one response.
 
 ```bash
-python mem0_managed/mem_03_agent.py
+python3 mem_03.py
 ```
 
-### Key Concepts
-- **Memory Storage**: Persistent memory using vector databases (Qdrant) or managed service
-- **User Scoping**: Separate memories per user/session
-- **Agent Integration**: Seamless integration with OpenAI agents
-- **Search & Retrieval**: Semantic search through stored memories
-- **Collaborative Memory**: Shared memory across multiple agents
-- **SaaS vs Self-hosted**: Choose between managed service or local deployment
+### Exercise 4: Interactive chat with persistent memory
 
-### Features Demonstrated
-- Basic memory add/retrieve operations
-- User-scoped memory management
-- Agent tools for memory operations
-- Collaborative memory sharing
-- Semantic memory search
-- Vector store configuration (Qdrant)
-- Managed SaaS integration
+Same agent as exercise 3, but wrapped in an interactive loop. The
+script asks for your name and uses it as the user_id. Share some facts,
+quit, restart, and the agent still remembers everything because the
+memories live in Qdrant.
 
-## Cleanup environment
 ```bash
-docker stop qdrant
+python3 mem_04.py
 ```
+
+Try this sequence:
+
+1. Run with name "alice", tell the agent your favorite food.
+2. Quit, restart with name "alice", ask "What's my favorite food?"
+3. Restart with name "bob", ask the same question. Bob gets no answer.
+
+### Exercise 5: Collaborative memory
+
+Multiple participants (Alice, Bob, and an AI assistant) share a single
+memory scope via a common `run_id`. Each participant adds messages,
+and the assistant can brainstorm using the combined context. Useful for
+multi-agent collaboration or shared project knowledge bases.
+
+```bash
+python3 mem_05.py
+```
+
+## Part 2: Managed SaaS
+
+These exercises use Mem0's managed API. No Docker, no Qdrant. You
+need an API key from [app.mem0.ai](https://app.mem0.ai).
+
+```bash
+export MEM0_API_KEY="your_key"
+```
+
+| Exercise | File | What it covers |
+|----------|------|----------------|
+| S1 | `mem0_managed/mem_01_saas.py` | Add memories, search with filters, retrieve all |
+| S2 | `mem0_managed/mem_02_saas.py` | OpenAI agent with SaaS-backed memory tools (v2 API) |
+| S3 | `mem0_managed/mem_03_agent.py` | Multi-turn agent test: add, search, get_all in sequence |
+
+### Exercise S1: Basic SaaS operations
+
+Same concept as exercise 1, but uses `MemoryClient()` instead of a
+local `Memory.from_config()`. Demonstrates the v2 API with filters
+for category-based search and paginated retrieval.
+
+```bash
+python3 mem0_managed/mem_01_saas.py
+```
+
+### Exercise S2: SaaS agent integration
+
+Same agent pattern as exercise 3, but backed by `MemoryClient`. Uses
+the v2 API with `output_format="v1.1"` to avoid deprecation warnings.
+
+```bash
+python3 mem0_managed/mem_02_saas.py
+```
+
+### Exercise S3: Multi-turn agent test
+
+Imports the agent from S2 and runs a full sequence: store two facts,
+search for one, then retrieve all. Good for verifying end-to-end
+behavior of the SaaS integration.
+
+```bash
+python3 mem0_managed/mem_03_agent.py
+```
+
+## Self-hosted vs SaaS: what changes?
+
+The core API is identical. The only difference is how you initialize
+the memory client:
+
+| | Self-hosted | SaaS |
+|---|---|---|
+| Import | `from mem0 import Memory` | `from mem0 import MemoryClient` |
+| Init | `Memory.from_config(config)` | `MemoryClient()` |
+| Vector store | You manage Qdrant/Chroma/etc. | Mem0 manages it |
+| API key | `OPENAI_API_KEY` only | `OPENAI_API_KEY` + `MEM0_API_KEY` |
+| Search/add/get_all | Same methods | Same methods (use `version="v2"`) |
+| Infrastructure | Docker + Qdrant | None |
+
+Switching between the two is a one-line change: swap the import and
+constructor.
+
+## How Mem0 works under the hood
+
+```
+m.add(messages, user_id="alice")
+    |
+    +--> LLM extracts discrete facts from the conversation
+    |        "Alice likes sci-fi movies"
+    |        "Alice dislikes thrillers"
+    |
+    +--> Facts are embedded (OpenAI embeddings)
+    |
+    +--> Embeddings stored in vector DB (Qdrant / Mem0 cloud)
+
+m.search("movie recommendations", user_id="alice")
+    |
+    +--> Query is embedded
+    |
+    +--> Vector similarity search in user's scope
+    |
+    +--> Returns ranked facts
+```
+
+The key insight: Mem0 does not store raw messages. It distills
+conversations into facts first, then embeds and indexes those facts.
+This means searches return clean, discrete memories rather than chunks
+of conversation text.
+
+## Key concepts
+
+- **Memory.from_config()**: creates a self-hosted memory client
+  backed by a vector database you control.
+- **MemoryClient()**: creates a SaaS client that talks to Mem0's
+  managed API.
+- **user_id**: scopes memories to a single user. Memories are fully
+  isolated between user IDs.
+- **run_id**: scopes memories to a shared context (collaborative
+  memory). Multiple users/agents can read and write.
+- **Semantic search**: queries are matched by meaning, not keywords.
+  "What movies does she enjoy?" matches "Alice likes sci-fi."
+- **function_tool**: the OpenAI Agents SDK decorator that exposes a
+  Python function as a tool the agent can call.
+
+## Cleanup
+
 ```bash
 deactivate
 ```
+
 ```bash
 ./lab_cleanup.sh
 ```
+
+Stop and remove the Qdrant container:
+
+```bash
+docker stop qdrant && docker rm qdrant
+rm -rf qdrant_storage
+```
+
 Back to [Lab Overview](https://github.com/kubiosec-agentic/agentic-labs/blob/master/README.md#-lab-overview)
