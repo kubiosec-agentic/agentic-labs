@@ -176,10 +176,9 @@ async def main() -> None:
     reviewer = Reviewer(id="reviewer", chat_client=reviewer_client)
 
     agent = (
-        WorkflowBuilder()
+        WorkflowBuilder(start_executor=worker)
         .add_edge(worker, reviewer)
         .add_edge(reviewer, worker)
-        .set_start_executor(worker)
         .build()
         .as_agent()
     )

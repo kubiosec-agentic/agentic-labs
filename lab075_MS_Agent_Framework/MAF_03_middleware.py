@@ -28,7 +28,6 @@ import asyncio
 import os
 import sys
 from typing import Annotated
-from collections.abc import Awaitable, Callable
 
 if not os.environ.get("OPENAI_API_KEY"):
     sys.exit("Error: OPENAI_API_KEY is not set. Run: export OPENAI_API_KEY=\"sk-...\"")
@@ -52,7 +51,7 @@ from agent_framework.openai import OpenAIChatClient
 @chat_middleware
 async def security_filter_middleware(
     context: ChatContext,
-    next: Callable[[ChatContext], Awaitable[None]],
+    call_next,
 ) -> None:
     """Block requests that contain sensitive keywords."""
     blocked_terms = ["password", "secret", "api_key", "token"]
@@ -76,7 +75,7 @@ async def security_filter_middleware(
                     )
                     return  # short-circuit: LLM is never called
 
-    await next(context)
+    await call_next()
 
 
 # ---------------------------------------------------------------------------
@@ -85,7 +84,7 @@ async def security_filter_middleware(
 @function_middleware
 async def atlantis_filter_middleware(
     context: FunctionInvocationContext,
-    next: Callable[[FunctionInvocationContext], Awaitable[None]],
+    call_next,
 ) -> None:
     """Block weather requests for Atlantis (demo guardrail)."""
     location = getattr(context.arguments, "location", None)
@@ -97,7 +96,7 @@ async def atlantis_filter_middleware(
         context.terminate = True
         return
 
-    await next(context)
+    await call_next()
 
 
 # ---------------------------------------------------------------------------
