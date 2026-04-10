@@ -171,6 +171,62 @@ behavior of the SaaS integration.
 python3 mem0_managed/mem_03_agent.py
 ```
 
+## Part 3: OpenMemory, the MCP approach
+
+OpenMemory is an open-source project from the Mem0 team that exposes
+memory as an MCP server. Instead of importing `mem0` in your code, you
+run OpenMemory as a local service and any MCP-compatible client (Claude
+Desktop, Cursor, your own agent) can store and search memories over
+the standard MCP protocol.
+
+This is interesting because it decouples memory from your application
+code entirely: any tool that speaks MCP gets persistent memory for free.
+
+### Quick start
+
+```bash
+export OPENAI_API_KEY="sk-..."
+curl -sL https://raw.githubusercontent.com/mem0ai/mem0/main/openmemory/run.sh | bash
+```
+
+This starts three containers: an MCP backend (port 8765), a Qdrant
+vector store, and a web UI (port 3000). Open http://localhost:3000 to
+browse stored memories.
+
+### Connecting a client
+
+Register your client with the MCP server:
+
+```bash
+npx @openmemory/install local http://localhost:8765/mcp/<client-name>/sse/<user-id>
+```
+
+For example, to connect Claude Desktop:
+
+```bash
+npx @openmemory/install local http://localhost:8765/mcp/claude/sse/philippe
+```
+
+After registration, Claude Desktop (or any MCP client) can call memory
+tools (add, search, get_all, delete) transparently.
+
+### Why this matters
+
+In Part 1 and Part 2, your Python code calls `m.add()` and
+`m.search()` directly. With OpenMemory, the memory layer becomes a
+standalone service that any agent can use via MCP, without importing a
+single library. This is the difference between "memory as a library"
+and "memory as infrastructure."
+
+### Cleanup
+
+```bash
+docker compose -f openmemory/docker-compose.yml down -v
+```
+
+For more details, see the
+[OpenMemory repo](https://github.com/mem0ai/mem0/tree/main/openmemory).
+
 ## Self-hosted vs SaaS: what changes?
 
 The core API is identical. The only difference is how you initialize
