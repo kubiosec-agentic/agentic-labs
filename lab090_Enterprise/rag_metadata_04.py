@@ -1,7 +1,9 @@
-import openai
+from openai import OpenAI
 import chromadb
 from chromadb.config import Settings
 import os
+
+client_openai = OpenAI()
 
 # Print ChromaDB version
 print(f"ChromaDB version: {chromadb.__version__}")
@@ -94,7 +96,7 @@ if collection.count() == 0:
 
     # Generate embeddings for all documents
     def get_embeddings(texts):
-        response = openai.embeddings.create(input=texts, model=EMBEDDING_MODEL)
+        response = client_openai.embeddings.create(input=texts, model=EMBEDDING_MODEL)
         return [d.embedding for d in response.data]
 
     embeddings = get_embeddings(documents)
@@ -150,7 +152,7 @@ def print_results(title, results):
 
 # Function to get embedding for query
 def get_query_embedding(text):
-    return openai.embeddings.create(input=text, model=EMBEDDING_MODEL).data[0].embedding
+    return client_openai.embeddings.create(input=text, model=EMBEDDING_MODEL).data[0].embedding
 
 # Query 1: Public documents
 results_public = collection.query(
@@ -193,7 +195,7 @@ Context:
 Question:
 {question}
 """
-    response = openai.chat.completions.create(
+    response = client_openai.chat.completions.create(
         model="gpt-4o",
         messages=[{"role": "user", "content": prompt}]
     )

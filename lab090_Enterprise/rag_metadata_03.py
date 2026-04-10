@@ -9,13 +9,12 @@ Run:
     python3 rag_metadata_03.py
 """
 
-import openai
+from openai import OpenAI
 import chromadb
 from chromadb.config import Settings
 
-# Set your OpenAI API key
+client_openai = OpenAI()
 
-# Use OpenAI's text-embedding-3-small (1536 dimensions)
 EMBEDDING_MODEL = "text-embedding-3-small"
 EMBEDDING_DIM = 1536
 
@@ -87,7 +86,7 @@ ids = [f"doc{i}" for i in range(40)]
 
 # Generate embeddings for all documents using OpenAI
 def get_embeddings(texts):
-    response = openai.embeddings.create(
+    response = client_openai.embeddings.create(
         input=texts,
         model=EMBEDDING_MODEL
     )
@@ -139,7 +138,7 @@ print_results("Query: All Documents", results_all)
 
 # Function to perform RAG using OpenAI GPT-4
 def query_rag(question, access_levels=None, n_results=5):
-    embedding_response = openai.embeddings.create(
+    embedding_response = client_openai.embeddings.create(
         input=question,
         model=EMBEDDING_MODEL
     )
@@ -176,7 +175,7 @@ Question:
 """
 
     # Get response from GPT-4
-    response = openai.chat.completions.create(
+    response = client_openai.chat.completions.create(
         model="gpt-4o",
         messages=[{"role": "user", "content": prompt}]
     )

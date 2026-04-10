@@ -57,16 +57,44 @@ Instructions and code:
 
 ### Traceloop integration
 
-Traceloop wraps your OpenAI calls with OpenTelemetry traces. The
-`@workflow` decorator captures latency, token usage, and errors for
-every call, and ships the data to the Traceloop dashboard.
+Traceloop wraps your OpenAI calls with OpenTelemetry traces. It
+auto-instruments the OpenAI SDK, but you can add structure with four
+decorators: `@workflow` (groups steps), `@agent` (marks autonomous
+units), `@tool` (marks functions), and `@task` (individual steps).
+This gives you a hierarchical trace in the Traceloop dashboard or any
+OpenTelemetry-compatible backend (Grafana Tempo, Datadog, Jaeger).
+
+**Exercise 1: Basic tracing**
+
+A single GPT-4o call wrapped in `@workflow`. Shows how Traceloop
+captures latency, token usage, and errors automatically.
 
 ```bash
 export TRACELOOP_API_KEY="tl_..."
 python3 traceloop_01.py
 ```
 
-Check [traceloop.com](https://www.traceloop.com/) for the dashboard.
+**Exercise 2: Multi-agent workflow with structured traces**
+
+A research-and-summarize pipeline with two agents and two tools. Uses
+`@workflow`, `@agent`, and `@tool` decorators so the trace shows a
+clear hierarchy:
+
+```
+workflow: research_and_summarize
+  agent: researcher
+    tool: web_search
+  agent: writer
+    tool: fact_check
+```
+
+```bash
+python3 traceloop_02.py
+```
+
+Check [app.traceloop.com](https://app.traceloop.com) for the
+dashboard, or configure `api_endpoint` to send traces to your own
+OpenTelemetry collector.
 
 ### OpenAI Agents SDK built-in tracing
 
