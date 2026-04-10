@@ -5,20 +5,17 @@ This file is the Azure counterpart of MAF_01_openai_agent.py. The
 business logic (tools, instructions, query) is identical. The only
 differences are:
 
-  1. Import: same OpenAIChatClient, but with Azure routing inputs.
-  2. Auth:   AzureCliCredential (run `az login` first) instead of
-             OPENAI_API_KEY.
-  3. Env:    AZURE_OPENAI_ENDPOINT + AZURE_OPENAI_CHAT_MODEL
+  1. Auth:   API key via AZURE_OPENAI_API_KEY instead of OPENAI_API_KEY.
+  2. Env:    AZURE_OPENAI_ENDPOINT + AZURE_OPENAI_CHAT_MODEL
              instead of OPENAI_API_KEY + OPENAI_CHAT_MODEL.
-  4. Lifecycle: `async with` for credential cleanup.
 
 Compare the two files side-by-side to see exactly what changes when
 moving from OpenAI to Azure.
 
 Prerequisites:
-    az login
-    export AZURE_OPENAI_ENDPOINT="https://<your-resource>.openai.azure.com"
-    export AZURE_OPENAI_CHAT_MODEL="gpt-4o"
+    export AZURE_OPENAI_API_KEY="<your-azure-api-key>"
+    export AZURE_OPENAI_ENDPOINT="https://<your-resource>.cognitiveservices.azure.com/"
+    export AZURE_OPENAI_CHAT_MODEL="gpt-5-nano"
 
 Run:
     python3 MAF_02_azure_agent.py
@@ -26,11 +23,18 @@ Run:
 
 import asyncio
 import os
+import sys
 from random import randint
 from typing import Annotated
 
+if not os.environ.get("AZURE_OPENAI_API_KEY"):
+    sys.exit("Error: AZURE_OPENAI_API_KEY is not set. Run: export AZURE_OPENAI_API_KEY=\"<key>\"")
+if not os.environ.get("AZURE_OPENAI_ENDPOINT"):
+    sys.exit("Error: AZURE_OPENAI_ENDPOINT is not set. Run: export AZURE_OPENAI_ENDPOINT=\"https://...\"")
+if not os.environ.get("AZURE_OPENAI_CHAT_MODEL"):
+    sys.exit("Error: AZURE_OPENAI_CHAT_MODEL is not set. Run: export AZURE_OPENAI_CHAT_MODEL=\"gpt-5-nano\"")
+
 from agent_framework.openai import OpenAIChatClient
-from azure.identity.aio import AzureCliCredential
 
 
 # Same tool, same logic, same annotation style.
@@ -49,33 +53,32 @@ async def main() -> None:
     print("=== Azure OpenAI Agent Example ===\n")
 
     # Same OpenAIChatClient, but with explicit Azure routing inputs.
-    # When credential or azure_endpoint is passed, the client switches
+    # When api_key + azure_endpoint are passed, the client switches
     # to Azure mode even if OPENAI_API_KEY is also set.
-    async with AzureCliCredential() as credential:
-        agent = OpenAIChatClient(
-            model=os.environ["AZURE_OPENAI_CHAT_MODEL"],
-            azure_endpoint=os.environ["AZURE_OPENAI_ENDPOINT"],
-            credential=credential,
-        ).as_agent(
-            name="WeatherAgent",
-            instructions="You are a helpful weather assistant.",
-            tools=get_weather,
-        )
+    agent = OpenAIChatClient(
+        model=os.environ["AZURE_OPENAI_CHAT_MODEL"],
+        azure_endpoint=os.environ["AZURE_OPENAI_ENDPOINT"],
+        api_key=os.environ["AZURE_OPENAI_API_KEY"],
+    ).as_agent(
+        name="WeatherAgent",
+        instructions="You are a helpful weather assistant.",
+        tools=get_weather,
+    )
 
-        # --- non-streaming ---
-        query = "What's the weather like in Seattle and Brussels?"
-        print(f"User: {query}")
-        result = await agent.run(query)
-        print(f"Agent: {result}\n")
+    # --- non-streaming ---
+    query = "What's the weather like in Seattle and Brussels?"
+    print(f"User: {query}")
+    result = await agent.run(query)
+    print(f"Agent: {result}\n")
 
-        # --- streaming ---
-        query2 = "And what about Tokyo?"
-        print(f"User: {query2}")
-        print("Agent: ", end="", flush=True)
-        async for chunk in agent.run(query2, stream=True):
-            if chunk.text:
-                print(chunk.text, end="", flush=True)
-        print()
+    # --- streaming ---
+    query2 = "And what about Tokyo?"
+    print(f"User: {query2}")
+    print("Agent: ", end="", flush=True)
+    async for chunk in agent.run(query2, stream=True):
+        if chunk.text:
+            print(chunk.text, end="", flush=True)
+    print()
 
 
 if __name__ == "__main__":

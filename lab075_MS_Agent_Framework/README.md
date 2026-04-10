@@ -25,46 +25,48 @@ exactly what changes when migrating from OpenAI to Azure.
 ## OpenAI vs Azure: what changes
 
 The framework abstracts the backend behind a chat client interface.
-Switching from OpenAI to Azure is a three-line diff:
+Switching from OpenAI to Azure requires only three changes:
 
-```
- # OpenAI                                    # Azure
- from agent_framework.openai import          from agent_framework.openai import
-     OpenAIChatClient                             OpenAIChatClient
-                                              from azure.identity.aio import
-                                                  AzureCliCredential
+|   | OpenAI | Azure |
+|---|--------|-------|
+| **Extra import** | (none) | (none) |
+| **Client constructor** | `OpenAIChatClient()` | `OpenAIChatClient(model=..., azure_endpoint=..., api_key=...)` |
+| **Auth mechanism** | `OPENAI_API_KEY` env var | `AZURE_OPENAI_API_KEY` env var |
+| **Env vars** | `OPENAI_API_KEY`, `OPENAI_CHAT_MODEL` | `AZURE_OPENAI_API_KEY`, `AZURE_OPENAI_ENDPOINT`, `AZURE_OPENAI_CHAT_MODEL` |
 
- client = OpenAIChatClient()                  client = OpenAIChatClient(
-                                                  model="gpt-4o",
-                                                  azure_endpoint="https://...",
-                                                  credential=AzureCliCredential())
-```
-
-Same class, same import. Azure routing is activated by passing
+Same class, same import path. Azure routing is activated by passing
 `azure_endpoint` and `credential`.
 
-Everything else (tools, instructions, middleware, workflows) stays the
-same. Compare `MAF_01_openai_agent.py` and `MAF_02_azure_agent.py`
+Everything else, tools, instructions, middleware, workflows, stays
+identical. Compare `MAF_01_openai_agent.py` and `MAF_02_azure_agent.py`
 side-by-side to see the full picture.
 
 ## Set up your environment
-
-```bash
-export OPENAI_API_KEY="sk-..."
-export OPENAI_CHAT_MODEL="gpt-4o-mini"
-```
 
 ```bash
 ./lab_setup.sh
 source .lab075/bin/activate
 ```
 
-### For exercise 2 (Azure, optional)
+### Environment variables
+
+| Variable | Exercises | Example |
+|----------|-----------|---------|
+| `OPENAI_API_KEY` | 1, 3, 4 | `sk-...` |
+| `OPENAI_CHAT_MODEL` | 1, 3, 4 | `gpt-4o-mini` |
+| `AZURE_OPENAI_API_KEY` | 2 | `<your-azure-api-key>` |
+| `AZURE_OPENAI_ENDPOINT` | 2 | `https://<resource>.cognitiveservices.azure.com/` |
+| `AZURE_OPENAI_CHAT_MODEL` | 2 | `gpt-5-nano` |
 
 ```bash
-az login
-export AZURE_OPENAI_ENDPOINT="https://<your-resource>.openai.azure.com"
-export AZURE_OPENAI_CHAT_MODEL="gpt-4o"
+# Exercises 1, 3, 4 (OpenAI)
+export OPENAI_API_KEY="sk-..."
+export OPENAI_CHAT_MODEL="gpt-4o-mini"
+
+# Exercise 2 (Azure, optional)
+export AZURE_OPENAI_API_KEY="<your-azure-api-key>"
+export AZURE_OPENAI_ENDPOINT="https://<resource>.cognitiveservices.azure.com/"
+export AZURE_OPENAI_CHAT_MODEL="gpt-5-nano"
 ```
 
 > If you do not have an Azure OpenAI resource, skip exercise 2.
@@ -97,8 +99,8 @@ the client setup differs.
 python3 MAF_02_azure_agent.py
 ```
 
-Key differences: `AzureCliCredential` for auth, explicit
-`azure_endpoint` and `model` parameters, and streaming via
+Key differences: explicit `api_key`, `azure_endpoint`, and `model`
+parameters on the constructor, and streaming via
 `agent.run(..., stream=True)`.
 
 ### 3. Middleware (OpenAI)
@@ -152,7 +154,6 @@ The directory also contains the original examples from the addendum:
 | `azure_agent_mcp.py` | Azure agent with MCP streamable HTTP tool (Microsoft Learn) |
 | `azure_code_interpreter.py` | Azure agent with hosted code interpreter |
 | `openai_workflow.py` | Full Worker/Reviewer workflow (more detailed than MAF_04) |
-| `demo_fomo/` | Four progressive Azure OpenAI demos with middleware |
 
 ## Additional resources
 
