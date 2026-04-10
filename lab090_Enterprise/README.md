@@ -138,25 +138,93 @@ analysis in production.
 
 ## Part 3: Access-Controlled RAG
 
-These exercises build up a RAG pipeline with metadata-based access
-control. The idea: documents are tagged as `public` or
-`confidential`, and the retrieval query filters by access level.
-This is how you prevent an agent from leaking internal data to
-unauthorized users.
+### Why metadata matters for security
+
+An AI agent backed by RAG retrieves documents to answer questions.
+Without access control, it will happily return confidential data to
+anyone who asks. Metadata filtering solves this at the retrieval
+layer: every document is tagged with an access level, and the query
+includes a filter so only authorized documents are searched.
+
+This is defense-in-depth. Even if the LLM is jailbroken, it
+cannot leak confidential data because that data was never retrieved
+in the first place. The LLM literally never sees it.
+
+### How it works
+
+```
+User question: "What are the chatbot's new features?"
+User role:     public
+                |
+                v
+    +---------------------------+
+    |  1. Embed the question    |    (text -> 1536-dim vector)
+    +---------------------------+
+                |
+                v
+    +---------------------------+
+    |  2. Filter by metadata    |    where={"access": "public"}
+    |     BEFORE similarity     |    confidential docs are removed
+    |     search                |    before ranking
+    +---------------------------+
+                |
+                v
+    +---------------------------+
+    |  3. Rank by similarity    |    cosine distance: lower = closer
+    |     Return top-k docs     |
+    +---------------------------+
+                |
+                v
+    +---------------------------+
+    |  4. (Exercise 3+)         |
+    |     Send docs as context  |    "Answer using ONLY this context"
+    |     to GPT-4o             |
+    +---------------------------+
+                |
+                v
+            Answer
+```
+
+The key insight: the metadata filter is applied BEFORE the similarity
+search. Unauthorized documents are not "deprioritized"; they are
+excluded entirely. This is a hard boundary, not a soft one.
+
+### What metadata can you use?
+
+In these exercises we use a simple `{"access": "public"}` tag.
+In production you could add as many fields as you need:
+
+| Field | Example values | Use case |
+|-------|---------------|----------|
+| access | public, confidential, top-secret | Classification level |
+| department | engineering, legal, finance | Department-scoped access |
+| project | chatbot, billing, onboarding | Project-scoped access |
+| author | alice, bob | Owner-based filtering |
+| date | 2025-01-15 | Time-based expiry |
+
+ChromaDB supports `$and`, `$or`, `$in`, `$gt`, `$lt` operators on
+metadata, so you can build complex filters like "public OR (confidential
+AND department=engineering AND date > 2025-01-01)".
+
+### Exercises
 
 | Exercise | File | What it adds |
 |----------|------|-------------|
-| 1 | `rag_metadata_01.py` | ChromaDB basics: add docs with metadata, query with access filters |
-| 2 | `rag_metadata_02.py` | Automatic OpenAI embeddings via ChromaDB's embedding function |
-| 3 | `rag_metadata_03.py` | Full RAG pipeline: embed, retrieve, generate with GPT-4o |
+| 1 | `rag_metadata_01.py` | ChromaDB with metadata filtering (default local embeddings) |
+| 2 | `rag_metadata_02.py` | Swap in OpenAI embeddings for better semantic matching |
+| 3 | `rag_metadata_03.py` | Full RAG: retrieve + generate with GPT-4o |
 | 4 | `rag_metadata_04.py` | Persistent storage: data survives restarts |
 | - | `verify_persistence.py` | Verify that persistent storage works |
 
 ### Exercise 1: Metadata-based access control
 
-Stores 20 public and 20 confidential documents in ChromaDB, then
-queries with `where={"access": "public"}` to demonstrate that
-confidential docs are excluded from results.
+Stores 20 public and 20 confidential documents in ChromaDB with
+metadata tags. Three queries show the effect of the `where` filter:
+a public user sees only public docs, an internal user sees only
+confidential docs, and an admin sees everything.
+
+Notice the `$or` operator in the admin query: this is how you build
+role-based access by mapping user roles to allowed metadata values.
 
 ```bash
 python3 rag_metadata_01.py
@@ -164,9 +232,15 @@ python3 rag_metadata_01.py
 
 ### Exercise 2: OpenAI embeddings
 
-Same documents, but uses ChromaDB's `OpenAIEmbeddingFunction` to
-automatically compute embeddings with `text-embedding-3-small`. No
-manual embedding management needed.
+Same documents, but swaps ChromaDB's default local embedding model
+for OpenAI's `text-embedding-3-small` via `OpenAIEmbeddingFunction`.
+Compare the distance scores with exercise 1: OpenAI embeddings
+typically produce better semantic matches (lower distances for
+relevant results).
+
+The embedding function is passed once at collection creation time;
+after that, ChromaDB calls OpenAI automatically on every add() and
+query().
 
 ```bash
 export CHROMA_OPENAI_API_KEY=$OPENAI_API_KEY
@@ -175,9 +249,15 @@ python3 rag_metadata_02.py
 
 ### Exercise 3: Full RAG with GPT-4o
 
-Adds the generation step: retrieved documents are assembled into a
-context string, passed to GPT-4o, and the model answers grounded in
-the retrieved evidence. Access filtering still applies.
+This is the complete pipeline. After retrieving documents with access
+filtering, the top-k results are assembled into a context string and
+sent to GPT-4o with the instruction "Answer using ONLY the context
+below." The LLM generates a grounded answer.
+
+The `access_levels` parameter on the `query_rag()` function is the
+authorization gate. In production, you would derive this from the
+user's JWT claims, RBAC role, or session attributes. Never let the
+user control this parameter directly.
 
 ```bash
 python3 rag_metadata_03.py
@@ -185,9 +265,14 @@ python3 rag_metadata_03.py
 
 ### Exercise 4: Persistent storage
 
-Uses `chromadb.PersistentClient` so data survives between script runs.
-Run it once to populate, then run `verify_persistence.py` to confirm
-the data is still there.
+Exercises 1 through 3 use an in-memory ChromaDB client: data is lost
+when the script exits. This exercise uses `PersistentClient` to write
+data to disk. Run it once to populate, quit, then run
+`verify_persistence.py` to confirm the data survived.
+
+This is the difference between "demo" and "deployable." In production
+you would typically run ChromaDB as a separate service (Docker
+container) rather than embedded in your app.
 
 ```bash
 python3 rag_metadata_04.py

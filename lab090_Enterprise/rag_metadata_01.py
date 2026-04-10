@@ -1,15 +1,76 @@
+"""
+Exercise 1: Metadata-based access control in ChromaDB.
+
+THE PROBLEM
+-----------
+An AI agent that retrieves documents to answer questions (RAG) will
+happily return confidential data if you don't stop it. "Tell me about
+the project" should return different results for a public user vs an
+internal engineer. The content is the same database; the difference is
+who is asking.
+
+THE SOLUTION: METADATA FILTERING
+---------------------------------
+Every document stored in the vector database gets a metadata dict
+alongside its text. In this example, the metadata is:
+
+    {"access": "public"}       for press releases, docs, blog posts
+    {"access": "confidential"} for internal issues, security findings
+
+When querying, we pass a `where` filter:
+
+    collection.query(
+        query_texts=["..."],
+        where={"access": "public"}    # <-- only public docs returned
+    )
+
+ChromaDB applies this filter BEFORE ranking by similarity. That means
+confidential documents are never even considered, no matter how
+semantically relevant they are. This is the simplest form of
+authorization in a RAG pipeline.
+
+HOW CHROMADB WORKS HERE
+-----------------------
+ChromaDB is an in-memory vector database. When you call collection.add()
+with documents (plain text), ChromaDB:
+  1. Generates embeddings internally (default: a small local model)
+  2. Stores the text, metadata, and embedding together
+  3. Builds an HNSW index for fast approximate nearest-neighbor search
+
+When you call collection.query() with query_texts:
+  1. The query is embedded using the same model
+  2. The metadata filter (where=...) removes non-matching docs
+  3. The remaining docs are ranked by cosine distance to the query
+
+The "distance" in the output tells you how close the match is.
+Lower = more similar. A distance of 0 would be an exact match.
+
+Run:
+    python3 rag_metadata_01.py
+"""
+
 import chromadb
 from chromadb.config import Settings
 
+# In-memory client: data lives only while the script runs.
+# Exercise 4 shows how to make it persistent.
 client = chromadb.Client(Settings())
 
-# Create or get collection
+# A "collection" in ChromaDB is like a table: it holds documents,
+# their embeddings, and their metadata under one name.
 collection = client.get_or_create_collection(name="my_docs")
 
-# Clear old data
+# Clear any leftover data from previous runs
 collection.delete(ids=[f"doc{i}" for i in range(40)])
 
-# Generate 20 public documents with unique content
+
+# -------------------------------------------------------------------------
+# Documents: 20 public, 20 confidential
+#
+# In a real system these would come from your document store, CMS, or
+# knowledge base. The key point is that EVERY document gets a metadata
+# tag indicating its access level.
+# -------------------------------------------------------------------------
 public_docs = [
     "Product roadmap for Q2 includes chatbot enhancements and UI redesign.",
     "Our chatbot now supports voice input for better accessibility.",
@@ -30,10 +91,9 @@ public_docs = [
     "New tutorial video covers chatbot integration in React apps.",
     "Webinar next week: Building inclusive AI for customer service.",
     "We open-sourced our fallback handling module on GitHub.",
-    "Customer support chatbot wins industry design award."
+    "Customer support chatbot wins industry design award.",
 ]
 
-# Generate 20 confidential documents with internal strategy and sensitive content
 conf_docs = [
     "Chatbot error logs revealed edge-case crashes in voice-to-text module. (CONFIDENTIAL)",
     "Internal Slack thread discussed delays in chatbot release. (CONFIDENTIAL)",
@@ -54,57 +114,78 @@ conf_docs = [
     "Confidential roadmap includes HR chatbot for internal onboarding. (CONFIDENTIAL)",
     "Budget request for chatbot training GPU cluster denied. (CONFIDENTIAL)",
     "Chatbot vendor contract ends December 2025. (CONFIDENTIAL)",
-    "Pilot with legal chatbot red-flagged by compliance. (CONFIDENTIAL)"
+    "Pilot with legal chatbot red-flagged by compliance. (CONFIDENTIAL)",
 ]
 
-# Merge docs, metadata, and IDs
+# -------------------------------------------------------------------------
+# Build the metadata list.
+#
+# Each document gets a dict: {"access": "public"} or {"access": "confidential"}.
+# You can add as many fields as you want: department, author, date,
+# classification level, project name, etc. More fields = more granular
+# filtering.
+# -------------------------------------------------------------------------
 documents = public_docs + conf_docs
-metadatas = [{"access": "public"} for _ in public_docs] + [{"access": "confidential"} for _ in conf_docs]
+metadatas = (
+    [{"access": "public"} for _ in public_docs]
+    + [{"access": "confidential"} for _ in conf_docs]
+)
 ids = [f"doc{i}" for i in range(40)]
 
-# Add documents to Chroma
-collection.add(
-    documents=documents,
-    metadatas=metadatas,
-    ids=ids
-)
+# Add everything to ChromaDB. Embeddings are generated automatically
+# using ChromaDB's default embedding model (a small local model).
+collection.add(documents=documents, metadatas=metadatas, ids=ids)
 
-# Helper to print results clearly
+
 def print_results(title, results):
     print(f"\n=== {title} ===")
     for i, doc in enumerate(results["documents"][0]):
         print(f"Result #{i + 1}")
-        print(f"📄 Document: {doc}")
-        print(f"🏷️  Metadata: {results['metadatas'][0][i]}")
-        print(f"📏 Distance: {results['distances'][0][i]:.4f}")
-        print("-" * 50)
+        print(f"  Document: {doc}")
+        print(f"  Metadata: {results['metadatas'][0][i]}")
+        print(f"  Distance: {results['distances'][0][i]:.4f}")
+        print("-" * 60)
 
-# Query 1: Public
+
+# -------------------------------------------------------------------------
+# Query 1: Public user asks about chatbot features.
+#
+# The where filter ensures that ONLY public documents are searched.
+# Even though some confidential docs are semantically relevant to
+# "chatbot features", they are excluded before ranking.
+# -------------------------------------------------------------------------
 results_public = collection.query(
     query_texts=["What are the chatbot's new features?"],
     n_results=3,
-    where={"access": "public"}
+    where={"access": "public"},
 )
-print_results("Query: Only Public Documents", results_public)
+print_results("Query: Public user (only public docs)", results_public)
 
-# Query 2: Confidential
+
+# -------------------------------------------------------------------------
+# Query 2: Internal engineer asks about issues.
+#
+# Now we filter for confidential only. The public marketing docs are
+# excluded even though they mention the chatbot.
+# -------------------------------------------------------------------------
 results_conf = collection.query(
     query_texts=["What internal issues exist with the chatbot?"],
     n_results=3,
-    where={"access": "confidential"}
+    where={"access": "confidential"},
 )
-print_results("Query: Only Confidential Documents", results_conf)
+print_results("Query: Internal user (only confidential docs)", results_conf)
 
-# Query 3: All
+
+# -------------------------------------------------------------------------
+# Query 3: Admin with full access.
+#
+# The $or operator combines multiple access levels. This is how you
+# would implement role-based access: map the user's role to a list
+# of allowed access levels, then build the where filter dynamically.
+# -------------------------------------------------------------------------
 results_all = collection.query(
     query_texts=["Tell me about the project."],
     n_results=5,
-    where={
-        "$or": [
-            {"access": "public"},
-            {"access": "confidential"}
-        ]
-    }
+    where={"$or": [{"access": "public"}, {"access": "confidential"}]},
 )
-
-print_results("Query: All Documents", results_all)
+print_results("Query: Admin (all docs)", results_all)

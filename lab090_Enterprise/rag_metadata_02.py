@@ -1,26 +1,74 @@
+"""
+Exercise 2: OpenAI embeddings via ChromaDB's embedding function.
+
+WHAT CHANGES FROM EXERCISE 1
+-----------------------------
+Exercise 1 used ChromaDB's default embedding model (a small local
+model). It works, but the embeddings are not very good for semantic
+search. In production you want a stronger model.
+
+Here we swap in OpenAI's text-embedding-3-small by passing an
+OpenAIEmbeddingFunction to the collection. Now ChromaDB will call the
+OpenAI API automatically every time you add or query documents.
+
+WHY THIS MATTERS
+----------------
+The embedding model determines how well "What are the chatbot's new
+features?" matches "Our chatbot now supports voice input." A better
+embedding model produces vectors that capture meaning more accurately,
+which means your RAG pipeline retrieves more relevant documents.
+
+text-embedding-3-small is a good trade-off between quality and cost.
+For higher accuracy at 6x the cost, use text-embedding-3-large.
+
+HOW THE EMBEDDING FUNCTION WORKS
+---------------------------------
+When you call collection.add(documents=[...]):
+  1. ChromaDB passes each document to the embedding function
+  2. The function calls OpenAI's embeddings API
+  3. The returned vectors (1536 dimensions) are stored in the HNSW index
+
+When you call collection.query(query_texts=[...]):
+  1. The query text is embedded using the same function
+  2. ChromaDB searches for nearest neighbors in vector space
+  3. The where filter is applied to remove unauthorized docs
+
+You never see the embeddings directly; ChromaDB handles it all.
+
+Prerequisites:
+    export OPENAI_API_KEY="sk-..."
+    export CHROMA_OPENAI_API_KEY=$OPENAI_API_KEY
+
+Run:
+    python3 rag_metadata_02.py
+"""
+
 import chromadb
 from chromadb.config import Settings
 from chromadb.utils.embedding_functions import OpenAIEmbeddingFunction
 
-# Define OpenAI embedding model
+# -------------------------------------------------------------------------
+# Configure the embedding function.
+#
+# ChromaDB will call this for every add() and query() operation.
+# The CHROMA_OPENAI_API_KEY env var is read automatically.
+# -------------------------------------------------------------------------
 EMBEDDING_MODEL = "text-embedding-3-small"
-
-# Set up embedding function using OpenAI
 embedding_fn = OpenAIEmbeddingFunction(model_name=EMBEDDING_MODEL)
 
-# Initialize ChromaDB client
 client = chromadb.Client(Settings())
 
-# Create or get collection with embedding function
+# Pass the embedding function when creating the collection.
+# All documents added to this collection will be embedded with OpenAI.
 collection = client.get_or_create_collection(
     name="my_docs",
-    embedding_function=embedding_fn
+    embedding_function=embedding_fn,
 )
 
-# Clear existing documents
 collection.delete(ids=[f"doc{i}" for i in range(40)])
 
-# Sample public documents
+
+# Same documents as exercise 1
 public_docs = [
     "Product roadmap for Q2 includes chatbot enhancements and UI redesign.",
     "Our chatbot now supports voice input for better accessibility.",
@@ -41,10 +89,9 @@ public_docs = [
     "New tutorial video covers chatbot integration in React apps.",
     "Webinar next week: Building inclusive AI for customer service.",
     "We open-sourced our fallback handling module on GitHub.",
-    "Customer support chatbot wins industry design award."
+    "Customer support chatbot wins industry design award.",
 ]
 
-# Sample confidential documents
 conf_docs = [
     "Chatbot error logs revealed edge-case crashes in voice-to-text module. (CONFIDENTIAL)",
     "Internal Slack thread discussed delays in chatbot release. (CONFIDENTIAL)",
@@ -65,51 +112,57 @@ conf_docs = [
     "Confidential roadmap includes HR chatbot for internal onboarding. (CONFIDENTIAL)",
     "Budget request for chatbot training GPU cluster denied. (CONFIDENTIAL)",
     "Chatbot vendor contract ends December 2025. (CONFIDENTIAL)",
-    "Pilot with legal chatbot red-flagged by compliance. (CONFIDENTIAL)"
+    "Pilot with legal chatbot red-flagged by compliance. (CONFIDENTIAL)",
 ]
 
-# Combine documents and metadata
 documents = public_docs + conf_docs
-metadatas = [{"access": "public"} for _ in public_docs] + [{"access": "confidential"} for _ in conf_docs]
+metadatas = (
+    [{"access": "public"} for _ in public_docs]
+    + [{"access": "confidential"} for _ in conf_docs]
+)
 ids = [f"doc{i}" for i in range(40)]
 
-# Add documents to Chroma (embedding is handled automatically)
-collection.add(
-    documents=documents,
-    metadatas=metadatas,
-    ids=ids
-)
+# When we call add(), ChromaDB sends each document to the OpenAI
+# embeddings API and stores the resulting vectors. This is the only
+# step that costs money (a few cents for 40 short documents).
+collection.add(documents=documents, metadatas=metadatas, ids=ids)
 
-# Helper to print results
+
 def print_results(title, results):
     print(f"\n=== {title} ===")
     for i, doc in enumerate(results["documents"][0]):
         print(f"Result #{i + 1}")
-        print(f"📄 Document: {doc}")
-        print(f"🏷️  Metadata: {results['metadatas'][0][i]}")
-        print(f"📏 Distance: {results['distances'][0][i]:.4f}")
-        print("-" * 50)
+        print(f"  Document: {doc}")
+        print(f"  Metadata: {results['metadatas'][0][i]}")
+        print(f"  Distance: {results['distances'][0][i]:.4f}")
+        print("-" * 60)
 
-# Query 1: Public only
+
+# -------------------------------------------------------------------------
+# Compare the distances with exercise 1. OpenAI embeddings should
+# produce lower distances (better matches) for semantically similar
+# queries, because the model understands meaning better than the
+# default local model.
+# -------------------------------------------------------------------------
+
 results_public = collection.query(
     query_texts=["What are the chatbot's new features?"],
     n_results=3,
-    where={"access": "public"}
+    where={"access": "public"},
 )
-print_results("Query: Only Public Documents", results_public)
+print_results("Query: Public user (OpenAI embeddings)", results_public)
 
-# Query 2: Confidential only
 results_conf = collection.query(
     query_texts=["What internal issues exist with the chatbot?"],
     n_results=3,
-    where={"access": "confidential"}
+    where={"access": "confidential"},
 )
-print_results("Query: Only Confidential Documents", results_conf)
+print_results("Query: Internal user (OpenAI embeddings)", results_conf)
 
-# Query 3: All documents
+# $in is a shorthand for $or on a single field
 results_all = collection.query(
     query_texts=["Tell me about the project."],
     n_results=5,
-    where={"access": {"$in": ["public", "confidential"]}}
+    where={"access": {"$in": ["public", "confidential"]}},
 )
-print_results("Query: All Documents", results_all)
+print_results("Query: Admin (all docs, OpenAI embeddings)", results_all)

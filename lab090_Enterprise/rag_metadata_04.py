@@ -1,47 +1,100 @@
+"""
+Exercise 4: Persistent RAG pipeline.
+
+THE PROBLEM WITH IN-MEMORY STORAGE
+-----------------------------------
+Exercises 1 through 3 use chromadb.Client() which is in-memory. Every
+time the script exits, the data is gone. That is fine for demos, but
+useless in production. You do not want to re-embed 100,000 documents
+every time your service restarts.
+
+THE FIX: PersistentClient
+--------------------------
+chromadb.PersistentClient(path="./chroma_storage") writes the HNSW
+index and document data to disk. On the next run, the collection is
+already populated, so we skip the embedding step entirely.
+
+This is the pattern for a real deployment:
+  - First run:  embed documents, store in persistent collection
+  - Next runs:  skip embedding, go straight to queries
+  - Updates:    add/delete individual documents without re-embedding
+
+In production you would typically run ChromaDB as a separate Docker
+container (chroma server mode) rather than embedded in your Python
+process. The API is the same; only the client initialization changes.
+
+IDEMPOTENT LOADING
+------------------
+The script checks collection.count() before adding documents. If the
+collection already has data, it skips the add step. This makes the
+script safe to run multiple times without creating duplicates.
+
+After running this script, try verify_persistence.py to confirm the
+data survived:
+    python3 rag_metadata_04.py       # first run: embeds and stores
+    python3 verify_persistence.py    # confirms data is still there
+    python3 rag_metadata_04.py       # second run: skips embedding
+
+Run:
+    python3 rag_metadata_04.py
+"""
+
 from openai import OpenAI
 import chromadb
-from chromadb.config import Settings
 import os
 
 client_openai = OpenAI()
 
-# Print ChromaDB version
-print(f"ChromaDB version: {chromadb.__version__}")
-
-# Set your OpenAI API key
-
-# Use OpenAI's text-embedding-3-small (1536 dimensions)
 EMBEDDING_MODEL = "text-embedding-3-small"
-EMBEDDING_DIM = 1536
 
-# Use an absolute path for persistence
+# -------------------------------------------------------------------------
+# Persistent storage setup.
+#
+# PersistentClient writes data to a local directory. ChromaDB uses
+# SQLite + HNSW under the hood. The directory contains:
+#   - chroma.sqlite3       : document text, metadata, IDs
+#   - index files          : the HNSW vector index for fast search
+#
+# On subsequent runs, data is loaded from disk automatically.
+# -------------------------------------------------------------------------
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 PERSIST_DIR = os.path.join(CURRENT_DIR, "chroma_storage")
-print(f"Using persistence directory: {PERSIST_DIR}")
-
-# Make sure the directory exists
 os.makedirs(PERSIST_DIR, exist_ok=True)
 
-# Initialize ChromaDB client with persistence - use this instead
-print("Creating a new ChromaDB client with persistent storage...")
-try:
-    # Try the newer API format if available
-    client = chromadb.PersistentClient(path=PERSIST_DIR)
-except AttributeError:
-    # Fall back to the older API if PersistentClient is not available
-    client = chromadb.Client(Settings(persist_directory=PERSIST_DIR, 
-                                     chroma_db_impl="duckdb+parquet"))
+print(f"ChromaDB version: {chromadb.__version__}")
+print(f"Persistence directory: {PERSIST_DIR}")
 
-# Create or get collection
+client = chromadb.PersistentClient(path=PERSIST_DIR)
+
 collection = client.get_or_create_collection(
     name="my_docs",
-    embedding_function=None,
-    metadata={"hnsw:space": "cosine"}
+    embedding_function=None,    # we provide embeddings manually
+    metadata={"hnsw:space": "cosine"},
 )
 
-# Only add documents if not already present
+
+# -------------------------------------------------------------------------
+# Embedding helper.
+#
+# Sends texts to the OpenAI embeddings API in a single batch call.
+# This is the expensive part: one API call per batch of documents.
+# With persistent storage, you only pay this cost once.
+# -------------------------------------------------------------------------
+def get_embeddings(texts):
+    response = client_openai.embeddings.create(input=texts, model=EMBEDDING_MODEL)
+    return [d.embedding for d in response.data]
+
+
+# -------------------------------------------------------------------------
+# Idempotent document loading.
+#
+# If the collection is empty (first run), embed and store everything.
+# If it already has data (subsequent runs), skip straight to queries.
+# This is what makes the script safe to run repeatedly.
+# -------------------------------------------------------------------------
 if collection.count() == 0:
-    # Sample public documents
+    print("\nCollection is empty. Embedding and storing documents...")
+
     public_docs = [
         "Product roadmap for Q2 includes chatbot enhancements and UI redesign.",
         "Our chatbot now supports voice input for better accessibility.",
@@ -62,10 +115,9 @@ if collection.count() == 0:
         "New tutorial video covers chatbot integration in React apps.",
         "Webinar next week: Building inclusive AI for customer service.",
         "We open-sourced our fallback handling module on GitHub.",
-        "Customer support chatbot wins industry design award."
+        "Customer support chatbot wins industry design award.",
     ]
 
-    # Sample confidential documents
     conf_docs = [
         "Chatbot error logs revealed edge-case crashes in voice-to-text module. (CONFIDENTIAL)",
         "Internal Slack thread discussed delays in chatbot release. (CONFIDENTIAL)",
@@ -86,108 +138,102 @@ if collection.count() == 0:
         "Confidential roadmap includes HR chatbot for internal onboarding. (CONFIDENTIAL)",
         "Budget request for chatbot training GPU cluster denied. (CONFIDENTIAL)",
         "Chatbot vendor contract ends December 2025. (CONFIDENTIAL)",
-        "Pilot with legal chatbot red-flagged by compliance. (CONFIDENTIAL)"
+        "Pilot with legal chatbot red-flagged by compliance. (CONFIDENTIAL)",
     ]
 
-    # Combine documents and metadata
     documents = public_docs + conf_docs
-    metadatas = [{"access": "public"} for _ in public_docs] + [{"access": "confidential"} for _ in conf_docs]
+    metadatas = (
+        [{"access": "public"} for _ in public_docs]
+        + [{"access": "confidential"} for _ in conf_docs]
+    )
     ids = [f"doc{i}" for i in range(40)]
 
-    # Generate embeddings for all documents
-    def get_embeddings(texts):
-        response = client_openai.embeddings.create(input=texts, model=EMBEDDING_MODEL)
-        return [d.embedding for d in response.data]
-
     embeddings = get_embeddings(documents)
-
-    # Add documents to ChromaDB
     collection.add(documents=documents, metadatas=metadatas, ids=ids, embeddings=embeddings)
-    
-    # Verification code - check if data was stored
-    print(f"Added {len(documents)} documents to ChromaDB collection")
-    print(f"Collection count after adding: {collection.count()}")
-    print(f"Check if storage directory exists: {os.path.exists(PERSIST_DIR)}")
-    storage_files = os.listdir(PERSIST_DIR) if os.path.exists(PERSIST_DIR) else []
-    print(f"Storage directory contents: {storage_files}")
-    # Removed client.persist() as persistence is automatic with persist_directory
 
-# Print all entries in the collection
-def print_all_entries(collection, batch_size=100):
-    total = collection.count()
-    print(f"\n📦 Total entries in collection: {total}\n")
+    print(f"Stored {len(documents)} documents.")
+    print(f"Storage contents: {os.listdir(PERSIST_DIR)}")
+else:
+    print(f"\nCollection already has {collection.count()} documents. Skipping embedding.")
 
+
+# -------------------------------------------------------------------------
+# List all stored entries (paginated).
+#
+# ChromaDB does not have a "SELECT *" equivalent, so we retrieve in
+# batches using offset/limit. This is useful for debugging and
+# verifying what is actually in the database.
+# -------------------------------------------------------------------------
+def print_all_entries(coll, batch_size=100):
+    total = coll.count()
+    print(f"\nTotal entries in collection: {total}\n")
     if total == 0:
         print("Collection is empty.")
         return
 
-    # ChromaDB doesn't have a native way to "list all", so we retrieve by slicing IDs
     for i in range(0, total, batch_size):
-        results = collection.get(
-            include=["documents", "metadatas"],  # Removed "ids" from include
-            offset=i,
-            limit=batch_size
-        )
+        results = coll.get(include=["documents", "metadatas"], offset=i, limit=batch_size)
         for doc_id, doc, meta in zip(results["ids"], results["documents"], results["metadatas"]):
-            print(f"🆔 ID: {doc_id}")
-            print(f"📄 Document: {doc}")
-            print(f"🏷️ Metadata: {meta}")
-            print("-" * 50)
+            print(f"  [{doc_id}] ({meta['access']}) {doc[:80]}...")
+    print()
 
-# Call the function
+
 print_all_entries(collection)
 
 
+# -------------------------------------------------------------------------
+# Queries and RAG (same as exercise 3)
+# -------------------------------------------------------------------------
+def get_query_embedding(text):
+    return client_openai.embeddings.create(input=text, model=EMBEDDING_MODEL).data[0].embedding
 
 
-# Function to print query results
 def print_results(title, results):
     print(f"\n=== {title} ===")
     for i, doc in enumerate(results["documents"][0]):
         print(f"Result #{i + 1}")
-        print(f"📄 Document: {doc}")
-        print(f"🏷️  Metadata: {results['metadatas'][0][i]}")
-        print(f"📏 Distance: {results['distances'][0][i]:.4f}")
-        print("-" * 50)
+        print(f"  Document: {doc}")
+        print(f"  Metadata: {results['metadatas'][0][i]}")
+        print(f"  Distance: {results['distances'][0][i]:.4f}")
+        print("-" * 60)
 
-# Function to get embedding for query
-def get_query_embedding(text):
-    return client_openai.embeddings.create(input=text, model=EMBEDDING_MODEL).data[0].embedding
 
-# Query 1: Public documents
 results_public = collection.query(
     query_embeddings=[get_query_embedding("What are the chatbot's new features?")],
     n_results=3,
-    where={"access": "public"}
+    where={"access": "public"},
 )
-print_results("Query: Only Public Documents", results_public)
+print_results("Retrieval: Public docs only", results_public)
 
-# Query 2: Confidential documents
 results_conf = collection.query(
     query_embeddings=[get_query_embedding("What internal issues exist with the chatbot?")],
     n_results=3,
-    where={"access": "confidential"}
+    where={"access": "confidential"},
 )
-print_results("Query: Only Confidential Documents", results_conf)
+print_results("Retrieval: Confidential docs only", results_conf)
 
-# Query 3: All documents
-results_all = collection.query(
-    query_embeddings=[get_query_embedding("Tell me about the project.")],
-    n_results=5,
-    where={"access": {"$in": ["public", "confidential"]}}
-)
-print_results("Query: All Documents", results_all)
 
-# Function to perform RAG using OpenAI GPT-4
 def query_rag(question, access_levels=None, n_results=5):
+    """Full RAG: embed question, retrieve with access filter, generate answer."""
     query_embedding = get_query_embedding(question)
+
     where_filter = {}
     if access_levels:
-        where_filter = {"access": {"$in": access_levels}} if isinstance(access_levels, list) else {"access": access_levels}
+        where_filter = (
+            {"access": {"$in": access_levels}}
+            if isinstance(access_levels, list)
+            else {"access": access_levels}
+        )
 
-    results = collection.query(query_embeddings=[query_embedding], n_results=n_results, where=where_filter)
+    results = collection.query(
+        query_embeddings=[query_embedding],
+        n_results=n_results,
+        where=where_filter,
+    )
     context = "\n\n".join(results.get("documents", [[]])[0])
+
     prompt = f"""Answer the question using ONLY the context below.
+If the context does not contain enough information, say so.
 
 Context:
 {context}
@@ -197,11 +243,13 @@ Question:
 """
     response = client_openai.chat.completions.create(
         model="gpt-4o",
-        messages=[{"role": "user", "content": prompt}]
+        messages=[{"role": "user", "content": prompt}],
     )
     return response.choices[0].message.content
 
-# Example usage
-answer = query_rag("What are the chatbot's new features?", access_levels=["public"])
-print(f"\n=== GPT-4 Response ===\n{answer}")
 
+print("\n" + "=" * 60)
+print("RAG: Public user asks about chatbot features (persistent storage)")
+print("=" * 60)
+answer = query_rag("What are the chatbot's new features?", access_levels=["public"])
+print(answer)
