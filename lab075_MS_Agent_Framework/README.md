@@ -179,18 +179,6 @@ python3 MAF_06_code_interpreter.py
 The key API: `client.get_code_interpreter_tool()`. The sandbox comes
 with common Python libraries (numpy, pandas, matplotlib, etc.).
 
-## Reference files
-
-The directory also contains the original examples from the addendum:
-
-| File | Description |
-|------|-------------|
-| `openai_agent.py` | Minimal OpenAI agent (original reference) |
-| `azure_agent.py` | Azure agent with streaming (original reference) |
-| `azure_agent_mcp.py` | Azure agent with MCP streamable HTTP tool (Microsoft Learn) |
-| `azure_code_interpreter.py` | Azure agent with hosted code interpreter |
-| `openai_workflow.py` | Full Worker/Reviewer workflow (more detailed than MAF_04) |
-
 ## Additional resources
 
 - Framework repo: https://github.com/microsoft/agent-framework
