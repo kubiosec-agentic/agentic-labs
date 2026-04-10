@@ -88,7 +88,6 @@ response = client.chat.completions.create(
         # Turn 3: The actual request, now in a scholarly context
         {"role": "user", "content": PENTEST_REQUEST},
     ],
-    reasoning_effort="medium",
 )
 
 print(response.choices[0].message.content)

@@ -54,7 +54,6 @@ response = client.chat.completions.create(
         {"role": "user", "content": ACADEMIC_PRIMER},
         {"role": "user", "content": PENTEST_REQUEST},
     ],
-    reasoning_effort="medium",
 )
 
 print(response.choices[0].message.content)
