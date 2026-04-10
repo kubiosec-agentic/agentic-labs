@@ -23,11 +23,40 @@ You should go through lab070 first. This lab assumes you already have
 a working fastmcp server in your pocket and want to see what it looks
 like from outside the Python process.
 
+## Remote lab environment
+
+All commands in this lab run **on the AWS box** over SSH. The MCP
+Inspector serves a web UI that you open **in the browser on your
+laptop**, reached through SSH port forwarding.
+
+Inspector uses two ports: **6274** (proxy) and **5173** (UI). Neither
+is in the default SSH command from the main README, so you need to add
+them. Open a dedicated terminal with the extra forwards:
+
+```bash
+ssh -i agentics-key.pem \
+    -L 6274:localhost:6274 \
+    -L 5173:localhost:5173 \
+    -L 8000:localhost:8000 \
+    -L 8001:localhost:8001 \
+    ubuntu@<YOUR_AWS_IP>
+```
+
+Ports 6274 and 5173 are for Inspector, 8000 is for the lab070 MCP
+server, and 8001 is for the rogue server used in section 5. Once
+this tunnel is up, `http://localhost:6274` in your laptop browser
+reaches Inspector running on the AWS box.
+
+> If you already have a Terminal\_1 session with the standard port
+> forwards from the main README, you can keep it. Just add this second
+> SSH session for the Inspector-specific ports. SSH is happy to forward
+> the same port from multiple sessions as long as only one is active.
+
 ## Prerequisites
 
-- Node.js 18+ with `npx` on PATH (for Inspector).
-- A working lab070 environment, or any MCP server you can point at
-  `http://127.0.0.1:8000/mcp/`.
+- Node.js 18+ with `npx` on PATH (already installed by `setup.sh`).
+- A working lab070 environment, or any MCP server running at
+  `http://127.0.0.1:8000/mcp` on the AWS box.
 - Optional but recommended: mitmproxy, Wireshark, and
   [Stratoshark](https://stratoshark.org) for deep traffic analysis.
 
@@ -42,22 +71,30 @@ npx -y @modelcontextprotocol/inspector@latest --help
 
 ## 1. MCP Inspector: interactive UI
 
-Start your lab070 streamable HTTP server in one terminal:
+Start your lab070 streamable HTTP server in one SSH terminal:
 
 ```bash
 cd ../lab070_MCP
 python3 server_streamable.py
 ```
 
-Launch Inspector pointed at it in another terminal:
+Launch Inspector in a second SSH terminal:
 
 ```bash
 npx -y @modelcontextprotocol/inspector
 ```
 
-Inspector opens a local UI at [http://localhost:6274](http://localhost:6274).
+Inspector prints two URLs on startup. Open your **laptop browser** at
+[http://localhost:6274](http://localhost:6274) (this reaches the AWS box
+through the SSH tunnel).
+
 In the connection panel, choose **Streamable HTTP** as the transport and
-enter `http://127.0.0.1:8000/mcp/` as the server URL. Click Connect.
+enter `http://127.0.0.1:8000/mcp` as the server URL. Click Connect.
+
+> The server URL points at 127.0.0.1 from Inspector's perspective,
+> which is correct: Inspector runs on the AWS box and talks to the MCP
+> server on the same machine. Your laptop never contacts port 8000
+> directly; it only tunnels 6274 and 5173.
 
 Things to try in the UI:
 
@@ -78,25 +115,24 @@ Things to try in the UI:
 ## 2. MCP Inspector: CLI mode
 
 Inspector also ships a scriptable CLI mode, which is the right tool
-for smoke tests and CI. Some useful one-liners against a streamable
-HTTP server on port 8000:
+for smoke tests and CI. Run these in an SSH terminal on the AWS box:
 
 ```bash
 # List tools
-npx -y @modelcontextprotocol/inspector --cli http://127.0.0.1:8000/mcp/ \
+npx -y @modelcontextprotocol/inspector --cli http://127.0.0.1:8000/mcp \
     --transport http --method tools/list
 ```
 
 ```bash
 # Call a tool
-npx -y @modelcontextprotocol/inspector --cli http://127.0.0.1:8000/mcp/ \
+npx -y @modelcontextprotocol/inspector --cli http://127.0.0.1:8000/mcp \
     --transport http --method tools/call \
     --tool-name add --tool-arg a=7 --tool-arg b=22
 ```
 
 ```bash
 # List prompts and resources
-npx -y @modelcontextprotocol/inspector --cli http://127.0.0.1:8000/mcp/ \
+npx -y @modelcontextprotocol/inspector --cli http://127.0.0.1:8000/mcp \
     --transport http --method prompts/list
 ```
 
@@ -140,8 +176,8 @@ traffic, covering:
   captures you can replay offline, which is the cleanest way to learn
   the transport framing without standing up any infrastructure.
 
-Clone and follow the repo's walkthroughs after you have finished the
-Inspector sections above:
+Clone the repo on the AWS box and follow the walkthroughs after you
+have finished the Inspector sections above:
 
 ```bash
 git clone https://github.com/mcp-firewall/mcp-debugging
@@ -156,14 +192,37 @@ tampered message look like on the wire.
 
 ## 5. Putting it together: debug a shadowing attack
 
-Combine lab070 section 3 with Inspector to make the attack visible:
+Combine lab070 section 3 with Inspector to make the attack visible.
+You need three SSH terminals on the AWS box:
 
-1. Start `server_streamable.py` on port 8000 and
-   `server_rogue_streamable.py` on port 8001 (both from lab070).
-2. Open two Inspector tabs, one pointed at each.
-3. In each tab, list the tools and note how the rogue server's names
-   and descriptions overlap with the real one.
-4. Then run `python3 mcp_03_streamable.py` from lab070 with the agent
+**Terminal A**: start the real server on port 8000.
+
+```bash
+cd ../lab070_MCP
+python3 server_streamable.py
+```
+
+**Terminal B**: start the rogue server on port 8001.
+
+```bash
+cd ../lab070_MCP
+python3 server_rogue_streamable.py
+```
+
+**Terminal C**: launch Inspector.
+
+```bash
+npx -y @modelcontextprotocol/inspector
+```
+
+Now, in your laptop browser at `http://localhost:6274`:
+
+1. Connect to `http://127.0.0.1:8000/mcp` (the real server). List the
+   tools and note names and descriptions.
+2. Disconnect. Connect to `http://127.0.0.1:8001/mcp` (the rogue
+   server). List the tools and note how the rogue server's names and
+   descriptions overlap with the real one.
+3. Then run `python3 mcp_03_streamable.py` from lab070 with the agent
    configured to both servers. Compare which tools the agent actually
    calls against the metadata you saw in Inspector.
 

@@ -9,24 +9,24 @@ triage, reporting) as homework.
 
 ## Architecture
 
-```
-  +---------------------+         +-----------------------+
-  |  OA_pentester.py    |         |  Docker container     |
-  |  (openai-agents)    |         |  ubuntu-node-python   |
-  |                     |         |                       |
-  |  Agent              |  MCP    |  supergateway         |
-  |  ├─ kali-box  ──────┼────────▶│   └─ desktop-commander|
-  |  └─ sequential-     |  HTTP   |      (stdio → HTTP)   |
-  |     thinking (stdio)|         |                       |
-  +---------────────────+         +-----------------------+
-           │
-           └─ MCP stdio
-              npx @modelcontextprotocol/server-sequential-thinking
+```mermaid
+graph LR
+    subgraph Host
+        A[OA_pentester.py<br/>openai-agents] -->|MCP stdio| B[sequential-thinking<br/>npx server-sequential-thinking]
+    end
+
+    subgraph Docker network
+        C[supergateway<br/>desktop-commander<br/>hack-agent container]
+        D[target-nginx<br/>nginx:alpine]
+    end
+
+    A -->|MCP streamable HTTP<br/>:8000/mcp| C
+    C -->|HTTP :80| D
 ```
 
 Two MCP servers feed the agent:
 
-1. **kali-box**: a throwaway Ubuntu container with `desktop-commander`
+1. **hack-agent**: a throwaway Ubuntu container with `desktop-commander`
    behind `supergateway`, exposed as streamable HTTP on
    `http://127.0.0.1:8000/mcp`. This is the shell. The agent can
    install missing scanners with apt, run them in the background, read
@@ -53,7 +53,7 @@ docker compose up -d --build
 
 This builds `ubuntu-node-python` from the local Dockerfile, starts an
 `nginx:alpine` container named `target-nginx` as the authorized lab
-host, starts `kali-box` with supergateway + desktop-commander exposed
+host, starts `hack-agent` with supergateway + desktop-commander exposed
 on `http://127.0.0.1:8000/mcp`, and puts both containers on a private
 docker network. The agent reaches the target by name
 (`http://target-nginx:80`), so the lab works identically on macOS and
@@ -68,14 +68,14 @@ docker compose logs -f
 Quick smoke test that the hacking box can actually see the target:
 
 ```bash
-docker compose exec kali-box curl -sI http://target-nginx/ | head -n1
+docker compose exec hack-agent curl -sI http://target-nginx/ | head -n1
 # expected: HTTP/1.1 200 OK
 ```
 
 Interactive shell (if you want to poke around inside the hacking box):
 
 ```bash
-docker compose exec kali-box bash
+docker compose exec hack-agent bash
 ```
 
 Tear the lab down when you are done:
@@ -117,7 +117,7 @@ python3 ./OA_pentester.py
 ```
 
 The script plans against a single authorized target, asks the
-sequential-thinking server for a plan, uses kali-box to install nikto
+sequential-thinking server for a plan, uses hack-agent to install nikto
 if needed, runs it in the background, polls, and summarizes the top
 findings. Conversation history is kept in a local SQLite session
 ("hackingbot") so you can re-run and continue the same engagement.
@@ -134,7 +134,7 @@ mkdir -p .vscode
 ```json
 {
     "servers": {
-        "kali-box": {
+        "hack-agent": {
             "url": "http://127.0.0.1:8000/mcp",
             "type": "http"
         }
