@@ -1,5 +1,4 @@
 openai
-traceloop-sdk
-langtrace-python-sdk 
 openai-agents
+traceloop-sdk
 chromadb

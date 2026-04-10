@@ -4,102 +4,263 @@
 
 ## Introduction
 
-This lab explores key concepts in Authentication, Authorization, and Observability for AI-integrated systems:
-- OAuth flows for machine-to-machine (M2M) and web app auth using real code examples.
-- Logging and tracing (coming soon) for monitoring agent behavior and API interactions
-- RAG with metadata (coming soon) to enhance retrieval and reasoning with structured context
+Building an agent that works on your laptop is one thing. Running it
+in production is something else entirely. This lab covers the gap
+between a prototype and an enterprise-grade deployment:
 
-Ideal for securing and debugging AI-powered applications in production environments.
+- **Authentication and authorization**: OAuth 2.0 flows (M2M and
+  web app) for securing agent APIs.
+- **Observability**: tracing agent calls with Traceloop and OpenAI's
+  built-in tracing so you can see what your agents are doing (and why
+  they fail).
+- **Access-controlled RAG**: metadata-based filtering in ChromaDB to
+  enforce who can see what when an agent retrieves documents.
+- **Dockerized agents**: packaging an OpenAI agent as a containerized
+  FastAPI service with health checks, structured logging, correlation
+  IDs, and resource limits.
 
 ## Set up your environment
 
-### Setup Commands
-
 ```bash
-export OPENAI_API_KEY="xxxxxxxxx"
+export OPENAI_API_KEY="sk-..."
 ```
 
 ```bash
 ./lab_setup.sh
-```
-
-```bash
 source .lab090/bin/activate
 ```
-## Lab instructions
-### OAuth 2.0
-#### OAuth 2.0 M2M API Server with OpenAI Integration
-Instructions see [OAuth 2.0 M2M API Server with OpenAI Integration](https://github.com/kubiosec-ai/openai-oauth-demo/)<br>
 
-The `client.py` example demonstrates a Machine-to-Machine (M2M) authenticates with Amazon Cognito using the **OAuth 2.0 client credentials flow**, and interact with a protected FastAPI server. 
+## Part 1: Authentication and Authorization
 
-The FastAPI application `server.py` implements a secure Machine-to-Machine (M2M) service, implementing both authentication and authorization using OAuth 2.0 with Amazon Cognito. It protects endpoints by verifying incoming JWT access tokens against **Cognito’s public keys (JWKS)**, ensuring that only authorized services can access the API. The app also integrates OpenAI’s API to generate AI-powered responses for authenticated requests. 
+### OAuth 2.0 M2M (Machine-to-Machine)
 
+The M2M flow is what you use when one service calls another, with no
+human in the loop. A `client.py` authenticates with Amazon Cognito
+using the OAuth 2.0 client credentials flow, then calls a protected
+FastAPI server that verifies the JWT and forwards the request to
+OpenAI.
 
-#### OAuth 2.0 Web Application with OpenAI Integration
-This project is a fully functional OAuth 2.0 web application demo that illustrates how to implement secure user authentication using Amazon Cognito as the identity provider. Built with Flask and Authlib, it showcases how to perform login, retrieve and inspect tokens, handle user session management, and access OpenID Connect (OIDC) claims. Designed for educational purposes, it also includes a token debug interface and an admin-only route that integrates with the OpenAI API for dynamic content generation. This demo is ideal for developers looking to understand OAuth/OIDC Authorization Code Flow in a Python-based web environment.
-Instructions can be found here [OAuth Web Application Demo](https://github.com/kubiosec-codecamp/oauth-web-app.git)
+Instructions and code:
+[OAuth 2.0 M2M API Server with OpenAI Integration](https://github.com/kubiosec-ai/openai-oauth-demo/)
 
-### Logging and Tracing
-#### Traceloop
+### OAuth 2.0 Web Application
 
-This script demonstrates how to use OpenAI's GPT-4o model to generate a joke, while integrating Traceloop for observability and tracing. The create_joke function is decorated as a workflow, enabling detailed monitoring of the AI-powered joke generation process using OpenTelemetry standards. Checkout [traceloop](https://www.traceloop.com/)
+The web app flow handles human users logging in via a browser. A Flask
+app uses Authlib to implement the OAuth Authorization Code Flow with
+Amazon Cognito, including token inspection, session management, and an
+admin-only route that calls OpenAI.
 
-```bash
-export TRACELOOP_API_KEY=tl_xxxxxxxxxxxxx
-```
+Instructions and code:
+[OAuth Web Application Demo](https://github.com/kubiosec-codecamp/oauth-web-app.git)
 
-```bash
-python traceloop_01.py
-```
+## Part 2: Observability and Tracing
 
-#### OpenAI Tracing
+### Traceloop integration
 
-This script is using the OpenAI Agent framework to build a triage agent that routes user questions to specialized tutors, while enforcing input safety using a custom guardrail. The guardrail checks whether a question is related to homework, and if not, the input is blocked. Accepted inputs are routed to either a math or history tutor agent for detailed responses. The entire process is traced and logged using OpenAI for observability.
-
-```bash
-python openai_trace_01.py
-```
-
-### RAG with Metadata
-#### Chroma and Metadata
-
-This script demonstrates how to use the Chroma database to store and retrieve documents with metadata-based access control. It simulates a real-world use case where documents are tagged as either public or confidential, and users can query the database with or without access filters.
+Traceloop wraps your OpenAI calls with OpenTelemetry traces. The
+`@workflow` decorator captures latency, token usage, and errors for
+every call, and ships the data to the Traceloop dashboard.
 
 ```bash
-python rag_metadata_01.py
+export TRACELOOP_API_KEY="tl_..."
+python3 traceloop_01.py
 ```
 
-#### Chroma, Metadata and OpenAI Embedding
+Check [traceloop.com](https://www.traceloop.com/) for the dashboard.
 
-This script demonstrates how to store and search documents in Chroma using automatic embedding via OpenAI's text-embedding-3-small model. Instead of manually generating embeddings, we configure Chroma with an OpenAIEmbeddingFunction, which automatically computes and stores embeddings when documents are added.
+### OpenAI Agents built-in tracing
+
+The OpenAI Agents SDK has built-in tracing that logs every agent step:
+guardrail checks, handoffs, tool calls, and final output. This example
+builds a triage agent with a homework guardrail that blocks off-topic
+questions, then routes accepted inputs to a math or history tutor.
+
+```bash
+python3 openai_trace_01.py
+```
+
+The trace output appears in your OpenAI dashboard under the Traces
+tab. Every guardrail decision and agent handoff is visible.
+
+## Part 3: Access-Controlled RAG
+
+These exercises build up a RAG pipeline with metadata-based access
+control. The idea: documents are tagged as `public` or
+`confidential`, and the retrieval query filters by access level.
+This is how you prevent an agent from leaking internal data to
+unauthorized users.
+
+| Exercise | File | What it adds |
+|----------|------|-------------|
+| 1 | `rag_metadata_01.py` | ChromaDB basics: add docs with metadata, query with access filters |
+| 2 | `rag_metadata_02.py` | Automatic OpenAI embeddings via ChromaDB's embedding function |
+| 3 | `rag_metadata_03.py` | Full RAG pipeline: embed, retrieve, generate with GPT-4o |
+| 4 | `rag_metadata_04.py` | Persistent storage: data survives restarts |
+| - | `verify_persistence.py` | Verify that persistent storage works |
+
+### Exercise 1: Metadata-based access control
+
+Stores 20 public and 20 confidential documents in ChromaDB, then
+queries with `where={"access": "public"}` to demonstrate that
+confidential docs are excluded from results.
+
+```bash
+python3 rag_metadata_01.py
+```
+
+### Exercise 2: OpenAI embeddings
+
+Same documents, but uses ChromaDB's `OpenAIEmbeddingFunction` to
+automatically compute embeddings with `text-embedding-3-small`. No
+manual embedding management needed.
 
 ```bash
 export CHROMA_OPENAI_API_KEY=$OPENAI_API_KEY
+python3 rag_metadata_02.py
+```
+
+### Exercise 3: Full RAG with GPT-4o
+
+Adds the generation step: retrieved documents are assembled into a
+context string, passed to GPT-4o, and the model answers grounded in
+the retrieved evidence. Access filtering still applies.
+
+```bash
+python3 rag_metadata_03.py
+```
+
+### Exercise 4: Persistent storage
+
+Uses `chromadb.PersistentClient` so data survives between script runs.
+Run it once to populate, then run `verify_persistence.py` to confirm
+the data is still there.
+
+```bash
+python3 rag_metadata_04.py
+python3 verify_persistence.py
+```
+
+## Part 4: Dockerized Agent Service
+
+This is the "how do I ship this to production" part. The `docker_agent/`
+directory packages an OpenAI agent as a containerized FastAPI service
+with enterprise patterns baked in.
+
+### What is in the box
+
+```
+docker_agent/
+  agent_service.py     # FastAPI app with the agent
+  Dockerfile           # Multi-stage build, non-root user
+  docker-compose.yml   # Orchestration with resource limits
+  .env.example         # Template for secrets
+```
+
+The service exposes two endpoints:
+
+- `POST /chat` : send a message, get the agent's response
+- `GET /health` : health check for K8s / ECS / any orchestrator
+
+### Enterprise patterns demonstrated
+
+**Structured JSON logging.** Every log line is a JSON object with
+timestamp, level, message, and correlation ID. This is what log
+aggregators (ELK, Datadog, CloudWatch) expect.
+
+**Correlation IDs.** Every request gets a UUID that flows through
+logs and the response header (`X-Correlation-ID`). When a user
+reports an issue, you can trace the full request lifecycle.
+
+**Health checks.** The `/health` endpoint returns the service status
+and configuration checks. The Dockerfile and docker-compose both
+define health checks so the orchestrator knows when the container is
+ready to serve traffic.
+
+**Non-root execution.** The Dockerfile creates and switches to a
+non-root user. Containers should never run as root in production.
+
+**Resource limits.** docker-compose sets memory (512M) and CPU (1.0)
+limits. Without these, a single runaway request can starve the host.
+
+**Environment-based secrets.** The API key comes from `.env` or
+environment variables, never from the image. The `.env` file is in
+`.gitignore` by default.
+
+### Run it
+
+```bash
+cd docker_agent
+cp .env.example .env
+# Edit .env with your OPENAI_API_KEY
 ```
 
 ```bash
-python rag_metadata_02.py
+docker compose up --build
 ```
 
-#### Semantic Search and Retrieval-Augmented Generation
-
-This code demonstrates a Retrieval-Augmented Generation (RAG) pipeline that combines OpenAI's embedding capabilities with Chroma's vector storage to perform semantic search over documents. It then leverages GPT-4 to generate responses based on the retrieved information.
+Test it:
 
 ```bash
-python rag_metadata_03.py
+curl -s http://localhost:8000/health | jq .
 ```
-
-#### Setup with Persistent Storage
 
 ```bash
-python rag_metadata_04.py
+curl -s -X POST http://localhost:8000/chat \
+    -H "Content-Type: application/json" \
+    -d '{"message": "What is the weather in Brussels?", "user_id": "demo"}' | jq .
 ```
-## Cleanup environment
+
+You should see structured JSON logs in the Docker output with
+correlation IDs matching the response headers.
+
+### Run without Docker (local dev)
+
+```bash
+cd docker_agent
+pip install -r requirements.txt
+python3 agent_service.py
 ```
+
+### Stop it
+
+```bash
+docker compose down
+```
+
+## Making agents enterprise-ready: checklist
+
+Here is a summary of what separates a prototype from a production
+agent deployment:
+
+| Concern | Prototype | Production |
+|---------|-----------|------------|
+| Secrets | Hardcoded in code | Environment variables, vault, or secrets manager |
+| Logging | `print()` | Structured JSON, shipped to a log aggregator |
+| Tracing | None | Correlation IDs, OpenTelemetry, Traceloop |
+| Auth | None | OAuth 2.0, JWT validation, API keys with scopes |
+| Access control | All data visible | Metadata filtering in RAG, role-based access |
+| Packaging | `python script.py` | Docker image, health checks, resource limits |
+| Orchestration | Manual | K8s Deployment, ECS Task, or similar |
+| Error handling | Stacktrace in terminal | Structured error responses, retry logic, circuit breakers |
+| Scaling | Single process | Multiple replicas behind a load balancer |
+| Monitoring | Check terminal | Dashboards, alerts on latency/error rate |
+
+The exercises in this lab cover the first six rows. The last four are
+infrastructure-level concerns that depend on your cloud provider and
+deployment platform, but the Docker example gives you a starting point
+that works with any orchestrator.
+
+## Cleanup
+
+```bash
 deactivate
-```
-```
 ./lab_cleanup.sh
 ```
+
+For the Docker example:
+
+```bash
+cd docker_agent && docker compose down
+```
+
 Back to [Lab Overview](https://github.com/kubiosec-agentic/agentic-labs/blob/master/README.md#-lab-overview)
