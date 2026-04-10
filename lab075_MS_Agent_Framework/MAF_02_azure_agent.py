@@ -5,17 +5,21 @@ This file is the Azure counterpart of MAF_01_openai_agent.py. The
 business logic (tools, instructions, query) is identical. The only
 differences are:
 
-  1. Auth:   API key via AZURE_OPENAI_API_KEY instead of OPENAI_API_KEY.
-  2. Env:    AZURE_OPENAI_ENDPOINT + AZURE_OPENAI_CHAT_MODEL
-             instead of OPENAI_API_KEY + OPENAI_CHAT_MODEL.
+  1. Client:  OpenAIChatCompletionClient (uses chat.completions API
+              supported by all Azure OpenAI endpoints).
+  2. Auth:    API key via AZURE_OPENAI_API_KEY.
+  3. Env:     AZURE_OPENAI_ENDPOINT + AZURE_OPENAI_CHAT_MODEL +
+              AZURE_OPENAI_API_VERSION instead of OPENAI_API_KEY +
+              OPENAI_CHAT_MODEL.
 
 Compare the two files side-by-side to see exactly what changes when
 moving from OpenAI to Azure.
 
 Prerequisites:
     export AZURE_OPENAI_API_KEY="<your-azure-api-key>"
-    export AZURE_OPENAI_ENDPOINT="https://<your-resource>.cognitiveservices.azure.com/"
+    export AZURE_OPENAI_ENDPOINT="https://<resource>.cognitiveservices.azure.com/"
     export AZURE_OPENAI_CHAT_MODEL="gpt-5-nano"
+    export AZURE_OPENAI_API_VERSION="2024-12-01-preview"
 
 Run:
     python3 MAF_02_azure_agent.py
@@ -33,8 +37,10 @@ if not os.environ.get("AZURE_OPENAI_ENDPOINT"):
     sys.exit("Error: AZURE_OPENAI_ENDPOINT is not set. Run: export AZURE_OPENAI_ENDPOINT=\"https://...\"")
 if not os.environ.get("AZURE_OPENAI_CHAT_MODEL"):
     sys.exit("Error: AZURE_OPENAI_CHAT_MODEL is not set. Run: export AZURE_OPENAI_CHAT_MODEL=\"gpt-5-nano\"")
+if not os.environ.get("AZURE_OPENAI_API_VERSION"):
+    sys.exit("Error: AZURE_OPENAI_API_VERSION is not set. Run: export AZURE_OPENAI_API_VERSION=\"2024-12-01-preview\"")
 
-from agent_framework.openai import OpenAIChatClient
+from agent_framework.openai import OpenAIChatCompletionClient
 
 
 # Same tool, same logic, same annotation style.
@@ -52,13 +58,15 @@ def get_weather(
 async def main() -> None:
     print("=== Azure OpenAI Agent Example ===\n")
 
-    # Same OpenAIChatClient, but with explicit Azure routing inputs.
-    # When api_key + azure_endpoint are passed, the client switches
-    # to Azure mode even if OPENAI_API_KEY is also set.
-    agent = OpenAIChatClient(
+    # OpenAIChatCompletionClient uses the standard chat.completions API
+    # which is supported by all Azure OpenAI endpoints (including
+    # cognitiveservices.azure.com). Passing azure_endpoint + api_key
+    # switches the client to Azure mode.
+    agent = OpenAIChatCompletionClient(
         model=os.environ["AZURE_OPENAI_CHAT_MODEL"],
         azure_endpoint=os.environ["AZURE_OPENAI_ENDPOINT"],
         api_key=os.environ["AZURE_OPENAI_API_KEY"],
+        api_version=os.environ["AZURE_OPENAI_API_VERSION"],
     ).as_agent(
         name="WeatherAgent",
         instructions="You are a helpful weather assistant.",

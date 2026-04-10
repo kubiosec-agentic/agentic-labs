@@ -29,10 +29,10 @@ Switching from OpenAI to Azure requires only three changes:
 
 |   | OpenAI | Azure |
 |---|--------|-------|
-| **Extra import** | (none) | (none) |
-| **Client constructor** | `OpenAIChatClient()` | `OpenAIChatClient(model=..., azure_endpoint=..., api_key=...)` |
+| **Client class** | `OpenAIChatClient` (Responses API) | `OpenAIChatCompletionClient` (Chat Completions API) |
+| **Client constructor** | `OpenAIChatClient()` | `OpenAIChatCompletionClient(model=..., azure_endpoint=..., api_key=..., api_version=...)` |
 | **Auth mechanism** | `OPENAI_API_KEY` env var | `AZURE_OPENAI_API_KEY` env var |
-| **Env vars** | `OPENAI_API_KEY`, `OPENAI_CHAT_MODEL` | `AZURE_OPENAI_API_KEY`, `AZURE_OPENAI_ENDPOINT`, `AZURE_OPENAI_CHAT_MODEL` |
+| **Env vars** | `OPENAI_API_KEY`, `OPENAI_CHAT_MODEL` | `AZURE_OPENAI_API_KEY`, `AZURE_OPENAI_ENDPOINT`, `AZURE_OPENAI_CHAT_MODEL`, `AZURE_OPENAI_API_VERSION` |
 
 Same class, same import path. Azure routing is activated by passing
 `azure_endpoint` and `credential`.
@@ -57,6 +57,7 @@ source .lab075/bin/activate
 | `AZURE_OPENAI_API_KEY` | 2 | `<your-azure-api-key>` |
 | `AZURE_OPENAI_ENDPOINT` | 2 | `https://<resource>.cognitiveservices.azure.com/` |
 | `AZURE_OPENAI_CHAT_MODEL` | 2 | `gpt-5-nano` |
+| `AZURE_OPENAI_API_VERSION` | 2 | `2024-12-01-preview` |
 
 ```bash
 # Exercises 1, 3, 4 (OpenAI)
@@ -67,6 +68,7 @@ export OPENAI_CHAT_MODEL="gpt-4o-mini"
 export AZURE_OPENAI_API_KEY="<your-azure-api-key>"
 export AZURE_OPENAI_ENDPOINT="https://<resource>.cognitiveservices.azure.com/"
 export AZURE_OPENAI_CHAT_MODEL="gpt-5-nano"
+export AZURE_OPENAI_API_VERSION="2024-12-01-preview"
 ```
 
 > If you do not have an Azure OpenAI resource, skip exercise 2.
@@ -99,9 +101,10 @@ the client setup differs.
 python3 MAF_02_azure_agent.py
 ```
 
-Key differences: explicit `api_key`, `azure_endpoint`, and `model`
-parameters on the constructor, and streaming via
-`agent.run(..., stream=True)`.
+Key differences: `OpenAIChatCompletionClient` instead of
+`OpenAIChatClient` (Azure endpoints use the Chat Completions API),
+explicit `api_key`, `azure_endpoint`, `api_version`, and `model`
+parameters, and streaming via `agent.run(..., stream=True)`.
 
 ### 3. Middleware (OpenAI)
 
