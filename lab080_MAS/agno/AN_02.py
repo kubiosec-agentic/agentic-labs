@@ -11,13 +11,13 @@ Prerequisites:
 
 from agno.agent import Agent
 from agno.models.openai import OpenAIChat
-from agno.storage import SqliteDb
+from agno.storage.sqlite import SqliteStorage
 from rich.pretty import pprint
 
 agent = Agent(
     model=OpenAIChat(id="gpt-4o"),
     # Store session history in a local SQLite file.
-    db=SqliteDb(db_file="tmp/agent.db"),
+    storage=SqliteStorage(table_name="agent_sessions", db_file="tmp/agent.db"),
     # Add the previous chat history to the context sent to the model.
     add_history_to_context=True,
     # Number of historical runs to include in the context.
