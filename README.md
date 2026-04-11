@@ -94,10 +94,10 @@ Each lab is structured to gradually build your understanding and capabilities, f
 | [lab085_OpenAI_Memory](./lab085_OpenAI_Memory) | OpenAI Agents with memory | python, OpenAI Agents SDK, SQLiteSession |
 | [lab087_Mem0](./lab087_Mem0) | Mem0 intelligent memory layer | python, Mem0, Qdrant, Docker, OpenAI |
 | [lab090_Enterprise](./lab090_Enterprise) | Enterprise-ready agent systems | python, OAuth 2.0, tracing, RAG metadata, Chroma |
-| [lab105_evaluatuions](./lab105_evaluatuions) | Prompt evaluation | curl, OpenAI Evals, JSONL, classification testing |
-| [lab110_A2A](./lab110_A2A) | Agent-to-Agent Communication (A2A) | python, A2A protocol, agent discovery |
-| [lab120_Security](./lab120_Security) | Security analysis | python, OpenAI, security testing |
-| [lab122_runtime](./lab122_runtime) | Runtime security monitoring | python, Tetragon, Docker, event tracing |
+| [lab105_evaluations](./lab105_evaluations) | Prompt evaluation | curl, OpenAI Evals, JSONL, classification testing |
+| [lab110_A2A](./lab110_A2A) | Agent-to-Agent Communication (A2A) | python, A2A protocol, Google ADK, MS Agent Framework, cross-vendor interop |
+| [lab120_Security](./lab120_Security) | Bypassing LLM guardrails and prompt injection | python, OpenAI, prompt engineering, MCP injection, guardrails |
+| [lab122_runtime](./lab122_runtime) | Runtime security monitoring | python, Tetragon, eBPF, Docker, process tracing, egress filtering |
 | [lab990_addendum](./lab990_addendum) | Additional examples and patterns | python, various frameworks, specialized use cases |
 
 Each lab has a different environment, feel free to fork, hack, and explore beyond the tasks!

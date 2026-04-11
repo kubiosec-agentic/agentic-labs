@@ -50,14 +50,16 @@ LAB_REQUIRED_KEYS: dict[str, list[str]] = {
     "lab061": ["GOOGLE_API_KEY", "SERP_API_KEY"],
     "lab064": ["OPENAI_API_KEY"],
     "lab070": ["OPENAI_API_KEY"],                        # mcp_05 also needs MCPCLOUD_API_TOKEN
+    "lab071": [],                                        # inspector / debugging only
+    "lab075": ["OPENAI_API_KEY"],
     "lab080": ["OPENAI_API_KEY"],                        # CrewAI optionally needs SERPER_API_KEY
     "lab085": ["OPENAI_API_KEY"],
     "lab087": ["OPENAI_API_KEY"],                        # managed mode also needs MEM0_API_KEY
     "lab090": ["OPENAI_API_KEY"],
     "lab105": ["OPENAI_API_KEY"],
-    "lab110": ["OPENAI_API_KEY"],
+    "lab110": ["OPENAI_API_KEY", "GOOGLE_API_KEY"],       # MS client + ADK server
     "lab120": ["OPENAI_API_KEY"],
-    "lab122": ["OPENAI_API_KEY"],
+    "lab122": [],                                        # Tetragon + stdlib only
 }
 
 # All known keys across every lab (order matches .env.example)

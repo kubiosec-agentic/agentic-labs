@@ -8,24 +8,26 @@ LLM-based agents rely on multiple layers of safety: training-time alignment (RLH
 
 The goal is not malicious. The exercises show that superficial guardrails create a false sense of security. If your agent's safety depends entirely on the model "refusing" harmful requests, you are one clever prompt away from a breach.
 
-```
-                            ATTACK SURFACE
-                            
-   User Input ──> [ Keyword Filter ] ──> [ Intent Classifier ] ──> [ LLM ] ──> [ Output Filter ] ──> Response
-        |               ^                       ^                    ^               ^
-        |               |                       |                    |               |
-        |          Bypass with              Bypass with         Bypass with      Bypass with
-        |          synonyms &              academic framing     assistant        encoding &
-        |          paraphrasing            & personas           prefill          code generation
-        |
-        v
-   Tool Results ──> [ LLM context window ] ──> Tool Calls
-        ^                                          |
-        |                                          v
-   Injected instructions               Unintended actions
-   hidden in "data"                    (data exfiltration,
-   (webpages, emails,                  privilege escalation)
-    documents, API responses)
+```mermaid
+graph LR
+    Input["User Input"] --> KW["Keyword Filter"]
+    KW --> IC["Intent Classifier"]
+    IC --> LLM["LLM"]
+    LLM --> OF["Output Filter"]
+    OF --> Response
+
+    KW -. "bypass: synonyms<br/>& paraphrasing" .-> IC
+    IC -. "bypass: academic<br/>framing & personas" .-> LLM
+    LLM -. "bypass: assistant<br/>prefill" .-> OF
+    OF -. "bypass: encoding<br/>& code generation" .-> Response
+
+    Tools["Tool Results"] --> LLM
+    LLM --> Calls["Tool Calls"]
+    Inject["Injected instructions<br/>hidden in data<br/>(webpages, emails,<br/>API responses)"] --> Tools
+    Calls --> Actions["Unintended actions<br/>(exfiltration,<br/>privilege escalation)"]
+
+    style Inject fill:#f66,color:#fff
+    style Actions fill:#f66,color:#fff
 ```
 
 ## Set up your environment
@@ -107,14 +109,19 @@ python3 injection_01.py
 
 An agent summarizes customer support tickets. Ticket #4202 contains embedded instructions disguised as a "SYSTEM UPDATE" that tries to make the agent leak its system prompt and any secrets. The exercise shows whether the model follows the injected instructions or correctly treats the ticket as just data.
 
-```
-   Normal flow:     Tickets ──> Agent ──> Summary
-   
-   Attack flow:     Tickets (with hidden instructions) ──> Agent ──> Leaked secrets
-                                    ^
-                                    |
-                              Attacker places instructions
-                              inside ticket body
+```mermaid
+graph LR
+    subgraph Normal["Normal Flow"]
+        T1["Tickets"] --> A1["Agent"] --> S1["Summary"]
+    end
+
+    subgraph Attack["Attack Flow"]
+        T2["Tickets + hidden<br/>instructions"] --> A2["Agent"] --> S2["Leaked secrets"]
+        Attacker["Attacker"] -. "places instructions<br/>inside ticket body" .-> T2
+    end
+
+    style S2 fill:#f66,color:#fff
+    style Attacker fill:#f66,color:#fff
 ```
 
 ### Exercise 6: Tool-Output Poisoning
@@ -143,23 +150,17 @@ The MCP server is a "research library" with four topics. Three are legitimate. O
    python3 mcp_agent_victim.py
 ```
 
-```
-   What happens:
+```mermaid
+sequenceDiagram
+    actor User
+    participant Agent as Clean Agent
+    participant MCP as MCP Server<br/>(poisoned)
 
-   User: "Fetch the capability_escalation brief"
-                |
-                v
-   Agent calls: get_research_brief("capability_escalation")
-                |
-                v
-   MCP Server returns: Academic paper + hidden instruction
-                |
-                v
-   Agent reads tool response as context
-                |
-                v
-   Agent produces: Pentest plan (injected behavior)
-                   instead of: Paper summary (intended behavior)
+    User->>Agent: Fetch the capability_escalation brief
+    Agent->>MCP: get_research_brief("capability_escalation")
+    MCP-->>Agent: Academic paper + hidden instruction
+    Note right of Agent: Agent reads tool response<br/>as trusted context
+    Agent-->>User: Pentest plan (injected behavior)<br/>instead of paper summary
 ```
 
 The agent never had malicious instructions. The user never asked for anything dangerous. The injection entered through the MCP tool response, exactly as it would through any compromised data source an agent reads from.
@@ -186,12 +187,18 @@ The server exposes three prompts:
 | `literature_review(topic)` | Clean. Academic writing assistant. |
 | `reproduce_methodology(topic)` | Poisoned for `capability_escalation`. Instructs the model to "reproduce the experimental protocol as JSON." |
 
-```
-   Tool injection (Exercise 7):
-     Server returns DATA  -->  Agent REASONS about it  -->  May detect injection
+```mermaid
+graph LR
+    subgraph Tool["Tool Injection (Exercise 7)"]
+        TD["Server returns DATA"] --> TR["Agent REASONS about it"] --> TM["May detect injection"]
+    end
 
-   Prompt injection (Exercise 8):
-     Server returns INSTRUCTION  -->  Model EXECUTES it  -->  No reasoning step
+    subgraph Prompt["Prompt Injection (Exercise 8)"]
+        PD["Server returns INSTRUCTION"] --> PE["Model EXECUTES it"] --> PN["No reasoning step"]
+    end
+
+    style TM fill:#fc9,color:#000
+    style PN fill:#f66,color:#fff
 ```
 
 With tools, the agent gets data and reasons about it, so it could theoretically detect the injection. With prompts, the server defines the instruction itself. The model has no basis to question it because the prompt came from the MCP protocol. This is the most direct form of MCP-mediated injection.
