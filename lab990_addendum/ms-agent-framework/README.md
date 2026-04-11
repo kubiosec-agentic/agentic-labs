@@ -3,42 +3,17 @@
 Reference examples for the Microsoft Agent Framework 1.0 GA Python API.
 These scripts complement the hands-on exercises in **lab075_MS_Agent_Framework**.
 
+The Azure examples here use `az login` (AzureCliCredential) for authentication
+instead of API keys, showing an alternative approach to the key-based setup in lab075.
+
 > For the full documentation see <https://github.com/microsoft/agent-framework/>
-
-## 1.0 GA Breaking Changes
-
-The 1.0 GA release introduced several breaking changes from the pre-release API:
-
-- `ChatAgent` removed, replaced by `Agent` (with `client=` instead of `chat_client=`)
-- `AzureAIAgentClient` removed; use `FoundryChatClient` from `agent_framework.foundry`
-- `HostedCodeInterpreterTool`, `HostedWebSearchTool` removed; use `client.get_code_interpreter_tool()` etc.
-- `ChatMessage` renamed to `Message` (with `contents=` instead of `text=`)
-- `model_id=` renamed to `model=` everywhere
-- `run_stream()` replaced by `run(stream=True)`
-- Separate packages: `agent-framework-core`, `agent-framework-openai`, `agent-framework-foundry`
-
-See the full migration guide:
-<https://learn.microsoft.com/en-us/agent-framework/support/upgrade/python-2026-significant-changes>
 
 ## Azure AI Foundry Setup
 
-1. Go to <https://ai.azure.com> and **Sign In**
-
-   ![Sign In](images/01_Deployment.png)
-
+1. Go to <https://ai.azure.com> and sign in
 2. Create a new Azure AI Foundry resource and a project
-
-   ![Project](images/02_Project_name.png)
-
-3. Go to Models + endpoints, deploy a base model
-
-   ![Deploy](images/03_Create_deployment.png)
-   ![Select model](images/05_Select_model_gpt4o.png)
-
-4. Note the deployment name
-
-   ![Deployment name](images/07_Deployment_name.png)
-
+3. Go to **Models + endpoints**, deploy a base model (e.g. `gpt-4o`)
+4. Note the project endpoint and the deployment name
 5. Set your environment variables:
 
 ```bash
@@ -52,22 +27,15 @@ export FOUNDRY_MODEL="gpt-4o"
 az login
 ```
 
+> The Azure portal UI changes frequently. If the steps above don't match
+> exactly, refer to the official docs at <https://learn.microsoft.com/en-us/azure/ai-foundry/>.
+
 ## Installation
 
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
-```
-
-Or install packages individually:
-
-```bash
-# For Azure Foundry examples
-pip install agent-framework-foundry azure-identity
-
-# For OpenAI examples
-pip install agent-framework-openai
 ```
 
 ## Scripts
