@@ -1,7 +1,7 @@
-^Cubuntu@ip-172-31-2-51:~cat treejson.py
 import json
 import sys
 from collections import defaultdict
+
 
 def load_events(lines):
     """Parse lines of JSON into process events."""
@@ -12,6 +12,7 @@ def load_events(lines):
         except json.JSONDecodeError:
             continue
     return events
+
 
 def build_tree(events):
     """Build process tree mapping from exec/exit events."""
@@ -28,20 +29,26 @@ def build_tree(events):
         elif "process_exit" in ev:
             p = ev["process_exit"]["process"]
             procs[p["exec_id"]] = p
-            # exits don’t add children, but they help populate proc info
+            # exits don't add children, but they help populate proc info
     return procs, children
 
-def print_tree(exec_id, procs, children, indent=""):
+
+def print_tree(exec_id, procs, children, prefix="", is_last=True):
     p = procs.get(exec_id, {})
     if not p:
         return
-    desc = f"{p.get('binary', '?')} (pid {p.get('pid','?')})"
+    connector = "└── " if is_last else "├── "
+    desc = f"{p.get('binary', '?')} (pid {p.get('pid', '?')})"
     args = p.get("arguments", "")
     if args:
         desc += f" {args}"
-    print(indent + desc)
-    for child in children.get(exec_id, []):
-        print_tree(child, procs, children, indent + "   └─ ")
+    print(prefix + connector + desc)
+
+    child_ids = children.get(exec_id, [])
+    for i, child in enumerate(child_ids):
+        extension = "    " if is_last else "│   "
+        print_tree(child, procs, children, prefix + extension, i == len(child_ids) - 1)
+
 
 if __name__ == "__main__":
     # read JSON lines from stdin or file
@@ -53,6 +60,13 @@ if __name__ == "__main__":
     all_children = {c for cl in children.values() for c in cl}
     roots = [eid for eid in procs if eid not in all_children]
 
-    for r in roots:
-        print_tree(r, procs, children)
-ubuntu@ip-172-31-2-51:~$
+    for i, r in enumerate(roots):
+        p = procs.get(r, {})
+        desc = f"{p.get('binary', '?')} (pid {p.get('pid', '?')})"
+        args = p.get("arguments", "")
+        if args:
+            desc += f" {args}"
+        print(desc)
+        child_ids = children.get(r, [])
+        for j, child in enumerate(child_ids):
+            print_tree(child, procs, children, "", j == len(child_ids) - 1)
