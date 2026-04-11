@@ -110,7 +110,7 @@ Expected output from the curl test:
 }
 ```
 
-The `test_agent_cards.sh` script runs five checks: server reachability, card retrieval, field validation, skills inspection, and a test A2A task.
+The `test_agent_cards.sh` script runs four checks: card retrieval, field validation, skills inspection, and a test A2A task.
 
 ## Step 3: Setup the Microsoft Agent Framework Client
 

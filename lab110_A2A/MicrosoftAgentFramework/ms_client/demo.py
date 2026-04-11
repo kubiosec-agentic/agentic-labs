@@ -3,13 +3,13 @@ import httpx
 
 from a2a.client import A2ACardResolver
 from agent_framework.a2a import A2AAgent
-from agent_framework import ChatAgent
+from agent_framework import Agent
 from agent_framework.openai import OpenAIChatClient
 
 
 async def main():
     remote_base_url = "http://localhost:8001/a2a/check_prime_agent"
-    card_path = "/.well-known/agent-card.json"  # matches ADK examples
+    card_path = "/.well-known/agent-card.json"
 
     async with httpx.AsyncClient(timeout=60.0) as http_client:
         resolver = A2ACardResolver(httpx_client=http_client, base_url=remote_base_url)
@@ -28,8 +28,8 @@ async def main():
         description="Check if one or more integers are prime. Provide the integers in your task.",
     )
 
-    openai_agent = ChatAgent(
-        chat_client=OpenAIChatClient(),
+    openai_agent = Agent(
+        client=OpenAIChatClient(),
         name="ms_openai_agent",
         instructions=(
             "You are a helpful assistant. "

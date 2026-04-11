@@ -26,7 +26,7 @@ import httpx
 
 from a2a.client import A2ACardResolver
 from agent_framework.a2a import A2AAgent
-from agent_framework import ChatAgent
+from agent_framework import Agent
 from agent_framework.openai import OpenAIChatClient
 
 
@@ -71,8 +71,8 @@ async def main():
     )
 
     # ── Create the local OpenAI-backed agent ──────────────────────
-    openai_agent = ChatAgent(
-        chat_client=OpenAIChatClient(),
+    openai_agent = Agent(
+        client=OpenAIChatClient(),
         name="ms_openai_agent",
         instructions=(
             "You are a math research assistant. "

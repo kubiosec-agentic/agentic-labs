@@ -95,7 +95,7 @@ This part demonstrates a Microsoft Agent Framework client (OpenAI) communicating
 | `MicrosoftAgentFramework/ms_client/demo.py` | Single-shot demo: "Is 97 prime?" |
 | `MicrosoftAgentFramework/ms_client/demo_conversation.py` | Multi-turn bidirectional conversation |
 | `MicrosoftAgentFramework/test.py` | Quick agent card connectivity check |
-| `test_agent_cards.sh` | Curl-based agent card verification (5 tests) |
+| `test_agent_cards.sh` | Curl-based agent card verification (4 tests) |
 
 ### Step 5: Setup the ADK Server (Terminal 1)
 
@@ -138,7 +138,7 @@ Or run the full verification suite:
 ./test_agent_cards.sh
 ```
 
-This runs 5 checks: server reachability, card retrieval, field validation, skills inspection, and a test A2A task via JSON-RPC.
+This runs 4 checks: card retrieval, field validation, skills inspection, and a test A2A task via JSON-RPC.
 
 ### Step 7: Setup the Microsoft Agent Framework Client (Terminal 2)
 
