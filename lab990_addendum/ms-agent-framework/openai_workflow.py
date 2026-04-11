@@ -1,17 +1,53 @@
 # Copyright (c) Microsoft. All rights reserved.
+# Updated to Microsoft Agent Framework 1.0 GA API
+#
+# Key changes from pre-1.0:
+#   - ChatMessage -> Message (with contents= instead of text=)
+#   - ChatClientProtocol -> SupportsChatGetResponse
+#   - model_id= -> model=
+#   - set_start_executor() fluent method -> start_executor= constructor param
+#   - agent.run_stream() -> agent.run(stream=True)
+#   - Contents -> list[Content] (Content is the unified content class)
+
+"""
+Sample: Workflow as Agent with Reflection and Retry Pattern
+
+Purpose:
+This sample demonstrates how to wrap a workflow as an agent using .as_agent().
+It uses a reflection pattern where a Worker executor generates responses and a
+Reviewer executor evaluates them. If the response is not approved, the Worker
+regenerates the output based on feedback until the Reviewer approves it. Only
+approved responses are emitted to the external consumer.
+
+Key Concepts Demonstrated:
+- WorkflowBuilder with .as_agent() to wrap a workflow as a regular agent.
+- Cyclic workflow design (Worker / Reviewer) for iterative improvement.
+- AgentRunUpdateEvent: Mechanism for emitting approved responses externally.
+- Structured output parsing for review feedback using Pydantic.
+- State management for pending requests and retry logic.
+
+Prerequisites:
+    export OPENAI_API_KEY="sk-..."
+    export OPENAI_CHAT_MODEL="gpt-4o-mini"
+"""
 
 import asyncio
+import os
+import sys
 from dataclasses import dataclass
 from uuid import uuid4
+
+if not os.environ.get("OPENAI_API_KEY"):
+    sys.exit("Error: OPENAI_API_KEY is not set. Run: export OPENAI_API_KEY=\"sk-...\"")
 
 from agent_framework import (
     AgentRunResponseUpdate,
     AgentRunUpdateEvent,
-    ChatClientProtocol,
-    ChatMessage,
-    Contents,
+    Content,
     Executor,
+    Message,
     Role,
+    SupportsChatGetResponse,
     WorkflowBuilder,
     WorkflowContext,
     handler,
@@ -19,37 +55,14 @@ from agent_framework import (
 from agent_framework.openai import OpenAIChatClient
 from pydantic import BaseModel
 
-"""
-Sample: Workflow as Agent with Reflection and Retry Pattern
-
-Purpose:
-This sample demonstrates how to wrap a workflow as an agent using WorkflowAgent.
-It uses a reflection pattern where a Worker executor generates responses and a
-Reviewer executor evaluates them. If the response is not approved, the Worker
-regenerates the output based on feedback until the Reviewer approves it. Only
-approved responses are emitted to the external consumer. The workflow completes when idle.
-
-Key Concepts Demonstrated:
-- WorkflowAgent: Wraps a workflow to behave like a regular agent.
-- Cyclic workflow design (Worker ↔ Reviewer) for iterative improvement.
-- AgentRunUpdateEvent: Mechanism for emitting approved responses externally.
-- Structured output parsing for review feedback using Pydantic.
-- State management for pending requests and retry logic.
-
-Prerequisites:
-- OpenAI account configured and accessible for OpenAIChatClient.
-- Familiarity with WorkflowBuilder, Executor, WorkflowContext, and event handling.
-- Understanding of how agent messages are generated, reviewed, and re-submitted.
-"""
-
 
 @dataclass
 class ReviewRequest:
     """Structured request passed from Worker to Reviewer for evaluation."""
 
     request_id: str
-    user_messages: list[ChatMessage]
-    agent_messages: list[ChatMessage]
+    user_messages: list[Message]
+    agent_messages: list[Message]
 
 
 @dataclass
@@ -64,7 +77,7 @@ class ReviewResponse:
 class Reviewer(Executor):
     """Executor that reviews agent responses and provides structured feedback."""
 
-    def __init__(self, id: str, chat_client: ChatClientProtocol) -> None:
+    def __init__(self, id: str, chat_client: SupportsChatGetResponse) -> None:
         super().__init__(id=id)
         self._chat_client = chat_client
 
@@ -79,9 +92,9 @@ class Reviewer(Executor):
 
         # Construct review instructions and context.
         messages = [
-            ChatMessage(
+            Message(
                 role=Role.SYSTEM,
-                text=(
+                contents=[
                     "You are a reviewer for an AI agent. Provide feedback on the "
                     "exchange between a user and the agent. Indicate approval only if:\n"
                     "- Relevance: response addresses the query\n"
@@ -89,7 +102,7 @@ class Reviewer(Executor):
                     "- Clarity: response is easy to understand\n"
                     "- Completeness: response covers all aspects\n"
                     "Do not approve until all criteria are satisfied."
-                ),
+                ],
             )
         ]
         # Add conversation history.
@@ -97,7 +110,7 @@ class Reviewer(Executor):
         messages.extend(request.agent_messages)
 
         # Add explicit review instruction.
-        messages.append(ChatMessage(role=Role.USER, text="Please review the agent's responses."))
+        messages.append(Message(role=Role.USER, contents=["Please review the agent's responses."]))
 
         print("Reviewer: Sending review request to LLM...")
         response = await self._chat_client.get_response(messages=messages, response_format=_Response)
@@ -116,17 +129,17 @@ class Reviewer(Executor):
 class Worker(Executor):
     """Executor that generates responses and incorporates feedback when necessary."""
 
-    def __init__(self, id: str, chat_client: ChatClientProtocol) -> None:
+    def __init__(self, id: str, chat_client: SupportsChatGetResponse) -> None:
         super().__init__(id=id)
         self._chat_client = chat_client
-        self._pending_requests: dict[str, tuple[ReviewRequest, list[ChatMessage]]] = {}
+        self._pending_requests: dict[str, tuple[ReviewRequest, list[Message]]] = {}
 
     @handler
-    async def handle_user_messages(self, user_messages: list[ChatMessage], ctx: WorkflowContext[ReviewRequest]) -> None:
+    async def handle_user_messages(self, user_messages: list[Message], ctx: WorkflowContext[ReviewRequest]) -> None:
         print("Worker: Received user messages, generating response...")
 
         # Initialize chat with system prompt.
-        messages = [ChatMessage(role=Role.SYSTEM, text="You are a helpful assistant.")]
+        messages = [Message(role=Role.SYSTEM, contents=["You are a helpful assistant."])]
         messages.extend(user_messages)
 
         print("Worker: Calling LLM to generate response...")
@@ -155,7 +168,7 @@ class Worker(Executor):
 
         if review.approved:
             print("Worker: Response approved. Emitting to external consumer...")
-            contents: list[Contents] = []
+            contents: list[Content] = []
             for message in request.agent_messages:
                 contents.extend(message.contents)
 
@@ -169,9 +182,9 @@ class Worker(Executor):
         print("Worker: Regenerating response with feedback...")
 
         # Incorporate review feedback.
-        messages.append(ChatMessage(role=Role.SYSTEM, text=review.feedback))
+        messages.append(Message(role=Role.SYSTEM, contents=[review.feedback]))
         messages.append(
-            ChatMessage(role=Role.SYSTEM, text="Please incorporate the feedback and regenerate the response.")
+            Message(role=Role.SYSTEM, contents=["Please incorporate the feedback and regenerate the response."])
         )
         messages.extend(request.user_messages)
 
@@ -197,29 +210,27 @@ async def main() -> None:
 
     # Initialize chat clients and executors.
     print("Creating chat client and executors...")
-    mini_chat_client = OpenAIChatClient(model_id="gpt-4.1-nano")
-    chat_client = OpenAIChatClient(model_id="gpt-4.1")
+    mini_chat_client = OpenAIChatClient(model="gpt-4.1-nano")
+    chat_client = OpenAIChatClient(model="gpt-4.1")
     reviewer = Reviewer(id="reviewer", chat_client=chat_client)
     worker = Worker(id="worker", chat_client=mini_chat_client)
 
-    print("Building workflow with Worker ↔ Reviewer cycle...")
+    print("Building workflow with Worker / Reviewer cycle...")
     agent = (
-        WorkflowBuilder()
+        WorkflowBuilder(start_executor=worker)
         .add_edge(worker, reviewer)  # Worker sends responses to Reviewer
         .add_edge(reviewer, worker)  # Reviewer provides feedback to Worker
-        .set_start_executor(worker)
         .build()
         .as_agent()  # Wrap workflow as an agent
     )
 
-    print("Running workflow agent with user query...")
-    print("Query: 'Write code for parallel reading 1 million files on disk and write to a sorted output file.'")
+    query = "Write code for parallel reading 1 million files on disk and write to a sorted output file."
+    print(f"Running workflow agent with user query...")
+    print(f"Query: '{query}'")
     print("-" * 50)
 
     # Run agent in streaming mode to observe incremental updates.
-    async for event in agent.run_stream(
-        "Write code for parallel reading 1 million files on disk and write to a sorted output file."
-    ):
+    async for event in agent.run(query, stream=True):
         print(f"Agent Response: {event}")
 
     print("=" * 50)
@@ -229,5 +240,3 @@ async def main() -> None:
 if __name__ == "__main__":
     print("Initializing Workflow as Agent Sample...")
     asyncio.run(main())
-
-    
