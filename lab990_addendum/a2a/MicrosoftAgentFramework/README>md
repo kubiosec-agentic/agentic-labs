@@ -1,0 +1,219 @@
+# Microsoft Agent Framework ↔ ADK (A2A) Interoperability Demo
+
+This repository demonstrates Agent-to-Agent (A2A) interoperability between:
+
+a Microsoft Agent Framework (Python) client agent using OpenAI, and
+
+a Google ADK server-side agent exposed over A2A with an agent card.
+
+The demo shows how a Microsoft agent can discover, connect to, and invoke a remote ADK agent via the A2A protocol, without either side sharing frameworks or models.
+
+## Architecture Overview
+┌────────────────────────────────────────────┐
+│ Microsoft Agent Framework (Python)          │
+│                                            │
+│  ChatAgent (OpenAI)                         │
+│    └── A2AAgent (remote tool) ───────────┐ │
+│                                           │ │
+└───────────────────────────────────────────┼─┘
+                                            │  A2A (HTTP + Agent Card)
+┌───────────────────────────────────────────┼─┐
+│ Google ADK                                 │ │
+│                                            │ │
+│  A2A API Server                            │ │
+│    └── check_prime_agent                   │◄┘
+│        (Gemini or tool-only)               │
+│        agent-card.json                     │
+└────────────────────────────────────────────┘
+
+
+The ADK agent acts as an A2A server
+
+The Microsoft agent consumes the ADK agent as a remote tool
+
+Communication happens via HTTP + agent card discovery
+
+The two sides are fully decoupled
+
+## Repository Structure
+.
+├── adk_server/
+│   ├── remote_a2a/
+│   │   └── check_prime_agent/
+│   │       ├── agent.py
+│   │       ├── agent.json
+│   │       └── agent-card.json
+│   └── .venv/
+│
+└── ms_client/
+    ├── demo.py
+    └── .venv/
+## Requirements
+General
+
+Python 3.13 or 3.14
+
+Two separate virtual environments (recommended)
+
+Microsoft Agent Framework client
+
+OpenAI API key
+
+ADK server
+
+Either a Gemini API key
+
+Or Vertex AI credentials
+
+Or a tool-only ADK agent (no LLM)
+
+## 1. ADK Server (A2A Provider)
+Setup
+```
+cd adk_server
+python -m venv .venv
+source .venv/bin/activate
+```
+```
+pip install "google-adk[a2a]"
+```
+Authentication (choose one)
+Option A: Gemini API (simplest)
+```
+export GOOGLE_API_KEY="your-gemini-api-key"
+```
+Option B: Vertex AI
+```
+export GOOGLE_GENAI_USE_VERTEXAI=true
+export GOOGLE_CLOUD_PROJECT="your-project-id"
+export GOOGLE_CLOUD_LOCATION="europe-west1"
+```
+```
+gcloud auth application-default login
+```
+Run the A2A server
+```
+adk api_server --a2a --port 8001 remote_a2a
+```
+Verify agent card
+```
+curl http://localhost:8001/a2a/check_prime_agent/.well-known/agent-card.json
+```
+
+If this returns JSON, the A2A server is ready.
+
+2. Microsoft Agent Framework Client
+Setup
+```
+cd ms_client
+python -m venv .venv
+source .venv/bin/activate
+```
+```
+pip install --upgrade pip
+```
+```
+pip install --pre \
+  "agent-framework-core==1.0.0b251216" \
+  "agent-framework-a2a==1.0.0b251216"
+```
+```
+pip install openai httpx
+````
+
+Note: We intentionally do not install the full agent-framework bundle to avoid Redis dependencies that are incompatible with Python 3.14.
+
+Environment variables
+```
+export OPENAI_API_KEY="your-openai-api-key"
+export OPENAI_CHAT_MODEL_ID="gpt-4o-mini"
+```
+Run the demo
+```
+python demo.py
+```
+
+Example output:
+
+97 is a prime number.
+
+What This Demo Proves
+
+A Microsoft Agent Framework agent can:
+
+Discover an external agent via an agent card
+
+Wrap it as an A2AAgent
+
+Expose it as a tool to an OpenAI-backed ChatAgent
+
+A Google ADK agent can:
+
+Act as a fully compliant A2A server
+
+Serve agent metadata
+
+Execute logic on behalf of remote agents
+
+No shared SDK, runtime, or model is required
+
+Why This Matters
+
+This setup demonstrates:
+
+Vendor-neutral agent interoperability
+
+Clear separation between agent reasoning and agent execution
+
+A practical pattern for:
+
+agent marketplaces
+
+agent delegation
+
+cross-platform agent ecosystems
+
+security and observability experiments
+
+Common Pitfalls
+Missing Gemini / Vertex credentials
+
+If you see:
+
+ValueError: Missing key inputs argument!
+
+
+You forgot to configure authentication for the ADK server.
+
+Python 3.14 dependency conflicts
+
+Avoid installing the full agent-framework meta-package on Python 3.14.
+Install only the required sub-packages (core, a2a).
+
+Next Steps
+
+Ideas to extend this demo:
+
+Replace the prime checker with:
+
+CVE lookup agent
+
+Kubernetes manifest linter
+
+Policy evaluation agent
+
+Add:
+
+mTLS between agents
+
+request signing
+
+audit logging
+
+observability (OpenTelemetry)
+
+Deploy both sides on Kubernetes
+
+License
+
+This demo is provided for educational and experimental purposes.
