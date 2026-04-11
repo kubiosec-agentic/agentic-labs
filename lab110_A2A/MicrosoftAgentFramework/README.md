@@ -6,23 +6,23 @@
 
 This demo shows two agents from different vendors communicating via the Agent-to-Agent (A2A) protocol. A Microsoft Agent Framework client (backed by OpenAI) discovers and invokes a Google ADK server (backed by Gemini) without shared SDKs, runtimes, or models.
 
-```
-┌─────────────────────────────────────────┐
-│  Microsoft Agent Framework (Python)     │
-│                                         │
-│  ChatAgent (OpenAI)                     │
-│    └── A2AAgent (remote tool) ────────┐ │
-│                                        │ │
-└────────────────────────────────────────┼─┘
-                                         │  A2A (HTTP + Agent Card)
-┌────────────────────────────────────────┼─┐
-│  Google ADK                            │ │
-│                                        │ │
-│  A2A API Server                        │ │
-│    └── check_prime_agent              ◄┘ │
-│        (Gemini + tool)                   │
-│        agent-card.json                   │
-└──────────────────────────────────────────┘
+```mermaid
+graph TB
+    subgraph MS["Microsoft Agent Framework (Python)"]
+        Agent["Agent (OpenAI)"]
+        A2A_Tool["A2AAgent (remote tool)"]
+        Agent --> A2A_Tool
+    end
+
+    subgraph ADK["Google ADK"]
+        Server["A2A API Server"]
+        Prime["check_prime_agent<br/>(Gemini + tool)"]
+        Card["agent-card.json"]
+        Server --> Prime
+        Server --> Card
+    end
+
+    A2A_Tool -- "A2A (HTTP + Agent Card)" --> Server
 ```
 
 The ADK agent acts as an A2A server, the Microsoft agent consumes it as a remote tool. Communication happens via HTTP and agent card discovery. The two sides are fully decoupled.
@@ -122,7 +122,7 @@ source .venv/bin/activate
 
 ```bash
 export OPENAI_API_KEY="sk-..."
-export OPENAI_CHAT_MODEL_ID="gpt-4o-mini"
+export OPENAI_CHAT_MODEL="gpt-4o-mini"
 ```
 
 ## Step 4: Run the Single-Shot Demo
@@ -150,11 +150,30 @@ This demonstrates a **bidirectional multi-turn conversation** across the A2A bou
 
 Each `prime_checker` call crosses the A2A protocol boundary: the MS agent (OpenAI) sends an HTTP request to the ADK agent (Gemini), which runs the `check_prime` tool and returns the result. The MS agent maintains conversational context across turns and builds on previous results.
 
-```
-   Turn 1: User --> MS Agent (OpenAI) --[A2A]--> ADK Agent (Gemini) --> check_prime([101..110])
-   Turn 2: User --> MS Agent (OpenAI) --[A2A]--> ADK Agent (Gemini) --> check_prime(twin pairs)
-   Turn 3: User --> MS Agent (OpenAI) --[A2A]--> ADK Agent (Gemini) --> check_prime(Mersenne)
-   Turn 4: User --> MS Agent (OpenAI) --> synthesize (no A2A call needed)
+```mermaid
+sequenceDiagram
+    actor User
+    participant MS as MS Agent (OpenAI)
+    participant ADK as ADK Agent (Gemini)
+
+    User->>MS: Check primes 101-110
+    MS->>ADK: A2A: check_prime([101..110])
+    ADK-->>MS: Results
+    MS-->>User: Prime list
+
+    User->>MS: Twin prime pairs?
+    MS->>ADK: A2A: check_prime(twin pairs)
+    ADK-->>MS: Results
+    MS-->>User: Twin pairs found
+
+    User->>MS: Mersenne candidates
+    MS->>ADK: A2A: check_prime(Mersenne)
+    ADK-->>MS: Results
+    MS-->>User: Mersenne primes
+
+    User->>MS: Synthesize all results
+    Note right of MS: No A2A call needed
+    MS-->>User: Full summary
 ```
 
 ## Quick Connectivity Test
@@ -177,7 +196,7 @@ Agent card OK.
 
 ## What This Proves
 
-The Microsoft agent can discover an external agent via an agent card, wrap it as an `A2AAgent`, and expose it as a tool to an OpenAI-backed `ChatAgent`. The Google ADK agent acts as a fully compliant A2A server, serves metadata, and executes logic on behalf of remote agents. No shared SDK, runtime, or model is required.
+The Microsoft agent can discover an external agent via an agent card, wrap it as an `A2AAgent`, and expose it as a tool to an OpenAI-backed `Agent`. The Google ADK agent acts as a fully compliant A2A server, serves metadata, and executes logic on behalf of remote agents. No shared SDK, runtime, or model is required.
 
 ## Common Pitfalls
 

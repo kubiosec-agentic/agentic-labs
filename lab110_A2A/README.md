@@ -11,18 +11,16 @@ This lab has two parts:
 - **Part 1** uses the official `a2a-samples` hello world to introduce the protocol basics: agent cards, discovery, message exchange, and the A2A Inspector.
 - **Part 2** demonstrates real cross-vendor interoperability: a Microsoft Agent Framework client (OpenAI) discovers and invokes a Google ADK server (Gemini) via A2A, with a multi-turn bidirectional conversation.
 
-```
-A2A Protocol Overview
+```mermaid
+sequenceDiagram
+    participant A as Agent A<br/>(Any framework, any model)
+    participant B as Agent B<br/>(Any framework, any model)
 
-  Agent A                                        Agent B
-  ┌──────────────┐                              ┌──────────────┐
-  │ Any framework │  ── discover ──────────────> │ agent-card   │
-  │ Any model     │  <── card JSON ──────────── │ .json        │
-  │               │                              │              │
-  │               │  ── tasks/send ────────────> │ Any framework│
-  │               │  <── result ─────────────── │ Any model    │
-  └──────────────┘                              └──────────────┘
-       HTTP + JSON-RPC                              HTTP + JSON-RPC
+    A->>B: GET /.well-known/agent-card.json
+    B-->>A: Agent Card (JSON)
+    Note over A,B: HTTP + JSON-RPC
+    A->>B: tasks/send (message)
+    B-->>A: Result (message)
 ```
 
 ## Set up your environment
@@ -68,23 +66,23 @@ The agent card contains: agent metadata, available skills, supported input/outpu
 
 This part demonstrates a Microsoft Agent Framework client (OpenAI) communicating with a Google ADK server (Gemini) via A2A. Neither side knows what framework or model the other uses.
 
-```
-┌──────────────────────────────────────────┐
-│  Microsoft Agent Framework (Python)      │
-│                                          │
-│  ChatAgent (OpenAI)                      │
-│    └── A2AAgent (remote tool) ─────────┐ │
-│                                         │ │
-└─────────────────────────────────────────┼─┘
-                                          │  A2A (HTTP + Agent Card)
-┌─────────────────────────────────────────┼─┐
-│  Google ADK                             │ │
-│                                         │ │
-│  A2A API Server                         │ │
-│    └── check_prime_agent               ◄┘ │
-│        (Gemini + tool)                    │
-│        agent-card.json                    │
-└───────────────────────────────────────────┘
+```mermaid
+graph TB
+    subgraph MS["Microsoft Agent Framework (Python)"]
+        Agent["Agent (OpenAI)"]
+        A2A_Tool["A2AAgent (remote tool)"]
+        Agent --> A2A_Tool
+    end
+
+    subgraph ADK["Google ADK"]
+        Server["A2A API Server"]
+        Prime["check_prime_agent<br/>(Gemini + tool)"]
+        Card["agent-card.json"]
+        Server --> Prime
+        Server --> Card
+    end
+
+    A2A_Tool -- "A2A (HTTP + Agent Card)" --> Server
 ```
 
 | File | What it does |
@@ -150,7 +148,7 @@ source .venv/bin/activate
 
 ```bash
 export OPENAI_API_KEY="sk-..."
-export OPENAI_CHAT_MODEL_ID="gpt-4o-mini"
+export OPENAI_CHAT_MODEL="gpt-4o-mini"
 ```
 
 ### Step 8: Single-Shot Demo
@@ -176,11 +174,30 @@ A 4-turn conversation where the MS agent calls the ADK agent multiple times, bui
 | 3 | Check Mersenne candidates (3, 7, 31, 127, 2047, 8191) | prime_checker with 6 numbers |
 | 4 | Synthesize all results across turns | No A2A call; agent summarizes from memory |
 
-```
-  Turn 1: User --> MS Agent (OpenAI) --[A2A]--> ADK Agent (Gemini) --> check_prime
-  Turn 2: User --> MS Agent (OpenAI) --[A2A]--> ADK Agent (Gemini) --> check_prime
-  Turn 3: User --> MS Agent (OpenAI) --[A2A]--> ADK Agent (Gemini) --> check_prime
-  Turn 4: User --> MS Agent (OpenAI) --> synthesize (no A2A call)
+```mermaid
+sequenceDiagram
+    actor User
+    participant MS as MS Agent (OpenAI)
+    participant ADK as ADK Agent (Gemini)
+
+    User->>MS: Check primes 101-110
+    MS->>ADK: A2A: check_prime
+    ADK-->>MS: Results
+    MS-->>User: Prime list
+
+    User->>MS: Twin prime pairs?
+    MS->>ADK: A2A: check_prime
+    ADK-->>MS: Results
+    MS-->>User: Twin pairs found
+
+    User->>MS: Mersenne candidates
+    MS->>ADK: A2A: check_prime
+    ADK-->>MS: Results
+    MS-->>User: Mersenne primes
+
+    User->>MS: Synthesize all results
+    Note right of MS: No A2A call needed
+    MS-->>User: Full summary
 ```
 
 Each `prime_checker` call crosses the A2A protocol boundary. The MS agent maintains conversational context across turns and builds on previous results. Two different LLM vendors collaborate seamlessly.
