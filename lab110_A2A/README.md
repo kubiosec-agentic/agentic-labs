@@ -64,24 +64,6 @@ curl http://127.0.0.1:9999/.well-known/agent-card.json | jq -r .
 
 The agent card contains: agent metadata, available skills, supported input/output modes, and the service URL.
 
-### Step 4: A2A Inspector (optional)
-
-Install and run the A2A Inspector for real-time monitoring and debugging:
-
-```bash
-cd ~/agentic-labs/lab110_A2A
-git clone https://github.com/a2aproject/a2a-inspector.git
-cd a2a-inspector/
-uv sync
-cd frontend
-npm install
-cd ..
-chmod +x scripts/run.sh
-bash scripts/run.sh
-```
-
-The Inspector provides message flow visualization, debugging tools, and performance metrics.
-
 ## Part 2: Cross-Vendor Interoperability (Microsoft + Google)
 
 This part demonstrates a Microsoft Agent Framework client (OpenAI) communicating with a Google ADK server (Gemini) via A2A. Neither side knows what framework or model the other uses.
