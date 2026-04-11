@@ -3,11 +3,13 @@
 #
 # Key changes from pre-1.0:
 #   - ChatMessage -> Message (with contents= instead of text=)
-#   - ChatClientProtocol -> SupportsChatGetResponse
+#   - Role.SYSTEM/USER/ASSISTANT -> plain strings "system"/"user"/"assistant"
+#   - ChatClientProtocol removed; use untyped or duck-typed chat_client
 #   - model_id= -> model=
 #   - set_start_executor() fluent method -> start_executor= constructor param
+#   - AgentRunUpdateEvent -> WorkflowEvent(type="response", ...)
+#   - AgentRunResponseUpdate -> AgentResponseUpdate
 #   - agent.run_stream() -> agent.run(stream=True)
-#   - Contents -> list[Content] (Content is the unified content class)
 
 """
 Sample: Workflow as Agent with Reflection and Retry Pattern
@@ -22,7 +24,7 @@ approved responses are emitted to the external consumer.
 Key Concepts Demonstrated:
 - WorkflowBuilder with .as_agent() to wrap a workflow as a regular agent.
 - Cyclic workflow design (Worker / Reviewer) for iterative improvement.
-- AgentRunUpdateEvent: Mechanism for emitting approved responses externally.
+- WorkflowEvent: Mechanism for emitting approved responses externally.
 - Structured output parsing for review feedback using Pydantic.
 - State management for pending requests and retry logic.
 
@@ -41,15 +43,13 @@ if not os.environ.get("OPENAI_API_KEY"):
     sys.exit("Error: OPENAI_API_KEY is not set. Run: export OPENAI_API_KEY=\"sk-...\"")
 
 from agent_framework import (
-    AgentRunResponseUpdate,
-    AgentRunUpdateEvent,
+    AgentResponseUpdate,
     Content,
     Executor,
     Message,
-    Role,
-    SupportsChatGetResponse,
     WorkflowBuilder,
     WorkflowContext,
+    WorkflowEvent,
     handler,
 )
 from agent_framework.openai import OpenAIChatClient
@@ -77,7 +77,7 @@ class ReviewResponse:
 class Reviewer(Executor):
     """Executor that reviews agent responses and provides structured feedback."""
 
-    def __init__(self, id: str, chat_client: SupportsChatGetResponse) -> None:
+    def __init__(self, id: str, chat_client) -> None:
         super().__init__(id=id)
         self._chat_client = chat_client
 
@@ -93,7 +93,7 @@ class Reviewer(Executor):
         # Construct review instructions and context.
         messages = [
             Message(
-                role=Role.SYSTEM,
+                role="system",
                 contents=[
                     "You are a reviewer for an AI agent. Provide feedback on the "
                     "exchange between a user and the agent. Indicate approval only if:\n"
@@ -110,7 +110,7 @@ class Reviewer(Executor):
         messages.extend(request.agent_messages)
 
         # Add explicit review instruction.
-        messages.append(Message(role=Role.USER, contents=["Please review the agent's responses."]))
+        messages.append(Message(role="user", contents=["Please review the agent's responses."]))
 
         print("Reviewer: Sending review request to LLM...")
         response = await self._chat_client.get_response(messages=messages, response_format=_Response)
@@ -129,7 +129,7 @@ class Reviewer(Executor):
 class Worker(Executor):
     """Executor that generates responses and incorporates feedback when necessary."""
 
-    def __init__(self, id: str, chat_client: SupportsChatGetResponse) -> None:
+    def __init__(self, id: str, chat_client) -> None:
         super().__init__(id=id)
         self._chat_client = chat_client
         self._pending_requests: dict[str, tuple[ReviewRequest, list[Message]]] = {}
@@ -139,7 +139,7 @@ class Worker(Executor):
         print("Worker: Received user messages, generating response...")
 
         # Initialize chat with system prompt.
-        messages = [Message(role=Role.SYSTEM, contents=["You are a helpful assistant."])]
+        messages = [Message(role="system", contents=["You are a helpful assistant."])]
         messages.extend(user_messages)
 
         print("Worker: Calling LLM to generate response...")
@@ -172,9 +172,13 @@ class Worker(Executor):
             for message in request.agent_messages:
                 contents.extend(message.contents)
 
-            # Emit approved result to external consumer via AgentRunUpdateEvent.
+            # Emit approved result via WorkflowEvent.
             await ctx.add_event(
-                AgentRunUpdateEvent(self.id, data=AgentRunResponseUpdate(contents=contents, role=Role.ASSISTANT))
+                WorkflowEvent(
+                    type="response",
+                    data=AgentResponseUpdate(contents=contents, role="assistant"),
+                    executor_id=self.id,
+                )
             )
             return
 
@@ -182,9 +186,9 @@ class Worker(Executor):
         print("Worker: Regenerating response with feedback...")
 
         # Incorporate review feedback.
-        messages.append(Message(role=Role.SYSTEM, contents=[review.feedback]))
+        messages.append(Message(role="system", contents=[review.feedback]))
         messages.append(
-            Message(role=Role.SYSTEM, contents=["Please incorporate the feedback and regenerate the response."])
+            Message(role="system", contents=["Please incorporate the feedback and regenerate the response."])
         )
         messages.extend(request.user_messages)
 
