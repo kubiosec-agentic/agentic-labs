@@ -6,5 +6,8 @@ agent-framework-foundry>=1.0.0
 # Azure authentication (used by az login / AzureCliCredential)
 azure-identity>=1.17.0
 
+# Async HTTP transport required by Azure SDK
+aiohttp>=3.9.0
+
 # Used by azure_agent.py for Field() annotations
 pydantic>=2.0
