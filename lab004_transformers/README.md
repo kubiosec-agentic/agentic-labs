@@ -215,11 +215,29 @@ lab004_transformers/
 ```
 
 ## Cleanup environment
+
+### Local Python
 ```bash
 deactivate
 ```
 ```bash
 ./lab_cleanup.sh
+```
+
+### Docker
+Stop and remove the container:
+```bash
+docker compose down
+```
+
+Remove the image to reclaim disk space (~1 GB for model layers):
+```bash
+docker rmi $(docker compose images -q)
+```
+
+If you also want to remove the downloaded model cache:
+```bash
+docker volume prune
 ```
 
 Back to [Lab Overview](https://github.com/kubiosec-agentic/agentic-labs/blob/master/README.md#-lab-overview)

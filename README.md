@@ -24,6 +24,7 @@ Each lab student has access to a virtual machine, accessible over SSH. Use the c
 ```bash
 ssh -i agentics-key.pem \
     -L 5000:localhost:5000 \
+    -L 5055:localhost:5055 \
     -L 5173:localhost:5173 \
     -L 6274:localhost:6274 \
     -L 8000:localhost:8000 \
@@ -38,6 +39,7 @@ ssh -i agentics-key.pem \
 | Port | Used by |
 |------|---------|
 | 5000 | Flask / API server |
+| 5055 | LangGraph agent CTF server (lab064) |
 | 5173 | MCP Inspector UI (lab071) |
 | 6274 | MCP Inspector proxy (lab071) |
 | 8000 | MCP streamable HTTP server (lab070) |
@@ -86,7 +88,7 @@ Each lab is structured to gradually build your understanding and capabilities, f
 | [lab054_LangChain_Tools](./lab054_LangChain_Tools) | LangChain tools and agents | python, LangChain, tool integration |
 | [lab060_OpenAI_Agents](./lab060_OpenAI_Agents) | Multi-agent orchestration | python, OpenAI Agents SDK, MCP integration |
 | [lab061_Google_Agents](./lab061_Google_Agents) | Google ADK | python, Google ADK, Gemini, agents |
-| [lab064_Langgraph](./lab064_Langgraph) | LangGraph stateful workflows + agent CTF | python, LangGraph, StateGraph, CTF, prompt injection |
+| [lab064_Langgraph](./lab064_Langgraph) | LangGraph stateful workflows + agent CTF (port 5055) | python, LangGraph, StateGraph, CTF, prompt injection |
 | [lab070_MCP](./lab070_MCP) | Model Context Protocol (MCP) core: transports, sampling, memory graph, security | python, fastmcp, MCP, streamable HTTP, SSE, stdio, sampling |
 | [lab071_MCP_Inspector](./lab071_MCP_Inspector) | MCP Inspector and wire-level debugging | MCP Inspector, mcp-debugging, mitmproxy, Wireshark |
 | [lab075_MS_Agent_Framework](./lab075_MS_Agent_Framework) | Microsoft Agent Framework (GA 1.0) | python, agent-framework, OpenAI, Azure OpenAI, middleware, workflows |

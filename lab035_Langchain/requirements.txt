@@ -1,15 +1,16 @@
-# LangChain provider integrations
-langchain-openai>=0.3,<2
-langchain-google-genai>=2.0,<3
-langchain-anthropic>=0.3,<2
-langchain-ollama>=0.3,<2
+# LangChain core -- pin to 0.3.x; huggingface 0.1.2 caps core <0.4.0
+langchain-core>=0.3.58,<0.4.0
+langchain==0.3.25
 
-# LangChain core
-langchain-core>=0.3,<2
-langchain-community>=0.3,<2
+# LangChain provider integrations (all compatible with core 0.3.x)
+langchain-openai==0.3.12
+langchain-google-genai==2.1.4
+langchain-anthropic==0.3.12
+langchain-ollama==0.3.2
+langchain-community==0.3.21
 
 # HuggingFace local model support (optional, see Step 5)
-langchain-huggingface>=0.1,<1
+langchain-huggingface==0.1.2
 torch>=2.2
 accelerate>=0.26
 transformers>=4.45,<5
