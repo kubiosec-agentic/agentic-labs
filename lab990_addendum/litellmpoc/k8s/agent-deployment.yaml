@@ -36,7 +36,7 @@ spec:
                   name: openai-credentials
                   key: OPENAI_API_KEY
             - name: MCP_SERVER_URL
-              value: "https://learn.microsoft.com/api/mcp"
+              value: "http://litellm-proxy.litellm-poc.svc.cluster.local:4000/mcp"
           livenessProbe:
             httpGet:
               path: /health

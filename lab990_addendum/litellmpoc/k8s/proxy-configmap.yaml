@@ -33,6 +33,11 @@ data:
           model: "omni-moderation-latest"
           api_base: "https://api.openai.com/v1"
 
+    mcp_servers:
+      microsoft_learn:
+        url: "https://learn.microsoft.com/api/mcp"
+        transport: "http"
+
     litellm_settings:
       callbacks: custom_callbacks.proxy_handler_instance
       num_retries: 3

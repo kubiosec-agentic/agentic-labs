@@ -45,7 +45,9 @@ from custom_logger import AgentCallLogger
 LITELLM_PROXY_URL = os.environ.get("LITELLM_PROXY_URL", "http://localhost:4000/v1")
 LITELLM_PROXY_KEY = os.environ.get("LITELLM_PROXY_KEY", "sk-master-1234")
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "")
-MCP_SERVER_URL = os.environ.get("MCP_SERVER_URL", "https://learn.microsoft.com/api/mcp")
+# MCP via LiteLLM proxy gateway: the proxy forwards tool calls to the
+# upstream MCP server configured in its config.yaml (mcp_servers section).
+MCP_SERVER_URL = os.environ.get("MCP_SERVER_URL", "http://localhost:4000/mcp")
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("agent_app")

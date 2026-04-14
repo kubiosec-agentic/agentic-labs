@@ -33,7 +33,7 @@ services:
       - LITELLM_PROXY_URL=http://litellm-proxy:4000/v1
       - LITELLM_PROXY_KEY=${LITELLM_MASTER_KEY:-sk-master-1234}
       - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - MCP_SERVER_URL=https://learn.microsoft.com/api/mcp
+      - MCP_SERVER_URL=http://litellm-proxy:4000/mcp
     depends_on:
       litellm-proxy:
         condition: service_healthy

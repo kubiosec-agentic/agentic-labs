@@ -4,33 +4,36 @@
 
 ## Introduction
 
-This lab builds a three-layer AI agent stack and deploys it with Docker Compose. The idea is straightforward: put a proxy between your agent and the LLM provider. That gives you a single observability point for every LLM call, provider-agnostic routing, and a place to bolt on guardrails without touching the agent code.
+This lab builds a three-layer AI agent stack and deploys it with Docker Compose. The idea is straightforward: put a proxy between your agent and everything external. LLM calls and MCP tool calls both flow through the LiteLLM proxy, giving you a single observability point, provider-agnostic routing, and a place to bolt on guardrails without touching the agent code.
 
 The three layers are:
 
-1. **LiteLLM Proxy** (port 4000): an OpenAI-compatible gateway that routes LLM calls, applies moderation guardrails, and logs every request with model, tokens, cost, and latency.
-2. **Agent App** (port 8080): a FastAPI service built with the OpenAI Agents SDK. It talks to the proxy as if it were OpenAI, adds its own input guardrail, and connects to a remote MCP server for tool use.
-3. **Microsoft Learn MCP Server**: a remote MCP endpoint at `https://learn.microsoft.com/api/mcp` that gives the agent search and fetch tools over Microsoft documentation.
+1. **LiteLLM Proxy** (port 4000): an OpenAI-compatible gateway that routes LLM calls and acts as an MCP gateway. It applies moderation guardrails and logs every request with model, tokens, cost, and latency. The proxy forwards MCP tool calls to the upstream Microsoft Learn server.
+2. **Agent App** (port 8080): a FastAPI service built with the OpenAI Agents SDK. It talks to the proxy for both LLM calls (via `/v1`) and MCP tool discovery/execution (via `/mcp`). It adds its own input guardrail and custom trace logging.
+3. **Microsoft Learn MCP Server**: a remote MCP endpoint at `https://learn.microsoft.com/api/mcp` that provides documentation search and fetch tools. The agent never talks to it directly; all MCP traffic is proxied through LiteLLM.
 
 ```mermaid
 flowchart TD
     Client["Client (curl)"]
     Agent["Agent App :8080<br/>OpenAI Agents SDK<br/>Moderation guardrail<br/>Custom trace logger"]
-    Proxy["LiteLLM Proxy :4000<br/>OpenAI backend<br/>Moderation guardrail<br/>Custom callback logger"]
+    Proxy["LiteLLM Proxy :4000<br/>LLM gateway + MCP gateway<br/>Moderation guardrail<br/>Custom callback logger"]
+    OpenAI["OpenAI API"]
     MCP["Microsoft Learn MCP<br/>learn.microsoft.com/api/mcp"]
 
     Client -- HTTP --> Agent
-    Agent -- MCP streamable-HTTP --> MCP
-    Agent -- OpenAI-compat API --> Proxy
+    Agent -- "OpenAI-compat API (/v1)" --> Proxy
+    Agent -- "MCP tools (/mcp)" --> Proxy
+    Proxy -- LLM calls --> OpenAI
+    Proxy -- MCP forwarding --> MCP
 ```
 
 ### What you will cover
 
-1. Deploying a LiteLLM proxy as an OpenAI-compatible gateway.
-2. Wiring an OpenAI Agents SDK app to talk through the proxy instead of directly to OpenAI.
+1. Deploying a LiteLLM proxy as an OpenAI-compatible gateway and MCP gateway.
+2. Wiring an OpenAI Agents SDK app to talk through the proxy for both LLM calls and MCP tool calls.
 3. Dual-layer content moderation: guardrails at both the proxy and the agent level using the OpenAI Moderation API (`omni-moderation-latest`).
-4. MCP tool integration: the agent calls Microsoft Learn search tools via the MCP streamable-HTTP transport.
-5. Structured observability: JSON logs from both layers capturing model, tokens, cost, latency, guardrail results, and MCP tool calls.
+4. MCP tool integration: the agent discovers and calls Microsoft Learn search tools through the proxy's `/mcp` endpoint, which forwards to the upstream MCP server.
+5. Structured observability: JSON logs from both layers capturing model, tokens, cost, latency, guardrail results, and MCP tool calls. Because MCP traffic is proxied, all external calls are visible in a single place.
 
 ## Set up your environment
 
@@ -96,7 +99,7 @@ The response includes the agent name, the LLM answer, and whether the guardrail 
 
 ### Talk to the learning agent (LLM + MCP tools)
 
-The learning agent uses Microsoft Learn MCP tools to search documentation before answering. This exercises the full stack: agent, proxy, and MCP server.
+The learning agent uses Microsoft Learn MCP tools to search documentation before answering. The MCP tool calls flow through the LiteLLM proxy (`/mcp`), which forwards them to the upstream Microsoft Learn server. This exercises the full stack: agent, proxy (both LLM and MCP paths), and the external MCP server.
 
 ```bash
 curl -s http://localhost:8080/chat \
@@ -115,7 +118,7 @@ Watch the agent logs while this runs to see the MCP tool calls (`microsoft_docs_
 curl -s http://localhost:8080/mcp/tools | jq
 ```
 
-This returns the three tools from the Microsoft Learn MCP server: `microsoft_docs_search` (semantic search across docs), `microsoft_code_sample_search` (find code snippets by language), and `microsoft_docs_fetch` (fetch a full doc page as markdown).
+This returns the tools discovered through the LiteLLM proxy's MCP gateway. The proxy connects to the Microsoft Learn MCP server configured in `proxy/config.yaml` and exposes its tools: `microsoft_docs_search` (semantic search across docs), `microsoft_code_sample_search` (find code snippets by language), and `microsoft_docs_fetch` (fetch a full doc page as markdown). LiteLLM namespaces tools by prefixing the server name, so you may see them as `microsoft_learn_microsoft_docs_search` etc.
 
 ### Call the proxy directly (bypass the agent)
 
@@ -232,7 +235,7 @@ litellmpoc/
 |
 +-- proxy/                       # LiteLLM Proxy container
 |   +-- Dockerfile
-|   +-- config.yaml              # Models, guardrails, callback config
+|   +-- config.yaml              # Models, guardrails, MCP servers, callback config
 |   +-- custom_callbacks.py      # Structured JSON logger (PROXY-LOG)
 |
 +-- agent/                       # Agent App container
@@ -256,7 +259,7 @@ litellmpoc/
 | `OPENAI_API_KEY` | Both containers | OpenAI API access + moderation |
 | `LITELLM_MASTER_KEY` | Both containers | Agent authenticates to proxy |
 | `LITELLM_PROXY_URL` | Agent only | Proxy endpoint (auto-set in compose/k8s) |
-| `MCP_SERVER_URL` | Agent only | Microsoft Learn MCP endpoint |
+| `MCP_SERVER_URL` | Agent only | LiteLLM proxy MCP gateway (`http://litellm-proxy:4000/mcp`) |
 
 ## Cleanup
 
