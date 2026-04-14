@@ -12,21 +12,16 @@ The three layers are:
 2. **Agent App** (port 8080): a FastAPI service built with the OpenAI Agents SDK. It talks to the proxy as if it were OpenAI, adds its own input guardrail, and connects to a remote MCP server for tool use.
 3. **Microsoft Learn MCP Server**: a remote MCP endpoint at `https://learn.microsoft.com/api/mcp` that gives the agent search and fetch tools over Microsoft documentation.
 
-```
-+-----------+         +------------------------------+
-|  Client   |--HTTP-->|  Agent App        :8080      |
-|  (curl)   |         |  +- OpenAI Agents SDK        |
-+-----------+         |  +- Moderation guardrail     |
-                      |  +- Custom trace logger      |
-                      |  +- MCP client --------------+--> learn.microsoft.com/api/mcp
-                      +--------------+---------------+
-                                     | OpenAI-compat API
-                      +--------------v---------------+
-                      |  LiteLLM Proxy    :4000      |
-                      |  +- OpenAI backend           |
-                      |  +- Moderation guardrail     |
-                      |  +- Custom callback logger   |
-                      +------------------------------+
+```mermaid
+flowchart TD
+    Client["Client (curl)"]
+    Agent["Agent App :8080<br/>OpenAI Agents SDK<br/>Moderation guardrail<br/>Custom trace logger"]
+    Proxy["LiteLLM Proxy :4000<br/>OpenAI backend<br/>Moderation guardrail<br/>Custom callback logger"]
+    MCP["Microsoft Learn MCP<br/>learn.microsoft.com/api/mcp"]
+
+    Client -- HTTP --> Agent
+    Agent -- MCP streamable-HTTP --> MCP
+    Agent -- OpenAI-compat API --> Proxy
 ```
 
 ### What you will cover
