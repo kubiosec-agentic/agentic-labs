@@ -1,0 +1,40 @@
+services:
+  # ── LiteLLM Proxy ──────────────────────────────────────────────
+  litellm-proxy:
+    build:
+      context: ./proxy
+      dockerfile: Dockerfile
+    container_name: litellm-proxy
+    ports:
+      - "4000:4000"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - LITELLM_MASTER_KEY=${LITELLM_MASTER_KEY:-sk-master-1234}
+    volumes:
+      - ./proxy/config.yaml:/app/config.yaml
+      - ./proxy/custom_callbacks.py:/app/custom_callbacks.py
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:4000/health/readiness')"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    restart: unless-stopped
+
+  # ── Agent App (OpenAI Agents SDK) ──────────────────────────────
+  agent-app:
+    build:
+      context: ./agent
+      dockerfile: Dockerfile
+    container_name: agent-app
+    ports:
+      - "8080:8080"
+    environment:
+      - LITELLM_PROXY_URL=http://litellm-proxy:4000/v1
+      - LITELLM_PROXY_KEY=${LITELLM_MASTER_KEY:-sk-master-1234}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - MCP_SERVER_URL=https://learn.microsoft.com/api/mcp
+    depends_on:
+      litellm-proxy:
+        condition: service_healthy
+    restart: unless-stopped

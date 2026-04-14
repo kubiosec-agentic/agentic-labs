@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: agent-app
+  namespace: litellm-poc
+  labels:
+    app: agent-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: agent-app
+  template:
+    metadata:
+      labels:
+        app: agent-app
+    spec:
+      containers:
+        - name: agent-app
+          image: litellmpoc-agent-app:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8080
+              name: http
+          env:
+            - name: LITELLM_PROXY_URL
+              value: "http://litellm-proxy.litellm-poc.svc.cluster.local:4000/v1"
+            - name: LITELLM_PROXY_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: openai-credentials
+                  key: LITELLM_MASTER_KEY
+            - name: OPENAI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: openai-credentials
+                  key: OPENAI_API_KEY
+            - name: MCP_SERVER_URL
+              value: "https://learn.microsoft.com/api/mcp"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 15
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          resources:
+            requests:
+              cpu: 250m
+              memory: 256Mi
+            limits:
+              cpu: "1"
+              memory: 512Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: agent-app
+  namespace: litellm-poc
+spec:
+  selector:
+    app: agent-app
+  ports:
+    - port: 8080
+      targetPort: 8080
+      name: http
+  type: ClusterIP

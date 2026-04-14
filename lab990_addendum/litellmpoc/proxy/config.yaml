@@ -1,0 +1,45 @@
+# ── LiteLLM Proxy Configuration ──────────────────────────────────
+# Docs: https://docs.litellm.ai/docs/proxy/configs
+
+model_list:
+  # GPT-4o — primary model for the agent
+  - model_name: gpt-4o
+    litellm_params:
+      model: openai/gpt-4o
+      api_key: "os.environ/OPENAI_API_KEY"
+
+  # GPT-4o-mini — lighter/cheaper alternative
+  - model_name: gpt-4o-mini
+    litellm_params:
+      model: openai/gpt-4o-mini
+      api_key: "os.environ/OPENAI_API_KEY"
+
+# ── Guardrails: OpenAI Moderation API ────────────────────────────
+# Docs: https://docs.litellm.ai/docs/proxy/guardrails/openai_moderation
+guardrails:
+  - guardrail_name: "openai-mod-input"
+    litellm_params:
+      guardrail: openai_moderation
+      mode: "pre_call"
+      api_key: "os.environ/OPENAI_API_KEY"
+      model: "omni-moderation-latest"
+      api_base: "https://api.openai.com/v1"
+
+  - guardrail_name: "openai-mod-output"
+    litellm_params:
+      guardrail: openai_moderation
+      mode: "post_call"
+      api_key: "os.environ/OPENAI_API_KEY"
+      model: "omni-moderation-latest"
+      api_base: "https://api.openai.com/v1"
+
+# ── Custom Logger ────────────────────────────────────────────────
+litellm_settings:
+  callbacks: custom_callbacks.proxy_handler_instance
+  num_retries: 3
+  request_timeout: 120
+  drop_params: true
+
+# ── General Settings ─────────────────────────────────────────────
+general_settings:
+  master_key: "os.environ/LITELLM_MASTER_KEY"

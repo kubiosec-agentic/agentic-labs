@@ -1,0 +1,76 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: litellm-proxy-config
+  namespace: litellm-poc
+data:
+  config.yaml: |
+    model_list:
+      - model_name: gpt-4o
+        litellm_params:
+          model: openai/gpt-4o
+          api_key: "os.environ/OPENAI_API_KEY"
+
+      - model_name: gpt-4o-mini
+        litellm_params:
+          model: openai/gpt-4o-mini
+          api_key: "os.environ/OPENAI_API_KEY"
+
+    guardrails:
+      - guardrail_name: "openai-mod-input"
+        litellm_params:
+          guardrail: openai_moderation
+          mode: "pre_call"
+          api_key: "os.environ/OPENAI_API_KEY"
+          model: "omni-moderation-latest"
+          api_base: "https://api.openai.com/v1"
+
+      - guardrail_name: "openai-mod-output"
+        litellm_params:
+          guardrail: openai_moderation
+          mode: "post_call"
+          api_key: "os.environ/OPENAI_API_KEY"
+          model: "omni-moderation-latest"
+          api_base: "https://api.openai.com/v1"
+
+    litellm_settings:
+      callbacks: custom_callbacks.proxy_handler_instance
+      num_retries: 3
+      request_timeout: 120
+      drop_params: true
+
+    general_settings:
+      master_key: "os.environ/LITELLM_MASTER_KEY"
+
+  custom_callbacks.py: |
+    import json, datetime as dt
+    from litellm.integrations.custom_logger import CustomLogger
+    import litellm
+
+    class ProxyCallLogger(CustomLogger):
+        @staticmethod
+        def _ts(): return dt.datetime.utcnow().isoformat() + "Z"
+        @staticmethod
+        def _safe_json(obj):
+            try: return json.dumps(obj, default=str)
+            except: return str(obj)
+        def _extract_meta(self, kwargs):
+            lp = kwargs.get("litellm_params", {})
+            md = lp.get("metadata", {})
+            return {"model": kwargs.get("model"), "call_type": kwargs.get("call_type"),
+                    "user": kwargs.get("user"), "request_id": md.get("request_id"),
+                    "guardrails": md.get("guardrails")}
+        def log_pre_api_call(self, model, messages, kwargs):
+            print(f'[PROXY-LOG] {self._safe_json({"ts":self._ts(),"event":"llm_pre_call","model":model,"msgs":len(messages or [])})}', flush=True)
+        async def async_log_success_event(self, kwargs, response_obj, start_time, end_time):
+            m = self._extract_meta(kwargs)
+            u = dict(response_obj.get("usage", {})) if response_obj else {}
+            try: c = litellm.completion_cost(completion_response=response_obj)
+            except: c = 0
+            lat = ((end_time - start_time).total_seconds() * 1000) if start_time and end_time else None
+            print(f'[PROXY-LOG] {self._safe_json({"ts":self._ts(),"event":"llm_success","model":m["model"],"usage":u,"cost_usd":round(c,6),"latency_ms":round(lat,1) if lat else None})}', flush=True)
+        async def async_log_failure_event(self, kwargs, response_obj, start_time, end_time):
+            m = self._extract_meta(kwargs)
+            print(f'[PROXY-LOG] {self._safe_json({"ts":self._ts(),"event":"llm_failure","model":m["model"],"error":str(kwargs.get("exception",""))[:500]})}', flush=True)
+
+    proxy_handler_instance = ProxyCallLogger()
