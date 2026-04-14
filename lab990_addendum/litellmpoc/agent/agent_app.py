@@ -148,6 +148,7 @@ ms_learn_mcp = MCPServerStreamableHttp(
     name="Microsoft Learn",
     params={
         "url": MCP_SERVER_URL,
+        "headers": {"Authorization": f"Bearer {LITELLM_PROXY_KEY}"},
         "timeout": 30,
     },
     cache_tools_list=True,
