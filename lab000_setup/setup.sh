@@ -8,8 +8,9 @@ sudo apt-get install -y python3.12
 sudo apt-get install -y python3-pip
 sudo apt-get  install -y python3.12-venv
 
-## Install npm
-sudo apt-get install -y npm
+## Install Node.js 22 + npm (MCP Inspector CLI requires Node >= 22)
+curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
+sudo apt-get install -y nodejs
 
 ## Install Docker
 curl -fsSL https://get.docker.com -o get-docker.sh

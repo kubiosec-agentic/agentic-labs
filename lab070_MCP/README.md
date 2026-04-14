@@ -302,6 +302,13 @@ docker compose up -d --build
 python3 OA_pentester.py
 ```
 
+When you are done, stop the containers. They keep running in the background otherwise:
+
+```bash
+docker compose down
+cd ..
+```
+
 ### 10. SSE variants (legacy transport - deprecated)
 
 The `SSE/` subfolder contains the same set of examples implemented over
