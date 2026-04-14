@@ -30,11 +30,27 @@ project.
 export OPENAI_API_KEY="xxxxxxxxx"
 ```
 
+CrewAI and PydanticAI have incompatible pydantic version constraints
+(`crewai` pins `pydantic<2.12`, `pydantic-ai` requires `>=2.12`), so
+each framework gets its own venv. Agno is flexible enough to live with
+either, but gets its own venv to keep things clean. FastAgent uses `uv`
+and has its own setup (see section 4).
+
+Create the venvs:
+
 ```bash
-python3 -m venv .lab080
-source .lab080/bin/activate
-pip install -r requirements.txt
+python3 -m venv .venv-agno
+python3 -m venv .venv-crewai
+python3 -m venv .venv-pydanticai
 ```
+
+```bash
+.venv-agno/bin/pip install -r requirements-agno.txt
+.venv-crewai/bin/pip install -r requirements-crewai.txt
+.venv-pydanticai/bin/pip install -r requirements-pydanticai.txt
+```
+
+Activate the appropriate venv before running each framework's scripts.
 
 ## 1. CrewAI
 
@@ -51,9 +67,11 @@ export SERPER_API_KEY=xxxxxxxxxx
 ```
 
 ```bash
+source .venv-crewai/bin/activate
 cd crewai
 python3 CRAI_01.py
 cd ..
+deactivate
 ```
 
 Things to notice: the `@tool` decorator, the `process=Process.sequential`
@@ -69,11 +87,13 @@ abstraction, first-class MCP tool integration, and an optional
 AgentOS/FastAPI layer to turn any agent into a REST API.
 
 ```bash
+source .venv-agno/bin/activate
 cd agno
 python3 AN_01.py             # Multi-agent Team (Researcher + Writer)
 python3 AN_02.py             # Chat history with SQLite persistence
 python3 AN_03_mcp_agent.py   # MCP tool (Agno docs) + persistent history
 cd ..
+deactivate
 ```
 
 Compare Agno's `Team` abstraction with CrewAI's `Crew`: both
@@ -93,10 +113,12 @@ export ANTHROPIC_API_KEY="sk-ant-..."
 ```
 
 ```bash
+source .venv-pydanticai/bin/activate
 cd pydanticai
 python3 PD_01.py    # Web search tool
 python3 PD_02.py    # Code execution tool
 cd ..
+deactivate
 ```
 
 If you come from a typed-Python background, PydanticAI will feel
@@ -149,7 +171,7 @@ multi-agent workflows.
 ## Cleanup environment
 
 ```bash
-deactivate
+rm -rf .venv-agno .venv-crewai .venv-pydanticai
 ```
 
 Back to [Lab Overview](https://github.com/kubiosec-agentic/agentic-labs/blob/master/README.md#-lab-overview)

@@ -1,0 +1,5 @@
+# Agno (AN_01, AN_02, AN_03)
+agno==2.5.16
+duckduckgo-search>=7.0
+sqlalchemy>=2.0
+aiosqlite>=0.21

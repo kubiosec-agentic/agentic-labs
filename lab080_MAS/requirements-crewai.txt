@@ -1,0 +1,3 @@
+# CrewAI (CRAI_01) -- versions must match exactly
+crewai==1.14.1
+crewai-tools==1.14.1

@@ -1,0 +1,2 @@
+# PydanticAI (PD_01, PD_02)
+pydantic-ai==1.81.0
