@@ -1,7 +1,14 @@
-agno
-duckduckgo-search
-sqlalchemy
-aiosqlite
-crewai
-crewai_tools
-pydantic-ai
+# Agno (AN_01, AN_02, AN_03)
+agno==2.5.16
+duckduckgo-search>=7.0
+
+# CrewAI (CRAI_01) -- versions must match exactly
+crewai==1.14.1
+crewai-tools==1.14.1
+
+# PydanticAI (PD_01, PD_02)
+pydantic-ai==1.81.0
+
+# Shared
+sqlalchemy>=2.0
+aiosqlite>=0.21
