@@ -302,7 +302,7 @@ docker compose up -d --build
 python3 OA_pentester.py
 ```
 
-### 10. SSE variants (legacy transport, not deprecated)
+### 10. SSE variants (legacy transport - deprecated)
 
 The `SSE/` subfolder contains the same set of examples implemented over
 SSE instead of streamable HTTP. SSE is the *previous* default transport
