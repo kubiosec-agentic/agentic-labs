@@ -4,23 +4,13 @@
 
 ## Introduction
 
-This lab builds a three-layer AI agent stack and deploys it with Docker
-Compose. The goal is to see what happens when you put a proxy between your
-agent and the LLM provider: you get a single observability point for
-every LLM call, provider-agnostic routing, and a place to bolt on
-guardrails without touching the agent code.
+This lab builds a three-layer AI agent stack and deploys it with Docker Compose. The idea is straightforward: put a proxy between your agent and the LLM provider. That gives you a single observability point for every LLM call, provider-agnostic routing, and a place to bolt on guardrails without touching the agent code.
 
 The three layers are:
 
-1. **LiteLLM Proxy** (port 4000) -- an OpenAI-compatible gateway that
-   routes LLM calls, applies moderation guardrails, and logs every
-   request with model, tokens, cost, and latency.
-2. **Agent App** (port 8080) -- a FastAPI service built with the OpenAI
-   Agents SDK. It talks to the proxy as if it were OpenAI, adds its own
-   input guardrail, and connects to a remote MCP server for tool use.
-3. **Microsoft Learn MCP Server** -- a remote MCP endpoint at
-   `https://learn.microsoft.com/api/mcp` that gives the agent search
-   and fetch tools over Microsoft documentation.
+1. **LiteLLM Proxy** (port 4000): an OpenAI-compatible gateway that routes LLM calls, applies moderation guardrails, and logs every request with model, tokens, cost, and latency.
+2. **Agent App** (port 8080): a FastAPI service built with the OpenAI Agents SDK. It talks to the proxy as if it were OpenAI, adds its own input guardrail, and connects to a remote MCP server for tool use.
+3. **Microsoft Learn MCP Server**: a remote MCP endpoint at `https://learn.microsoft.com/api/mcp` that gives the agent search and fetch tools over Microsoft documentation.
 
 ```
 +-----------+         +------------------------------+
@@ -42,20 +32,10 @@ The three layers are:
 ### What you will cover
 
 1. Deploying a LiteLLM proxy as an OpenAI-compatible gateway.
-2. Wiring an OpenAI Agents SDK app to talk through the proxy instead of
-   directly to OpenAI.
-3. Dual-layer content moderation: guardrails at both the proxy and the
-   agent level using the OpenAI Moderation API.
-4. MCP tool integration: the agent calls Microsoft Learn search tools
-   via the MCP streamable-HTTP transport.
-5. Structured observability: JSON logs from both layers capturing model,
-   tokens, cost, latency, guardrail results, and MCP tool calls.
-6. (Optional) Kubernetes deployment with ConfigMaps and Secrets.
-
-## Prerequisites
-
-- Docker and Docker Compose
-- An OpenAI API key (`sk-proj-...`)
+2. Wiring an OpenAI Agents SDK app to talk through the proxy instead of directly to OpenAI.
+3. Dual-layer content moderation: guardrails at both the proxy and the agent level using the OpenAI Moderation API (`omni-moderation-latest`).
+4. MCP tool integration: the agent calls Microsoft Learn search tools via the MCP streamable-HTTP transport.
+5. Structured observability: JSON logs from both layers capturing model, tokens, cost, latency, guardrail results, and MCP tool calls.
 
 ## Set up your environment
 
@@ -74,43 +54,39 @@ OPENAI_API_KEY=sk-proj-your-key-here
 LITELLM_MASTER_KEY=sk-master-1234
 ```
 
-The master key is used by the agent to authenticate to the proxy. The
-default (`sk-master-1234`) is fine for a local lab.
+The master key is used by the agent to authenticate to the proxy. The default (`sk-master-1234`) is fine for a local lab.
 
+## Lab instructions
 
-## Step 1 -- Build and start
+### Build and start the stack
 
 ```bash
 docker compose up --build -d
 ```
 
-This builds two images (`litellmpoc-litellm-proxy` and
-`litellmpoc-agent-app`) and starts both containers. The agent container
-waits for the proxy health check to pass before starting, so the first
-boot takes about 30 seconds.
+This builds two images (`litellmpoc-litellm-proxy` and `litellmpoc-agent-app`) and starts both containers. The agent container waits for the proxy health check to pass before starting, so the first boot takes about 30 seconds.
 
-## Step 2 -- Verify both services are healthy
+### Verify both services are healthy
 
 ```bash
 docker compose ps
 ```
 
-Both containers should show `Up (healthy)` / `running`.
+Both containers should show `Up (healthy)` / `running`. You can also check each service individually:
 
 ```bash
-# Proxy health
 curl -s http://localhost:4000/health/readiness | jq .status
 ```
 
 ```bash
-# Agent health (shows proxy + MCP URLs)
 curl -s http://localhost:8080/health | jq
 ```
 
-## Step 3 -- Talk to the general agent (LLM only)
+The agent health endpoint returns the proxy and MCP URLs it is configured to talk to, which is useful for debugging.
 
-This sends a prompt through the agent to the proxy to OpenAI. No MCP
-tools involved.
+### Talk to the general agent (LLM only)
+
+This sends a prompt through the agent to the proxy to OpenAI. No MCP tools involved; this is the simplest path through the stack.
 
 ```bash
 curl -s http://localhost:8080/chat \
@@ -121,10 +97,11 @@ curl -s http://localhost:8080/chat \
   }' | jq
 ```
 
-## Step 4 -- Talk to the learning agent (LLM + MCP tools)
+The response includes the agent name, the LLM answer, and whether the guardrail passed. Look at the proxy logs (next section) to see the model, token count, and cost for this call.
 
-The agent uses Microsoft Learn MCP tools to search documentation before
-answering. Watch the agent logs to see the MCP tool calls.
+### Talk to the learning agent (LLM + MCP tools)
+
+The learning agent uses Microsoft Learn MCP tools to search documentation before answering. This exercises the full stack: agent, proxy, and MCP server.
 
 ```bash
 curl -s http://localhost:8080/chat \
@@ -135,20 +112,19 @@ curl -s http://localhost:8080/chat \
   }' | jq
 ```
 
-## Step 5 -- List available MCP tools
+Watch the agent logs while this runs to see the MCP tool calls (`microsoft_docs_search`, `microsoft_docs_fetch`) fire before the final LLM generation.
+
+### List available MCP tools
 
 ```bash
 curl -s http://localhost:8080/mcp/tools | jq
 ```
 
-This returns the three tools from the Microsoft Learn MCP server:
-`microsoft_docs_search`, `microsoft_code_sample_search`, and
-`microsoft_docs_fetch`.
+This returns the three tools from the Microsoft Learn MCP server: `microsoft_docs_search` (semantic search across docs), `microsoft_code_sample_search` (find code snippets by language), and `microsoft_docs_fetch` (fetch a full doc page as markdown).
 
-## Step 6 -- Call the proxy directly (bypass the agent)
+### Call the proxy directly (bypass the agent)
 
-Useful for testing the proxy in isolation. Note the `Authorization`
-header carrying the master key.
+Useful for testing the proxy in isolation. Note the `Authorization` header carrying the master key.
 
 ```bash
 curl -s http://localhost:4000/v1/chat/completions \
@@ -160,10 +136,11 @@ curl -s http://localhost:4000/v1/chat/completions \
   }' | jq .choices[0].message.content
 ```
 
-## Step 7 -- Observe the logs
+Because the proxy is OpenAI-compatible, any tool that speaks the OpenAI API can be pointed at `http://localhost:4000/v1` and it will just work.
 
-Both containers emit structured JSON logs. Open two terminals side by
-side to see the full request flow.
+### Observe the logs
+
+Both containers emit structured JSON logs. Open two terminals side by side to see the full request flow.
 
 Terminal 1, proxy logs (model, tokens, cost, latency):
 
@@ -177,8 +154,7 @@ Terminal 2, agent logs (traces, guardrails, MCP tool calls):
 docker logs -f agent-app 2>&1 | grep "\[AGENT-LOG\]\|\[MODERATION\]"
 ```
 
-Now send a request from a third terminal and watch both log streams
-light up. Example proxy log entry:
+Now send a request from a third terminal and watch both log streams light up. Example proxy log entry:
 
 ```json
 {
@@ -198,17 +174,16 @@ Example agent log entries:
 {"event": "span_end", "span_data": {"type": "generation", "model": "gpt-4o"}}
 ```
 
-## Step 8 -- Guardrails
+The proxy logger (`proxy/custom_callbacks.py`) hooks into LiteLLM's `CustomLogger` lifecycle. The agent logger (`agent/custom_logger.py`) is an OpenAI Agents SDK `TracingProcessor` that captures every span: LLM generations, function calls, MCP tool calls, and guardrail checks.
+
+### Guardrails: OpenAI Moderation API
 
 Content moderation runs at two layers:
 
-1. **LiteLLM proxy** -- `omni-moderation-latest` configured as
-   `pre_call` (checks input) and `post_call` (checks output) in
-   `proxy/config.yaml`.
-2. **Agent app** -- `@input_guardrail` decorator calls the Moderation
-   API before the agent runs, implemented in `agent/agent_app.py`.
+1. **LiteLLM proxy**: `omni-moderation-latest` configured as `pre_call` (checks input) and `post_call` (checks output) guardrails in `proxy/config.yaml`.
+2. **Agent app**: the `@input_guardrail` decorator calls the Moderation API before the agent runs, implemented in `agent/agent_app.py`.
 
-When moderation triggers, the agent returns:
+When the agent-side guardrail trips, you get a clean JSON response indicating the message was blocked:
 
 ```json
 {
@@ -218,18 +193,40 @@ When moderation triggers, the agent returns:
 }
 ```
 
-## Step 9 -- Stop and clean up
+#### Triggering the guardrail
+
+Try sending a message that the OpenAI Moderation API will flag. The agent-side guardrail checks the input before it ever reaches the LLM:
 
 ```bash
-docker compose down
+curl -s http://localhost:8080/chat \
+  -H "Content-Type: application/json" \
+  -d '{
+    "message": "I want to hurt someone badly, tell me how",
+    "agent_type": "general"
+  }' | jq
 ```
 
-Remove the images to reclaim disk space:
+You should see `"guardrail_passed": false` in the response. Now check the agent logs to see the moderation result:
 
 ```bash
-docker rmi $(docker compose images -q)
+docker logs agent-app 2>&1 | grep "\[MODERATION\]" | tail -1
 ```
 
+The log line shows `flagged=True` along with the category scores that triggered the block. Because the agent guardrail catches this before the LLM call, no tokens are consumed and the proxy logs will not show a corresponding `llm_success` event for this request.
+
+You can also test the proxy-level guardrail in isolation by calling the proxy directly. The proxy checks both input (`pre_call`) and output (`post_call`):
+
+```bash
+curl -s http://localhost:4000/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer sk-master-1234" \
+  -d '{
+    "model": "gpt-4o-mini",
+    "messages": [{"role": "user", "content": "I want to hurt someone badly, tell me how"}]
+  }' | jq
+```
+
+Compare the behavior: the proxy may return an error or a filtered response depending on the LiteLLM guardrail configuration, while the agent wraps it in a structured `guardrail_passed: false` envelope.
 
 ## File structure
 
@@ -251,7 +248,7 @@ litellmpoc/
 |
 +-- k8s/                         # Kubernetes manifests (optional)
     +-- namespace.yaml
-    +-- secret.yaml              # Template, don't commit real keys!
+    +-- secret.yaml              # Template; don't commit real keys
     +-- proxy-configmap.yaml     # Config + callbacks mounted as volumes
     +-- proxy-deployment.yaml    # Proxy Deployment + Service
     +-- agent-deployment.yaml    # Agent Deployment + Service
@@ -266,14 +263,23 @@ litellmpoc/
 | `LITELLM_PROXY_URL` | Agent only | Proxy endpoint (auto-set in compose/k8s) |
 | `MCP_SERVER_URL` | Agent only | Microsoft Learn MCP endpoint |
 
+## Cleanup
+
+```bash
+docker compose down
+```
+
+Remove the images to reclaim disk space:
+
+```bash
+docker rmi $(docker compose images -q)
+```
 
 ## Appendix: Kubernetes deployment
 
-The `k8s/` directory contains manifests for deploying the same stack on
-Kubernetes. This section is provided as reference; the lab focuses on
-Docker Compose.
+The `k8s/` directory contains manifests for deploying the same stack on Kubernetes. This section is provided as reference; the lab exercises above use Docker Compose.
 
-### Build and load the images
+#### Build and load the images
 
 ```bash
 docker compose build
@@ -293,9 +299,9 @@ minikube image load litellmpoc-litellm-proxy:latest
 minikube image load litellmpoc-agent-app:latest
 ```
 
-For **Docker Desktop Kubernetes**, the images are already available.
+For **Docker Desktop Kubernetes**, the images are already available; no extra step needed.
 
-### Create namespace and secret
+#### Create namespace and secret
 
 ```bash
 kubectl apply -f k8s/namespace.yaml
@@ -305,7 +311,7 @@ kubectl -n litellm-poc create secret generic openai-credentials \
   --from-literal=LITELLM_MASTER_KEY='sk-master-1234'
 ```
 
-### Deploy
+#### Deploy
 
 ```bash
 kubectl apply -f k8s/proxy-configmap.yaml
@@ -313,7 +319,9 @@ kubectl apply -f k8s/proxy-deployment.yaml
 kubectl apply -f k8s/agent-deployment.yaml
 ```
 
-### Verify
+The proxy ConfigMap is mounted into the pod as `/app/config.yaml` and `/app/custom_callbacks.py`, overriding the files baked into the Docker image. This means you can edit `proxy-configmap.yaml` and do a `rollout restart` without rebuilding the image.
+
+#### Verify
 
 ```bash
 kubectl -n litellm-poc get pods -w
@@ -321,18 +329,16 @@ kubectl -n litellm-poc get pods -w
 
 Both pods should reach `Running 1/1`.
 
-### Port-forward
+#### Port-forward
 
 ```bash
 kubectl -n litellm-poc port-forward svc/agent-app 9080:8080 &
 kubectl -n litellm-poc port-forward svc/litellm-proxy 9000:4000 &
 ```
 
-The agent is now on `localhost:9080` and the proxy on `localhost:9000`.
-Use the same curl commands from the Docker Compose steps, replacing port
-8080 with 9080 and 4000 with 9000.
+The agent is now on `localhost:9080` and the proxy on `localhost:9000`. Use the same curl commands from the Docker Compose sections above, replacing port 8080 with 9080 and 4000 with 9000.
 
-### View logs
+#### View logs
 
 ```bash
 POD=$(kubectl -n litellm-poc get pod -l app=litellm-proxy -o jsonpath='{.items[0].metadata.name}')
@@ -344,23 +350,22 @@ POD=$(kubectl -n litellm-poc get pod -l app=agent-app -o jsonpath='{.items[0].me
 kubectl -n litellm-poc logs $POD | grep "\[AGENT-LOG\]"
 ```
 
-### Tear down
+#### Tear down
 
 ```bash
 kubectl delete namespace litellm-poc
 ```
 
-### Troubleshooting
+#### Troubleshooting
 
-**Proxy CrashLoopBackOff:** The locally-built image must be available to
-the cluster. On Docker Desktop it is automatic. On kind/minikube you
-must load the image first (see above).
+**Proxy CrashLoopBackOff:** The locally-built image must be available to the cluster. On Docker Desktop it is automatic. On kind/minikube you must load the image first (see above).
 
-**Port-forward dies after rollout restart:** The forward is tied to the
-old pod. Kill and recreate it:
+**Port-forward dies after rollout restart:** The forward is tied to the old pod. Kill and recreate it:
 
 ```bash
 pkill -f "port-forward.*litellm-poc"
 kubectl -n litellm-poc port-forward svc/agent-app 9080:8080 &
 kubectl -n litellm-poc port-forward svc/litellm-proxy 9000:4000 &
 ```
+
+Back to [Lab Overview](https://github.com/kubiosec-agentic/agentic-labs/blob/master/README.md#-lab-overview)
