@@ -334,7 +334,7 @@ cp .env.example .env
 ```
 
 ```bash
-docker compose up --build
+docker compose up --build -d
 ```
 
 Test it:
@@ -356,8 +356,21 @@ correlation IDs matching the response headers.
 
 ```bash
 cd docker_agent
+python3 -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
+```
+
+```bash
+cp .env.example .env
+# Edit .env with your OPENAI_API_KEY
 python3 agent_service.py
+```
+
+When you are done, deactivate the venv:
+
+```bash
+deactivate
 ```
 
 ### Stop it
