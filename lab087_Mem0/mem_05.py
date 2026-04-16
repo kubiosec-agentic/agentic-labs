@@ -51,7 +51,7 @@ class CollaborativeAgent:
 
     def brainstorm(self, prompt: str) -> str:
         """Use shared context to generate a response."""
-        memories = self.mem.search(prompt, run_id=self.run_id, limit=5)
+        memories = self.mem.search(prompt, filters={"run_id": self.run_id}, limit=5)
         items = memories if isinstance(memories, list) else memories.get("results", [])
         context = "\n".join(
             f"- {m['memory']} (by {m.get('actor_id', 'Unknown')})" for m in items
@@ -73,7 +73,7 @@ class CollaborativeAgent:
         return reply
 
     def get_all_messages(self):
-        res = self.mem.get_all(run_id=self.run_id)
+        res = self.mem.get_all(filters={"run_id": self.run_id})
         return res if isinstance(res, list) else res.get("results", [])
 
     def print_grouped_by_actor(self):

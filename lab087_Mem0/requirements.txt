@@ -1,4 +1,4 @@
 openai-agents
-mem0ai
-openai
-qdrant-client>=1.15,<1.16
+mem0ai>=2.0.0
+openai>=1.90.0
+qdrant-client>=1.15

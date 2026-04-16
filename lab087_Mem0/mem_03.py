@@ -66,7 +66,7 @@ def add_to_memory(ctx: RunContextWrapper[Mem0Context], content: str) -> str:
 def search_memory(ctx: RunContextWrapper[Mem0Context], query: str) -> str:
     """Search facts in Mem0 relevant to the query."""
     uid = ctx.context.user_id
-    res = MEM0.search(query, user_id=uid)
+    res = MEM0.search(query, filters={"user_id": uid})
     items = res if isinstance(res, list) else res.get("results", [])
     memories = [it.get("memory", str(it)) for it in items]
     return "\n".join(memories) if memories else "(no matches)"
@@ -76,7 +76,7 @@ def search_memory(ctx: RunContextWrapper[Mem0Context], query: str) -> str:
 def get_all_memory(ctx: RunContextWrapper[Mem0Context]) -> str:
     """Return all stored facts for this user."""
     uid = ctx.context.user_id
-    res = MEM0.get_all(user_id=uid)
+    res = MEM0.get_all(filters={"user_id": uid})
     items = res if isinstance(res, list) else res.get("results", [])
     memories = [it.get("memory", str(it)) for it in items]
     return "\n".join(memories) if memories else "(empty)"

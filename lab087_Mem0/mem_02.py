@@ -30,7 +30,7 @@ config = {
 m = Memory.from_config(config)
 
 # --- Retrieve all memories ---
-all_memories = m.get_all(user_id="alice")
+all_memories = m.get_all(filters={"user_id": "alice"})
 print("All memories for alice:")
 print("-" * 50)
 for memory in all_memories.get("results", []):
@@ -39,7 +39,7 @@ for memory in all_memories.get("results", []):
 # --- Semantic search ---
 print("\nSearch: 'What kind of movies does she like?'")
 print("-" * 50)
-results = m.search("What kind of movies does she like?", user_id="alice")
+results = m.search("What kind of movies does she like?", filters={"user_id": "alice"})
 items = results if isinstance(results, list) else results.get("results", [])
 for item in items:
     print(f"  - {item['memory']}")

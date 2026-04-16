@@ -45,7 +45,7 @@ print("Adding conversation to memory for user 'alice'...")
 m.add(messages, user_id="alice", metadata={"category": "movies"})
 
 # Retrieve what Mem0 extracted
-all_memories = m.get_all(user_id="alice")
+all_memories = m.get_all(filters={"user_id": "alice"})
 print("\nMemories for alice:")
 print("-" * 50)
 for memory in all_memories.get("results", []):
