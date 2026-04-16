@@ -352,6 +352,12 @@ curl -s -X POST http://localhost:8000/chat \
 You should see structured JSON logs in the Docker output with
 correlation IDs matching the response headers.
 
+### Stop it
+
+```bash
+docker compose down
+```
+
 ### Run without Docker (local dev)
 
 ```bash
@@ -373,11 +379,7 @@ When you are done, deactivate the venv:
 deactivate
 ```
 
-### Stop it
 
-```bash
-docker compose down
-```
 
 ## Making agents enterprise-ready: checklist
 
