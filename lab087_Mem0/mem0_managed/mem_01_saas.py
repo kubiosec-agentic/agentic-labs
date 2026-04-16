@@ -39,14 +39,10 @@ print("\nWaiting for memories to be processed...")
 time.sleep(5)
 
 # --- Search with filters ---
-print("\n--- Search: technology-related memories ---")
-filters = {
-    "AND": [
-        {"user_id": "alex"},
-        {"categories": {"contains": "technology"}},
-    ]
-}
-search_results = client.search(query="What do I like?", version="v2", filters=filters, top_k=2)
+print("\n--- Search: what does alex like? ---")
+search_results = client.search(
+    query="What do I like?", version="v2", filters={"user_id": "alex"}, top_k=2
+)
 
 # Handle both possible response formats (list of dicts or list of strings)
 if isinstance(search_results, list):
@@ -63,8 +59,7 @@ else:
 
 # --- Retrieve all memories ---
 print("\n--- All memories for alex ---")
-filters = {"AND": [{"user_id": "alex"}]}
-all_memories = client.get_all(version="v2", filters=filters, page=1, page_size=50)
+all_memories = client.get_all(version="v2", filters={"user_id": "alex"}, page=1, page_size=50)
 
 if isinstance(all_memories, dict):
     for memory in all_memories.get("results", []):
