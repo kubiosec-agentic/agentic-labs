@@ -1,4 +1,5 @@
 openai-agents
-mem0ai>=2.0.0
+mem0ai[nlp]>=2.0.0
+fastembed
 openai>=1.90.0
 qdrant-client>=1.15
