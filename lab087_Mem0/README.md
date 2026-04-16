@@ -231,6 +231,26 @@ This starts three containers: an MCP backend (port 8765), a Qdrant
 vector store, and a web UI (port 3000). Open http://localhost:3000 to
 browse stored memories.
 
+### Fix: search parameter mismatch
+
+The OpenMemory MCP image bundles mem0ai 2.0.0, which renamed the
+vector store search parameter from `limit` to `top_k`. The MCP server
+code was not updated to match, so `search_memory` calls will fail with
+`TypeError: Qdrant.search() got an unexpected keyword argument 'limit'`.
+
+Because the compose file volume-mounts `api/` into the container and
+runs with `--reload`, a one-line sed fix on the host is picked up
+immediately:
+
+```bash
+sed -i 's/limit=10/top_k=10/' api/app/mcp_server.py
+```
+
+This is a good example of a common pain point with fast-moving
+open-source projects: the MCP layer and the core mem0 library are
+maintained by the same team but versioned independently, and internal
+API changes slip through.
+
 ### Register and test with the MCP Inspector
 
 The OpenMemory MCP endpoint follows the pattern
