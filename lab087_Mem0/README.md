@@ -127,6 +127,16 @@ multi-agent collaboration or shared project knowledge bases.
 python3 mem_05.py
 ```
 
+### Cleanup: stop the Qdrant container
+
+The self-hosted exercises are done. Stop the Qdrant container before
+moving on to the SaaS track (or skip straight to cleanup at the bottom
+if you are finished).
+
+```bash
+docker stop qdrant && docker rm qdrant
+```
+
 ## Part 2: Managed SaaS
 
 These exercises use Mem0's managed API. No Docker, no Qdrant. You
@@ -221,22 +231,47 @@ This starts three containers: an MCP backend (port 8765), a Qdrant
 vector store, and a web UI (port 3000). Open http://localhost:3000 to
 browse stored memories.
 
-### Connecting a client
+### Register and test with the MCP Inspector
 
-Register your client with the MCP server:
+The OpenMemory MCP endpoint follows the pattern
+`http://localhost:8765/mcp/<client-name>/sse/<user-id>`. The `/sse`
+suffix means it uses SSE transport, not streamable HTTP.
 
-```bash
-npx @openmemory/install local http://localhost:8765/mcp/<client-name>/sse/<user-id>
-```
-
-For example, to connect Claude Desktop:
+Register a client (this writes the URL into the client's MCP config):
 
 ```bash
-npx @openmemory/install local http://localhost:8765/mcp/claude/sse/philippe
+npx @openmemory/install local http://localhost:8765/mcp/claude/sse/philippe --client claude
 ```
 
-After registration, Claude Desktop (or any MCP client) can call memory
-tools (add, search, get_all, delete) transparently.
+Before connecting a full client, verify the server is reachable with
+the MCP Inspector CLI. Note the `--transport sse` flag; using `http`
+will fail with "Method Not Allowed" because the endpoint speaks SSE,
+not streamable HTTP:
+
+```bash
+npx -y @modelcontextprotocol/inspector --cli \
+    http://localhost:8765/mcp/claude/sse/philippe \
+    --transport sse \
+    --method tools/list
+```
+
+You should see the available memory tools: `add_memories`,
+`search_memory`, `get_all_memories`, and `delete_all_memories`.
+
+You can also test a tool call directly from the CLI:
+
+```bash
+npx -y @modelcontextprotocol/inspector --cli \
+    http://localhost:8765/mcp/claude/sse/philippe \
+    --transport sse \
+    --method tools/call \
+    --tool-name search_memory \
+    --tool-arg query="sci-fi movies"
+```
+
+Once the Inspector confirms connectivity, any MCP-compatible client
+(Claude Desktop, Cursor, your own agent) can call the same memory
+tools transparently.
 
 ### Why this matters
 
