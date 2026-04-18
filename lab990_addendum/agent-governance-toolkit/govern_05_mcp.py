@@ -1,5 +1,5 @@
 """
-Exercise 5: MCP tool governance with Microsoft Agent Framework middleware.
+Exercise 5: MCP tool governance with Microsoft Agent Framework.
 
 Combines three ideas from the training:
   - lab075 MAF_03: function_middleware intercepts tool calls
@@ -8,12 +8,19 @@ Combines three ideas from the training:
 
 The agent connects to the Microsoft Learn MCP server, which exposes
 documentation search and fetch tools. A function_middleware checks
-every tool call (including MCP-discovered ones) against a policy
-before execution.
+every tool call against a regex-based policy before execution.
 
-The policy allows search-type operations but blocks fetch/read
-operations, demonstrating governance over dynamically discovered
-MCP tools.
+NOTE: as of agent-framework-openai 1.0.x, function_middleware fires
+for locally-defined FunctionTool instances but may not intercept
+MCP-discovered tools (they go through a different code path in the
+SDK). This exercise demonstrates both behaviors:
+  - Prompt 1 uses a search tool (MCP). Middleware may or may not fire.
+  - Prompt 2 triggers a fetch attempt. If middleware does not fire,
+    the MCP tool runs unblocked.
+
+If the middleware is bypassed for MCP tools, that is itself a finding:
+governance middleware must be verified against every tool type in your
+stack.
 
 Prerequisites:
     export OPENAI_API_KEY="sk-..."
@@ -129,7 +136,8 @@ async def governance_gate(
     result = policy.evaluate(tool_name, args_str)
 
     if result["action"] == "deny":
-        print(f"    [!] BLOCKED: tool='{tool_name}' rule='{result['rule']}'")
+        print(f"    [!] BLOCKED by middleware: tool='{tool_name}' "
+              f"rule='{result['rule']}'")
         context.result = (
             f"Governance blocked this tool call. "
             f"Tool '{tool_name}' was denied by policy rule '{result['rule']}'. "
@@ -138,7 +146,7 @@ async def governance_gate(
         context.terminate = True
         return
 
-    print(f"    [+] ALLOWED: tool='{tool_name}'")
+    print(f"    [+] ALLOWED by middleware: tool='{tool_name}'")
     await call_next()
 
 
@@ -153,6 +161,10 @@ async def main() -> None:
     print()
     print("Policy: allow search-type MCP tools, block fetch/read tools.")
     print("The agent connects to Microsoft Learn's MCP server.")
+    print()
+    print("NOTE: function_middleware may not intercept MCP-discovered")
+    print("tools in agent-framework-openai 1.0.x. Watch for the")
+    print("[+] ALLOWED / [!] BLOCKED lines to verify.")
     print()
 
     client = OpenAIChatClient()
@@ -178,7 +190,7 @@ async def main() -> None:
 
     prompts = [
         "Search Microsoft Learn for documentation about Azure Container Apps.",
-        "Fetch the full content of the top result.",
+        "Fetch the full content of the top result about Azure Container Apps.",
     ]
 
     for i, prompt in enumerate(prompts, 1):
@@ -193,12 +205,25 @@ async def main() -> None:
     # --- Audit trail ---
     print()
     print("-" * 60)
-    print("  Audit trail")
+    print("  Middleware audit trail")
     print("-" * 60)
-    for entry in policy.audit:
-        icon = "[+]" if entry["action"] == "allow" else "[!]"
-        print(f"  {icon} {entry['action'].upper():5s}  {entry['tool']:30s}  "
-              f"rule={entry['rule']}")
+    if policy.audit:
+        for entry in policy.audit:
+            icon = "[+]" if entry["action"] == "allow" else "[!]"
+            print(f"  {icon} {entry['action'].upper():5s}  "
+                  f"{entry['tool']:30s}  rule={entry['rule']}")
+    else:
+        print("  (empty: middleware was not invoked for MCP tools)")
+        print()
+        print("  Finding: function_middleware does not intercept MCP tool")
+        print("  calls in this version of agent-framework-openai. This")
+        print("  means MCP tools bypass your governance layer entirely.")
+        print()
+        print("  Mitigation options:")
+        print("    1. Use MCP Guardian to wrap MCP tools before they")
+        print("       reach the agent (see Exercise 6)")
+        print("    2. Use approval_mode='always_require' on get_mcp_tool()")
+        print("    3. Implement a proxy MCP server that enforces policy")
     print()
 
 

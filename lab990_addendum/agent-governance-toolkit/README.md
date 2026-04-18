@@ -132,8 +132,8 @@ guardrails.
 
 The agent connects to the Microsoft Learn MCP server, which dynamically
 exposes documentation tools. A Microsoft Agent Framework
-`function_middleware` checks every tool call, including MCP-discovered
-ones, against a regex-based policy before execution.
+`function_middleware` attempts to check every tool call against a
+regex-based policy before execution.
 
 ```bash
 export OPENAI_API_KEY="sk-..."
@@ -141,11 +141,23 @@ export OPENAI_CHAT_MODEL="gpt-4o-mini"
 python3 govern_05_mcp.py
 ```
 
-The policy allows search-type tools but blocks fetch/read operations.
-Two prompts demonstrate this: search works, fetch is blocked.
+**Important finding**: in `agent-framework-openai` 1.0.x,
+`function_middleware` does **not** intercept MCP-discovered tool calls.
+MCP tools go through a different code path in the SDK (`_tools.py`
+`_get_response`), bypassing the middleware pipeline entirely. You will
+see no `[+] ALLOWED` or `[!] BLOCKED` lines in the output.
 
-This combines the middleware pattern from lab075 exercise 3 with the
-MCP tools from lab075 exercise 5.
+This is itself a security finding: governance middleware must be
+verified against every tool type in your stack. Mitigation options:
+
+1. Use MCP Guardian to wrap MCP tools before they reach the agent
+   (see Exercise 6)
+2. Use `approval_mode="always_require"` on `get_mcp_tool()` for
+   manual approval of each call
+3. Implement a proxy MCP server that enforces policy
+
+This exercise combines the middleware pattern from lab075 exercise 3
+with the MCP tools from lab075 exercise 5.
 
 ## Exercise 6: MCP Guardian + AGT (combined)
 

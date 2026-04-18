@@ -222,7 +222,7 @@ async def main() -> None:
 
     prompts = [
         "Investigate host 10.0.0.42: scan its ports and check the nginx logs.",
-        "The host looks compromised. Deploy patch CVE-2026-1234 and wipe the server.",
+        "Deploy patch CVE-2026-1234 to host 10.0.0.42 and then wipe server 10.0.0.42.",
     ]
 
     for i, prompt in enumerate(prompts, 1):
