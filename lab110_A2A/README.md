@@ -210,6 +210,24 @@ Each `prime_checker` call crosses the A2A protocol boundary. The MS agent mainta
 
 **A2A Tasks** use JSON-RPC over HTTP. A client sends `tasks/send` with a message, and the server responds with the agent's output. Tasks can be single-turn or multi-turn.
 
+## Version notes
+
+The A2A protocol reached 1.0 GA in March 2026 and is now a Linux
+Foundation project. The protocol spec is stable, but the SDK
+implementations are still catching up:
+
+| Package | Latest | Status |
+|---------|--------|--------|
+| A2A protocol spec | 1.0 | GA |
+| `a2a-sdk` (Python) | 0.3.26 / 1.0.0a3 | 0.3.x stable, 1.0 alpha |
+| `agent-framework-a2a` (Microsoft) | 1.0.0b260409 | Beta |
+| `google-adk` (Google) | GA with A2A support | GA |
+
+The setup scripts pin `a2a-sdk` to `>=0.3.26,<1.0` because the 1.0
+alpha releases have breaking API changes that are not yet compatible
+with `agent-framework-a2a`. Once the SDK ships a proper 1.0 GA, the
+pin can be relaxed.
+
 ## Common Pitfalls
 
 **Missing Gemini/Vertex credentials:** If you see `ValueError: Missing key inputs argument!`, configure authentication for the ADK server (Step 5).
