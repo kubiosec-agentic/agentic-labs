@@ -1,15 +1,15 @@
 """
-Exercise 2: OpenAI Agents SDK with governance guardrails.
+Exercise 2: AGT Supply Chain Guard.
 
-Wraps async tool functions with a governance guard that enforces an
-allowlist, a blocklist, and content pattern matching. Three scenarios
-demonstrate the enforcement:
+Scans dependency manifests (requirements.txt, package.json,
+pyproject.toml, Cargo.toml) for supply chain risks:
 
-  1. A tool NOT in the allowlist is blocked.
-  2. An allowed tool called with dangerous content is blocked.
-  3. An allowed tool called with safe content succeeds.
+  - Missing version pins ("requests" without ==x.y.z)
+  - Version ranges that allow untested upgrades
+  - Typosquatting detection (fuzzy match against known packages)
+  - Lockfile drift (lockfile disagrees with manifest)
 
-No actual LLM call is made; this focuses on the governance layer.
+No API keys needed. Pure static analysis.
 
 Run:
     python3 govern_02.py
@@ -17,80 +17,101 @@ Run:
 
 from __future__ import annotations
 
-import asyncio
-from datetime import datetime
+import os
+import tempfile
+from pathlib import Path
 
-from agent_os.integrations.openai_agents_sdk import (
-    GovernancePolicy,
-    OpenAIAgentsKernel,
-    PolicyViolationError,
-)
-
-# --- 1. Define a governance policy ---
-policy = GovernancePolicy(
-    allowed_tools=["file_search", "code_interpreter"],   # explicit allowlist
-    blocked_tools=["shell_exec", "network_request"],     # explicit blocklist
-    blocked_patterns=["DROP TABLE", "rm -rf"],           # ban dangerous strings
-    max_tool_calls=10,
-)
-
-kernel = OpenAIAgentsKernel(policy=policy, on_violation=lambda _e: None)
-guard = kernel.create_tool_guard()
-audit: list[dict] = []
-
-print("=" * 60)
-print("  OpenAI Agents SDK: governance guardrails")
-print("=" * 60)
+from agent_compliance import SupplyChainGuard, SupplyChainConfig
 
 
-async def main() -> None:
+def print_findings(label: str, findings: list) -> None:
+    """Pretty-print supply chain findings."""
+    print(f"\n  --- {label} ---")
+    if not findings:
+        print("  [+] No issues found.")
+        return
+    for f in findings:
+        icon = "[!]" if f.severity in ("high", "critical") else "[~]"
+        print(f"  {icon} {f.severity.upper():8s}  {f.package or f.finding_type}: "
+              f"{f.message}")
 
-    # --- 2. Blocked: tool not in allowlist ---
-    print("\n[1] Calling 'web_search' (not in allowlist) ...")
 
-    @guard
-    async def web_search(query: str) -> str:
-        return f"results for {query}"
+def main() -> None:
+    print("=" * 64)
+    print("  AGT Supply Chain Guard")
+    print("=" * 64)
+    print()
+    print("Scans dependency manifests for supply chain risks:")
+    print("unpinned versions, version ranges, typosquatting, etc.")
+    print()
 
-    try:
-        await web_search("AI governance news")
-    except PolicyViolationError as exc:
-        print(f"    BLOCKED: {exc}")
-        audit.append({"ts": datetime.now().isoformat(),
-                       "tool": "web_search", "status": "BLOCKED"})
+    guard = SupplyChainGuard(SupplyChainConfig(
+        allow_ranges=False,        # flag >= or ~= specifiers
+        typosquat_threshold=0.85,  # fuzzy match sensitivity
+    ))
 
-    # --- 3. Blocked: dangerous content in argument ---
-    print("\n[2] Calling 'code_interpreter' with dangerous argument ...")
+    # --- Create sample requirements files ---
+    with tempfile.TemporaryDirectory() as tmp:
 
-    @guard
-    async def code_interpreter(code: str) -> str:
-        return "executed"
+        # 1. A risky requirements.txt
+        risky = Path(tmp) / "risky_requirements.txt"
+        risky.write_text(
+            "# An agent's dependencies (intentionally bad)\n"
+            "requests\n"
+            "flask>=2.0\n"
+            "openai~=1.30\n"
+            "requets==2.31.0\n"   # typosquat
+            "numpy==1.26.4\n"
+            "pyjwt\n"
+        )
 
-    try:
-        await code_interpreter("import os; os.system('rm -rf /')")
-    except PolicyViolationError as exc:
-        print(f"    BLOCKED: {exc}")
-        audit.append({"ts": datetime.now().isoformat(),
-                       "tool": "code_interpreter", "status": "BLOCKED"})
+        # 2. A properly pinned requirements.txt
+        clean = Path(tmp) / "clean_requirements.txt"
+        clean.write_text(
+            "# Properly pinned dependencies\n"
+            "requests==2.32.3\n"
+            "flask==3.1.0\n"
+            "openai==1.90.0\n"
+            "numpy==1.26.4\n"
+            "pyjwt==2.10.1\n"
+        )
 
-    # --- 4. Allowed: compliant tool call ---
-    print("\n[3] Calling 'file_search' with safe content ...")
+        print("  Scanning risky_requirements.txt ...")
+        findings_risky = guard.check_requirements(str(risky))
+        print_findings("risky_requirements.txt", findings_risky)
 
-    @guard
-    async def file_search(query: str) -> list[str]:
-        return ["Q4_report.pdf", "annual_summary.pdf"]
+        print()
+        print("  Scanning clean_requirements.txt ...")
+        findings_clean = guard.check_requirements(str(clean))
+        print_findings("clean_requirements.txt", findings_clean)
 
-    result = await file_search("Find Q4 financial reports")
-    print(f"    ALLOWED: guardrails passed, found: {result}")
-    audit.append({"ts": datetime.now().isoformat(),
-                   "tool": "file_search", "status": "ALLOWED"})
+    # --- Also scan this lab's own requirements ---
+    lab_req = Path(__file__).parent / "requirements.txt"
+    if lab_req.exists():
+        print()
+        print("  Scanning this lab's requirements.txt ...")
+        findings_lab = guard.check_requirements(str(lab_req))
+        print_findings("lab requirements.txt", findings_lab)
 
-    # --- 5. Audit trail ---
-    print("\n-- Audit Trail " + "-" * 44)
-    for i, entry in enumerate(audit, 1):
-        print(f"  [{i}] {entry['ts']}  tool={entry['tool']!r}  "
-              f"status={entry['status']}")
+    # --- Typosquatting check ---
+    print()
+    print("-" * 64)
+    print("  Standalone typosquatting check")
+    print("-" * 64)
+    suspect_names = ["requets", "openaii", "numpy", "reqeusts", "tenserflow"]
+    for pkg in suspect_names:
+        finding = guard.check_typosquatting(pkg)
+        if finding:
+            print(f"  [!] '{pkg}': {finding.message}")
+        else:
+            print(f"  [+] '{pkg}': looks legitimate")
+
+    print()
+    print("Takeaway: run SupplyChainGuard in CI before pip install.")
+    print("Catches unpinned deps, version ranges, and typosquats")
+    print("before they reach your agent's runtime.")
     print()
 
 
-asyncio.run(main())
+if __name__ == "__main__":
+    main()

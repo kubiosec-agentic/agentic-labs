@@ -1,13 +1,16 @@
 """
-Exercise 3: File assistant agent with governance.
+Exercise 3: File integrity verification for governance code.
 
-A real OpenAI agent with four tools: search_docs, read_file,
-execute_shell, and delete_file. The governance policy allows only
-the first two. The agent is asked to do something that requires
-the blocked tools, and governance stops it mid-conversation.
+Demonstrates the concept behind AGT's IntegrityVerifier:
+generate SHA-256 hashes of your governance files in a trusted
+build step, then verify them at agent startup to detect tampering.
 
-Requires:
-    export OPENAI_API_KEY="sk-..."
+AGT's IntegrityVerifier (v3.1.0) is scoped to its own internal
+governance modules. This exercise implements the same pattern for
+your own code, which is how you would use it in practice for any
+agent project.
+
+No API keys needed.
 
 Run:
     python3 govern_03.py
@@ -15,101 +18,127 @@ Run:
 
 from __future__ import annotations
 
-import asyncio
-import sys
+import hashlib
+import json
+import tempfile
+from datetime import datetime, timezone
 from pathlib import Path
 
-# --- AGT imports ---
-_REPO_ROOT = Path(__file__).resolve().parent
-sys.path.insert(0, str(_REPO_ROOT))
 
-from agent_os.integrations.openai_agents_sdk import (
-    GovernancePolicy,
-    OpenAIAgentsKernel,
-    PolicyViolationError,
-)
-
-# --- OpenAI Agents SDK imports ---
-from agents import Agent, Runner, function_tool
-
-# --- Governance policy: only read-only tools allowed ---
-policy = GovernancePolicy(
-    allowed_tools=["search_docs", "read_file"],
-    blocked_tools=["execute_shell", "delete_file"],
-    blocked_patterns=["rm -rf", "DROP TABLE", "format c:"],
-    max_tool_calls=10,
-)
-
-kernel = OpenAIAgentsKernel(policy=policy, on_violation=lambda _e: None)
-guard = kernel.create_tool_guard()
+def hash_file(path: Path) -> str:
+    """Compute SHA-256 hash of a file."""
+    h = hashlib.sha256()
+    h.update(path.read_bytes())
+    return h.hexdigest()
 
 
-# --- Tools ---
-@function_tool
-@guard
-async def search_docs(query: str) -> str:
-    """Search internal documents for relevant information."""
-    return (
-        f"Found 3 results for '{query}':\n"
-        "  1. security_policy_v3.pdf\n"
-        "  2. incident_response_playbook.md\n"
-        "  3. access_control_matrix.xlsx"
-    )
+def generate_manifest(directory: Path, pattern: str = "*.py") -> dict:
+    """Generate a hash manifest for all matching files."""
+    manifest = {
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "directory": str(directory),
+        "files": {},
+    }
+    for f in sorted(directory.glob(pattern)):
+        manifest["files"][f.name] = hash_file(f)
+    return manifest
 
 
-@function_tool
-@guard
-async def read_file(path: str) -> str:
-    """Read the contents of a file."""
-    return f"[Contents of {path}]: This document describes the standard security review process ..."
+def verify_manifest(directory: Path, manifest: dict) -> list[dict]:
+    """Verify files against a manifest. Returns list of violations."""
+    violations = []
+    for filename, expected_hash in manifest["files"].items():
+        filepath = directory / filename
+        if not filepath.exists():
+            violations.append({
+                "file": filename,
+                "status": "MISSING",
+                "expected": expected_hash[:16] + "...",
+            })
+            continue
+        actual_hash = hash_file(filepath)
+        if actual_hash != expected_hash:
+            violations.append({
+                "file": filename,
+                "status": "TAMPERED",
+                "expected": expected_hash[:16] + "...",
+                "actual": actual_hash[:16] + "...",
+            })
+    return violations
 
 
-@function_tool
-@guard
-async def execute_shell(command: str) -> str:
-    """Execute a shell command on the server."""
-    return f"Executed: {command}"
+def main() -> None:
+    print("=" * 64)
+    print("  Governance Code Integrity Verification")
+    print("=" * 64)
+    print()
+    print("Same pattern as AGT's IntegrityVerifier: hash files in a")
+    print("trusted build, verify at startup to detect tampering.")
+    print()
 
+    lab_dir = Path(__file__).resolve().parent
+    manifest_path = Path(tempfile.mktemp(suffix=".json"))
 
-@function_tool
-@guard
-async def delete_file(path: str) -> str:
-    """Delete a file from the filesystem."""
-    return f"Deleted {path}"
+    # --- Step 1: generate manifest from current code ---
+    print("  [1] Generating manifest from trusted code ...")
+    manifest = generate_manifest(lab_dir, "govern_*.py")
+    manifest_path.write_text(json.dumps(manifest, indent=2))
+    print(f"      Files hashed: {len(manifest['files'])}")
+    for name, h in manifest["files"].items():
+        print(f"        {name}: {h[:24]}...")
+    print()
 
+    # --- Step 2: verify (should pass) ---
+    print("  [2] Verifying integrity (nothing changed) ...")
+    violations = verify_manifest(lab_dir, manifest)
+    if violations:
+        for v in violations:
+            print(f"      [!] {v['status']}: {v['file']}")
+    else:
+        print("      [+] PASS: all files match manifest")
+    print()
 
-# --- Agent ---
-file_agent = Agent(
-    name="File Assistant",
-    instructions=(
-        "You are a file assistant. You can search documents, read files, "
-        "execute shell commands, and delete files. Use whatever tools are "
-        "needed to fulfill the user's request. If a tool call fails, "
-        "explain what happened."
-    ),
-    tools=[search_docs, read_file, execute_shell, delete_file],
-)
+    # --- Step 3: simulate tampering ---
+    print("  [3] Simulating tampering ...")
+    first_file = next(iter(manifest["files"]))
+    original_hash = manifest["files"][first_file]
+    manifest["files"][first_file] = "deadbeef" + original_hash[8:]
+    print(f"      Modified manifest hash for: {first_file}")
+    print()
 
+    # --- Step 4: re-verify ---
+    print("  [4] Re-verifying after tampering ...")
+    violations = verify_manifest(lab_dir, manifest)
+    if violations:
+        for v in violations:
+            print(f"      [!] {v['status']}: {v['file']}")
+            if v["status"] == "TAMPERED":
+                print(f"          Expected: {v['expected']}")
+                print(f"          Actual:   {v['actual']}")
+    else:
+        print("      [+] PASS (unexpected)")
+    print()
 
-async def main():
-    prompts = [
-        "Search for documents about security policies and read the first result.",
-        "Delete the file /tmp/old_logs.txt and then run 'ls /tmp' to confirm.",
-    ]
+    # --- Step 5: show AGT's built-in verifier (limited scope) ---
+    print("-" * 64)
+    print("  Note on AGT's IntegrityVerifier")
+    print("-" * 64)
+    print()
+    print("  AGT v3.1.0 includes IntegrityVerifier, but it is scoped")
+    print("  to AGT's own internal governance modules (agentmesh.*,")
+    print("  agent_os.*, etc.). For your own agent code, implement")
+    print("  the same SHA-256 manifest pattern as shown above.")
+    print()
+    print("  In production:")
+    print("    1. CI generates the manifest during a trusted build")
+    print("    2. Manifest is signed and stored alongside the deployment")
+    print("    3. Agent startup calls verify_manifest()")
+    print("    4. If any file is TAMPERED or MISSING, agent refuses to start")
+    print()
 
-    for i, prompt in enumerate(prompts, 1):
-        print(f"\n{'=' * 60}")
-        print(f"  Prompt {i}: {prompt}")
-        print("=" * 60)
-
-        try:
-            result = await Runner.run(file_agent, prompt)
-            print(f"\n  Agent: {result.final_output}")
-        except PolicyViolationError as exc:
-            print(f"\n  GOVERNANCE BLOCKED: {exc}")
-        except Exception as exc:
-            print(f"\n  Error: {exc}")
+    # Cleanup
+    manifest_path.unlink(missing_ok=True)
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()

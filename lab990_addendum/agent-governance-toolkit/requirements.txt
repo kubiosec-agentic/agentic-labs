@@ -1,10 +1,11 @@
 # Agent Governance Toolkit (Microsoft, open-sourced April 2026)
 # https://github.com/microsoft/agent-governance-toolkit
-agent-governance-toolkit[full]
-openai-agents
+# Exercises 1-3: prompt defense, supply chain, integrity
+agent-governance-toolkit
 openai
-# Exercise 5: Microsoft Agent Framework for MCP + middleware
+# Exercise 4: OpenAI Agents SDK with custom tool governance
+openai-agents
+# Exercise 5: Microsoft Agent Framework + MCP middleware
 agent-framework-openai
-# Exercise 6: MCP Guardian integration
+# Exercise 6: MCP Guardian + AGT combined
 mcp-guardian-ai
-

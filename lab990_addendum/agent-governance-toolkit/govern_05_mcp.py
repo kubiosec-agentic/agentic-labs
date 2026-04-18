@@ -1,19 +1,19 @@
 """
-Exercise 5: MCP tool governance with Microsoft Agent Framework.
+Exercise 5: MCP tool governance with Microsoft Agent Framework middleware.
 
 Combines three ideas from the training:
   - lab075 MAF_03: function_middleware intercepts tool calls
   - lab075 MAF_05: MCP tool connected to Microsoft Learn
-  - AGT: deterministic policy evaluation
+  - Custom tool policy engine (from Exercise 4)
 
 The agent connects to the Microsoft Learn MCP server, which exposes
-documentation search and fetch tools. A function middleware powered by
-AGT's PolicyEvaluator checks every tool call (including MCP-discovered
-ones) against a policy before execution.
+documentation search and fetch tools. A function_middleware checks
+every tool call (including MCP-discovered ones) against a policy
+before execution.
 
 The policy allows search-type operations but blocks fetch/read
-operations, demonstrating governance over dynamically discovered MCP
-tools.
+operations, demonstrating governance over dynamically discovered
+MCP tools.
 
 Prerequisites:
     export OPENAI_API_KEY="sk-..."
@@ -26,8 +26,11 @@ Run:
 from __future__ import annotations
 
 import asyncio
+import re
 import os
 import sys
+from dataclasses import dataclass, field
+from datetime import datetime, timezone
 
 if not os.environ.get("OPENAI_API_KEY"):
     sys.exit("Error: OPENAI_API_KEY is not set.")
@@ -40,86 +43,112 @@ from agent_framework import (
 )
 from agent_framework.openai import OpenAIChatClient
 
-from agent_os.policies import (
-    PolicyEvaluator,
-    PolicyDocument,
-    PolicyRule,
-    PolicyCondition,
-    PolicyAction,
-    PolicyOperator,
-    PolicyDefaults,
-)
+
+# ===================================================================
+# Tool policy engine (same pattern as Exercise 4)
+# ===================================================================
+
+@dataclass
+class PolicyRule:
+    name: str
+    field: str          # "tool_name" or "arguments"
+    pattern: str        # regex
+    action: str         # "allow" or "deny"
+    priority: int = 0
+
+    def matches(self, value: str) -> bool:
+        return bool(re.search(self.pattern, value, re.IGNORECASE))
 
 
-# --- AGT policy: allow search, block fetch ---
+@dataclass
+class ToolPolicy:
+    name: str
+    default_action: str = "allow"
+    rules: list[PolicyRule] = field(default_factory=list)
+    audit: list[dict] = field(default_factory=list)
 
-evaluator = PolicyEvaluator(policies=[PolicyDocument(
+    def evaluate(self, tool_name: str, arguments: str = "") -> dict:
+        ts = datetime.now(timezone.utc).isoformat()
+        sorted_rules = sorted(self.rules, key=lambda r: r.priority, reverse=True)
+        for rule in sorted_rules:
+            value = tool_name if rule.field == "tool_name" else arguments
+            if rule.matches(value):
+                decision = {
+                    "tool": tool_name, "action": rule.action,
+                    "rule": rule.name, "timestamp": ts,
+                }
+                self.audit.append(decision)
+                return decision
+        decision = {
+            "tool": tool_name, "action": self.default_action,
+            "rule": "default", "timestamp": ts,
+        }
+        self.audit.append(decision)
+        return decision
+
+
+# ===================================================================
+# Policy: allow search, block fetch/read/download
+# ===================================================================
+
+policy = ToolPolicy(
     name="mcp-tool-governance",
-    version="1.0",
-    defaults=PolicyDefaults(action=PolicyAction.ALLOW),
+    default_action="allow",
     rules=[
         PolicyRule(
             name="block-fetch-tools",
-            description="Block MCP tools that retrieve full document content",
-            condition=PolicyCondition(
-                field="tool_name",
-                operator=PolicyOperator.MATCHES,
-                value=r"(?i)(fetch|read|get_page|download)",
-            ),
-            action=PolicyAction.DENY,
+            field="tool_name",
+            pattern=r"(?i)(fetch|read|get_page|download|get_content)",
+            action="deny",
             priority=100,
         ),
         PolicyRule(
-            name="block-dangerous-patterns",
-            description="Block calls with shell injection patterns",
-            condition=PolicyCondition(
-                field="arguments",
-                operator=PolicyOperator.MATCHES,
-                value=r"(rm -rf|DROP TABLE|;.*sh\b)",
-            ),
-            action=PolicyAction.DENY,
+            name="block-dangerous-args",
+            field="arguments",
+            pattern=r"(rm -rf|DROP TABLE|;.*sh\b)",
+            action="deny",
             priority=200,
         ),
     ],
-)])
+)
 
 
-# --- Function middleware: governance gate for all tool calls ---
+# ===================================================================
+# MAF function middleware: governance gate
+# ===================================================================
 
 @function_middleware
 async def governance_gate(
     context: FunctionInvocationContext,
     call_next,
 ) -> None:
-    """Check every tool call against AGT policy before execution."""
+    """Check every tool call against the policy before execution."""
     tool_name = context.function.name if hasattr(context.function, "name") else "unknown"
     args_str = str(getattr(context, "arguments", ""))
 
-    result = evaluator.evaluate({
-        "tool_name": tool_name,
-        "arguments": args_str,
-    })
+    result = policy.evaluate(tool_name, args_str)
 
-    if result.action == PolicyAction.DENY:
-        rule = result.matched_rule.name if result.matched_rule else "policy"
-        print(f"    [!] BLOCKED by AGT: tool='{tool_name}' rule='{rule}'")
+    if result["action"] == "deny":
+        print(f"    [!] BLOCKED: tool='{tool_name}' rule='{result['rule']}'")
         context.result = (
             f"Governance blocked this tool call. "
-            f"Tool '{tool_name}' was denied by policy rule '{rule}'. "
+            f"Tool '{tool_name}' was denied by policy rule '{result['rule']}'. "
             f"Inform the user that this operation is not permitted."
         )
         context.terminate = True
         return
 
-    print(f"    [+] ALLOWED by AGT: tool='{tool_name}'")
+    print(f"    [+] ALLOWED: tool='{tool_name}'")
     await call_next()
 
 
-# --- Agent setup ---
+# ===================================================================
+# Agent setup
+# ===================================================================
 
 async def main() -> None:
     print("=" * 60)
-    print("  MCP Tool Governance with AGT")
+    print("  MCP Tool Governance with MAF Middleware")
     print("=" * 60)
     print()
     print("Policy: allow search-type MCP tools, block fetch/read tools.")
@@ -147,7 +176,6 @@ async def main() -> None:
         middleware=[governance_gate],
     )
 
-    # Prompt 1: should trigger a search tool (allowed)
     prompts = [
         "Search Microsoft Learn for documentation about Azure Container Apps.",
         "Fetch the full content of the top result.",
@@ -162,6 +190,15 @@ async def main() -> None:
         except Exception as exc:
             print(f"Error: {exc}")
 
+    # --- Audit trail ---
+    print()
+    print("-" * 60)
+    print("  Audit trail")
+    print("-" * 60)
+    for entry in policy.audit:
+        icon = "[+]" if entry["action"] == "allow" else "[!]"
+        print(f"  {icon} {entry['action'].upper():5s}  {entry['tool']:30s}  "
+              f"rule={entry['rule']}")
     print()
 
 

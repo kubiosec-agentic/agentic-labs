@@ -4,35 +4,30 @@
 
 ## Introduction
 
-Prompt-based safety (system prompts, guardrail agents) is
-probabilistic: the LLM decides whether to comply. Microsoft's Agent
-Governance Toolkit (AGT) takes a different approach. It sits between
-your agent framework and the actions your agent wants to take, and
-evaluates every tool call against a deterministic policy before
-execution happens. If the policy says "deny", the call never fires,
-regardless of what the LLM asked for.
+Microsoft's Agent Governance Toolkit (AGT) was open-sourced on April 2,
+2026 under the MIT license. The project's vision includes runtime policy
+enforcement (allow/deny lists, YAML/OPA/Cedar policies), zero-trust
+agent identity, execution sandboxing, and Merkle-chained audit trails.
 
-AGT was open-sourced on April 2, 2026 under the MIT license. It is
-framework-agnostic (LangChain, CrewAI, OpenAI Agents SDK, Google ADK,
-Microsoft Agent Framework, and others) and adds sub-millisecond
-overhead per policy evaluation.
+The PyPI package (`agent-governance-toolkit` v3.1.0) currently ships
+three functional modules:
 
-The toolkit has seven packages. This addendum focuses on the two you
-will use first:
+1. **PromptDefenseEvaluator**: grades agent system prompts for defense
+   coverage against 12 OWASP LLM attack vectors. Pure regex, zero LLM
+   cost, under 5ms per prompt. Think of it as a linter for system
+   prompts.
+2. **SupplyChainGuard**: scans dependency manifests (requirements.txt,
+   package.json, pyproject.toml) for unpinned versions, version ranges,
+   and typosquatting.
+3. **IntegrityVerifier**: SHA-256 manifest generation and verification
+   for governance code. Currently scoped to AGT's internal modules.
 
-1. **agent-os**: the core policy engine. Supports YAML rules,
-   OPA/Rego, and Cedar policies. This is where allow/deny lists,
-   content pattern matching, and rate limiting live.
-2. **OpenAI Agents SDK integration**: a `GovernancePolicy` class and
-   a `@guard` decorator that wrap async tool functions with policy
-   enforcement, including allowlist/blocklist checks and dangerous
-   content pattern matching.
-
-The other packages (agent-mesh for zero-trust identity, agent-runtime
-for execution sandboxing, agent-sre for SLOs and circuit breakers,
-agent-compliance for regulatory mapping, agent-marketplace for plugin
-signing, and agent-lightning for RL training governance) are documented
-in the repo but not covered here.
+The blog post described additional capabilities (runtime
+`PolicyEvaluator`, `AuditLog`, agent-os policy engine) that are not yet
+in the PyPI package. Exercises 4-6 implement the runtime governance
+pattern described in the blog using lightweight Python policy engines,
+showing how you would build this today while waiting for AGT's runtime
+modules to ship.
 
 Repository: https://github.com/microsoft/agent-governance-toolkit
 
@@ -44,112 +39,87 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-No API keys are needed for exercise 1. Exercise 2 uses the OpenAI
-Agents SDK integration but does not make actual LLM calls; it
-demonstrates the governance layer in isolation.
+Exercises 1-3 need no API keys. Exercises 4-6 are noted individually.
 
-## Exercise 1: Governance in 60 seconds
+## Exercise 1: Prompt Defense Evaluator
 
-The simplest possible governance example. A single `govern()` call
-creates a policy gate with an allow list and a deny list. Each agent
-action is checked against the policy before execution.
+Grades agent system prompts for defense coverage against 12 OWASP LLM
+attack vectors. Three prompts are tested: a naive one (grade F), one
+with partial defenses (grade D), and a hardened one (grade B).
 
 ```bash
 python3 govern_01.py
 ```
 
-The output shows five actions tested against the policy: two pass, three
-are blocked. The `stats` object reports total decisions, denial count,
-violation rate, and average evaluation latency (typically under 0.1ms).
+The output shows which attack vectors are undefended and generates an
+audit entry suitable for compliance reporting. Run this in CI/CD before
+deploying any agent: a system prompt graded below B is likely vulnerable
+to at least one OWASP attack vector.
 
-Things to notice: there is no LLM involved. The policy is
-deterministic. A blocked action never executes, period. This is the
-fundamental difference from prompt-based guardrails.
+## Exercise 2: Supply Chain Guard
 
-## Exercise 2: OpenAI Agents SDK with governance guardrails
-
-This exercise wraps async tool functions with a governance guard.
-The `GovernancePolicy` defines three layers of enforcement:
-
-1. **Tool allowlist**: only `file_search` and `code_interpreter` are
-   permitted. Any other tool name is blocked.
-2. **Tool blocklist**: `shell_exec` and `network_request` are
-   explicitly denied (defense in depth).
-3. **Content patterns**: arguments containing `DROP TABLE` or `rm -rf`
-   are blocked, even if the tool itself is allowed.
+Scans dependency manifests for supply chain risks: unpinned versions,
+version ranges, and typosquatting. Two sample requirements files are
+tested: one with intentional problems and one properly pinned.
 
 ```bash
 python3 govern_02.py
 ```
 
-Three scenarios run in sequence:
+The exercise also scans its own requirements.txt and runs standalone
+typosquatting checks against package names like "requets" and
+"tenserflow". Run `SupplyChainGuard` in CI before `pip install` to
+catch problems before they reach your agent's runtime.
 
-| Scenario | Tool | Why it is blocked or allowed |
-|----------|------|-----------------------------|
-| 1 | `web_search` | Not in the allowlist |
-| 2 | `code_interpreter` | Allowed tool, but argument contains `rm -rf` |
-| 3 | `file_search` | Allowed tool, safe argument |
+## Exercise 3: Integrity Verification
 
-An audit trail is printed at the end with timestamps and
-pass/fail status for each call.
-
-## Exercise 3: File assistant agent
-
-This wires governance into a real OpenAI agent. The agent has four
-tools: `search_docs`, `read_file`, `execute_shell`, and `delete_file`.
-The policy allows only the read-only tools. Two prompts are sent:
-
-1. "Search for security policy docs and read the first result."
-   The agent calls `search_docs` and `read_file`, both pass.
-2. "Delete /tmp/old_logs.txt and run ls /tmp to confirm."
-   The agent tries `delete_file` and `execute_shell`, both are blocked
-   by governance before they execute.
+Demonstrates the tamper detection pattern behind AGT's
+IntegrityVerifier. Generates SHA-256 hashes of governance code files,
+verifies them, then simulates tampering by modifying a hash in the
+manifest.
 
 ```bash
-export OPENAI_API_KEY="sk-..."
 python3 govern_03.py
 ```
 
-The key observation: the agent still tries to call the blocked tools
-(the LLM does not know they are forbidden). Governance intercepts the
-call after the LLM decides but before the tool runs. This is the
-difference from prompt-based guardrails, where you tell the LLM "do
-not use these tools" and hope it complies.
+In production: generate the manifest during a trusted CI build, sign it,
+and verify at agent startup. If any file has been tampered with, the
+agent should refuse to start.
 
-## Exercise 4: Security analyst agent
+## Exercise 4: Runtime tool governance (OpenAI Agents SDK)
 
-Same pattern, security-themed. The agent has `scan_ports`, `read_logs`,
-`deploy_patch`, and `wipe_server`. Governance allows investigation
-(read-only) but blocks remediation (destructive actions).
+AGT's blog described runtime policy enforcement for tool calls, but
+the current PyPI package does not include this module yet. This exercise
+implements the pattern using a lightweight Python policy engine with
+regex-based tool name matching.
 
-1. "Investigate host 10.0.0.42: scan ports and check nginx logs."
-   Both tools pass; the agent reports suspicious findings.
-2. "Deploy patch CVE-2026-1234 and wipe the server."
-   Both `deploy_patch` and `wipe_server` are blocked. The agent
-   explains it cannot proceed and recommends manual intervention.
+A security analyst agent has four tools: `scan_ports`, `read_logs`,
+`deploy_patch`, and `wipe_server`. The policy allows investigation but
+blocks remediation. This models a common pattern: investigate
+autonomously, require human approval for destructive actions.
 
 ```bash
+export OPENAI_API_KEY="sk-..."
 python3 govern_04.py
 ```
 
-This models a real-world pattern: let agents investigate autonomously,
-but require human approval for destructive actions. The governance
-layer enforces this boundary deterministically regardless of how
-convincing the prompt is.
+Two prompts run:
 
-## Exercise 5: Governing MCP tool calls
+1. "Investigate host 10.0.0.42" -- `scan_ports` and `read_logs` pass.
+2. "Deploy patch and wipe the server" -- both are blocked by governance
+   before they execute.
 
-This is where it gets interesting. The agent connects to the Microsoft
-Learn MCP server, which dynamically exposes documentation tools. You
-do not know the tool names at development time; the agent discovers
-them at runtime via MCP. AGT's `PolicyEvaluator` sits inside a
-Microsoft Agent Framework `function_middleware` and checks every tool
-call, including the MCP-discovered ones, before execution.
+The agent still tries to call the blocked tools (the LLM does not know
+they are forbidden). Governance intercepts after the LLM decides but
+before the tool runs. This is the key difference from prompt-based
+guardrails.
 
-The policy uses a regex match: tool names containing "fetch", "read",
-"get_page", or "download" are blocked. Search-type tools pass. This
-demonstrates governance over tools you did not write and cannot
-modify.
+## Exercise 5: Governing MCP tool calls (MAF middleware)
+
+The agent connects to the Microsoft Learn MCP server, which dynamically
+exposes documentation tools. A Microsoft Agent Framework
+`function_middleware` checks every tool call, including MCP-discovered
+ones, against a regex-based policy before execution.
 
 ```bash
 export OPENAI_API_KEY="sk-..."
@@ -157,85 +127,70 @@ export OPENAI_CHAT_MODEL="gpt-4o-mini"
 python3 govern_05_mcp.py
 ```
 
-Two prompts are sent:
+The policy allows search-type tools but blocks fetch/read operations.
+Two prompts demonstrate this: search works, fetch is blocked.
 
-1. "Search Microsoft Learn for Azure Container Apps documentation."
-   The agent calls an MCP search tool. Governance allows it.
-2. "Fetch the full content of the top result."
-   The agent calls an MCP fetch tool. Governance blocks it.
-
-The middleware pattern here comes from lab075 exercise 3
-(`function_middleware`), combined with lab075 exercise 5 (MCP tools).
-The AGT `PolicyEvaluator` replaces the hardcoded checks with a
-declarative policy that can be loaded from YAML in production.
+This combines the middleware pattern from lab075 exercise 3 with the
+MCP tools from lab075 exercise 5.
 
 ## Exercise 6: MCP Guardian + AGT (combined)
 
-This exercise combines two complementary projects:
+Combines two complementary projects:
 
 - **MCP Guardian** (https://github.com/mcp-guardian/mcp-guardian):
-  a 3-tier validation pipeline for MCP tool calls. Tier 1 is
-  deterministic (allowlists, blocklists). Tier 2 uses an LLM to
-  evaluate intent against policy constraints. Tier 3 escalates to
-  a human when confidence is below threshold.
+  3-tier validation for MCP tool calls. Tier 1: deterministic rules.
+  Tier 2: LLM-based intent evaluation. Tier 3: human escalation.
 
-- **AGT PolicyEvaluator**: richer deterministic rules than simple
-  allow/deny lists (regex matching, priorities, pattern matching
-  on arguments). Plus Merkle-chained audit logs for tamper-proof
-  decision trails.
+- **AGT PromptDefenseEvaluator**: pre-deployment system prompt audit.
 
-The idea: replace Guardian's built-in Tier-1 engine with AGT's
-PolicyEvaluator for more expressive rules, and feed every Guardian
-decision into AGT's AuditLog. This gives you the best of both
-worlds: Guardian's multi-tier validation pipeline with AGT's
-enterprise-grade policy engine and audit.
+The combination runs in two phases: Phase 1 (pre-deployment) grades the
+agent's system prompt with AGT. Phase 2 (runtime) governs tool calls
+through MCP Guardian's IntentPolicy (allowed/forbidden glob patterns
+plus constraint checking).
 
 ```bash
 python3 govern_06_guardian.py
 ```
 
-No API keys needed. The example simulates 10 tool call scenarios
-and runs them through the combined pipeline:
+No API keys needed. Nine tool call scenarios are tested:
 
-| Scenario | Tool | Tier | Result |
-|----------|------|------|--------|
-| 1 | `read_file` (safe path) | passes both | ALLOW |
-| 2 | `list_directory` | passes both | ALLOW |
-| 3 | `search_docs` | passes both | ALLOW |
-| 4 | `delete_file` | AGT Tier-1 (name pattern) | DENY |
-| 5 | `execute_shell` | AGT Tier-1 (name pattern) | DENY |
-| 6 | `read_file` (path traversal) | AGT Tier-1 (argument pattern) | DENY |
-| 7 | `read_file` (injection) | AGT Tier-1 (argument pattern) | DENY |
-| 8 | `upload_document` | Guardian Tier-2 (not in allowed list) | DENY |
-| 9 | `write_config` | AGT Tier-1 (name pattern) | DENY |
-| 10 | `get_status` | passes both | ALLOW |
+| Scenario | Tool | Result | Why |
+|----------|------|--------|-----|
+| 1 | `read_file` (safe) | ALLOW | Matches `read_*` allowed pattern |
+| 2 | `search_docs` | ALLOW | Matches `search_*` allowed pattern |
+| 3 | `get_status` | ALLOW | Matches `get_*` allowed pattern |
+| 4 | `delete_file` | DENY | Matches `delete_*` forbidden pattern |
+| 5 | `execute_shell` | DENY | Matches `execute_*` forbidden pattern |
+| 6 | `write_config` | DENY | Matches `write_*` forbidden pattern |
+| 7 | `upload_document` | DENY | Matches `upload_*` forbidden pattern |
+| 8 | `read_file` (traversal) | DENY | `../` violates path constraint |
+| 9 | `list_directory` | ALLOW | Matches `list_*` allowed pattern |
 
-The audit trail at the end shows every decision with Merkle chain
-verification. This is the pattern you would use in production: AGT
-handles the fast deterministic checks, Guardian adds LLM-based
-intent evaluation for edge cases, and AGT's audit log gives you a
-tamper-proof record of everything the agent tried to do.
+The combined audit trail shows both the pre-deployment prompt grade and
+all runtime decisions.
 
 ## How AGT fits into the OWASP Agentic Top 10
 
-AGT maps its enforcement capabilities to all 10 risks in the OWASP
-Agentic Top 10. The exercises above touch on three of them directly:
-
 | OWASP risk | AGT mitigation | Exercise |
 |------------|---------------|----------|
-| Excessive Capabilities | Tool allowlist/blocklist | 1, 2, 3, 4, 5 |
-| Uncontrolled Code Execution | Content pattern matching | 2, 3 |
-| Goal Hijacking | Deterministic policy (LLM cannot override) | 3, 4, 5 |
-
-The full mapping is in the repo at `docs/OWASP-COMPLIANCE.md`.
+| Prompt Injection | PromptDefenseEvaluator grades system prompts | 1, 6 |
+| Supply Chain | SupplyChainGuard scans dependencies | 2 |
+| Excessive Capabilities | Tool allow/deny policies | 4, 5, 6 |
+| Uncontrolled Code Execution | Content pattern matching | 4, 5 |
+| Goal Hijacking | Deterministic policy (LLM cannot override) | 4, 5 |
+| Integrity | Hash-based tamper detection | 3 |
 
 ## What AGT is not
 
-AGT is not a prompt guardrail or content moderation tool. It does not
-inspect LLM inputs or outputs. It governs agent actions: which tools
-can be called, with what arguments, by which identity, at what rate.
-The two approaches are complementary. Use prompt guardrails (like the
-OpenAI Moderation API) for content safety, and AGT for action safety.
+AGT is not a prompt guardrail or content moderation tool. Its current
+PyPI modules focus on pre-deployment checks (prompt defense, supply
+chain, integrity). The runtime policy enforcement described in the blog
+(agent-os, PolicyEvaluator) is not yet shipped. Exercises 4-6 implement
+this pattern manually, demonstrating how to build runtime governance
+today using middleware and custom policy engines.
+
+The two approaches are complementary: use prompt guardrails for content
+safety, and deterministic policy engines for action safety.
 
 ## Cleanup
 
@@ -248,6 +203,7 @@ rm -rf .venv
 
 - AGT repository: https://github.com/microsoft/agent-governance-toolkit
 - Announcement blog post: https://opensource.microsoft.com/blog/2026/04/02/introducing-the-agent-governance-toolkit-open-source-runtime-security-for-ai-agents/
+- MCP Guardian: https://github.com/mcp-guardian/mcp-guardian
 - OWASP Agentic Top 10: https://genai.owasp.org/resource/agentic-ai-threats-and-mitigations/
 
 Back to [Lab Overview](https://github.com/kubiosec-agentic/agentic-labs/blob/master/README.md#-lab-overview)
