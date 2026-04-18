@@ -1,0 +1,5 @@
+# Agent Governance Toolkit (Microsoft, open-sourced April 2026)
+# https://github.com/microsoft/agent-governance-toolkit
+agent-governance-toolkit[full]
+openai-agents
+openai
