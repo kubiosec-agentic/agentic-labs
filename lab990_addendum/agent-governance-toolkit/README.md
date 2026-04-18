@@ -128,12 +128,15 @@ they are forbidden). Governance intercepts after the LLM decides but
 before the tool runs. This is the key difference from prompt-based
 guardrails.
 
-## Exercise 5: Governing MCP tool calls (MAF middleware)
+## Exercise 5: Governing MCP tool calls (AGT MCPGateway)
 
-The agent connects to the Microsoft Learn MCP server, which dynamically
-exposes documentation tools. A Microsoft Agent Framework
-`function_middleware` attempts to check every tool call against a
-regex-based policy before execution.
+This exercise requires `agent-os-kernel` (see Exercise 6 install).
+
+The agent connects to the Microsoft Learn MCP server. AGT's
+`MCPGateway` and `GovernancePolicy` compute which tools the agent
+is allowed to use. The allowed list is passed to
+`get_mcp_tool(allowed_tools=[...])`, which filters tools at the API
+level before the LLM even sees them.
 
 ```bash
 export OPENAI_API_KEY="sk-..."
@@ -141,23 +144,21 @@ export OPENAI_CHAT_MODEL="gpt-4o-mini"
 python3 govern_05_mcp.py
 ```
 
-**Important finding**: in `agent-framework-openai` 1.0.x,
-`function_middleware` does **not** intercept MCP-discovered tool calls.
-MCP tools go through a different code path in the SDK (`_tools.py`
-`_get_response`), bypassing the middleware pipeline entirely. You will
-see no `[+] ALLOWED` or `[!] BLOCKED` lines in the output.
+**Why not `function_middleware`?** MAF's `get_mcp_tool()` uses OpenAI's
+hosted MCP execution. Tool calls are sent to OpenAI, which calls the
+MCP server remotely. Your Python process never sees the actual tool
+invocation, so `function_middleware` cannot intercept it. The correct
+interception point is `allowed_tools` on `get_mcp_tool()`, which
+filters tools server-side.
 
-This is itself a security finding: governance middleware must be
-verified against every tool type in your stack. Mitigation options:
+Two prompts demonstrate the governance:
 
-1. Use MCP Guardian to wrap MCP tools before they reach the agent
-   (see Exercise 6)
-2. Use `approval_mode="always_require"` on `get_mcp_tool()` for
-   manual approval of each call
-3. Implement a proxy MCP server that enforces policy
+1. "Search for Azure Container Apps docs" - the search tool is in the
+   allowed list, so the LLM can use it and gets results.
+2. "Fetch the full content" - fetch/read tools are not in the allowed
+   list, so the LLM never sees them and must explain the limitation.
 
-This exercise combines the middleware pattern from lab075 exercise 3
-with the MCP tools from lab075 exercise 5.
+`MCPGateway` also provides an audit trail and rate limiting per agent.
 
 ## Exercise 6: MCP Guardian + AGT MCP Governance (combined)
 
