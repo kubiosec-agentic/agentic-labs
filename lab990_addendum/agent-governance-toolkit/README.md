@@ -169,6 +169,53 @@ The middleware pattern here comes from lab075 exercise 3
 The AGT `PolicyEvaluator` replaces the hardcoded checks with a
 declarative policy that can be loaded from YAML in production.
 
+## Exercise 6: MCP Guardian + AGT (combined)
+
+This exercise combines two complementary projects:
+
+- **MCP Guardian** (https://github.com/mcp-guardian/mcp-guardian):
+  a 3-tier validation pipeline for MCP tool calls. Tier 1 is
+  deterministic (allowlists, blocklists). Tier 2 uses an LLM to
+  evaluate intent against policy constraints. Tier 3 escalates to
+  a human when confidence is below threshold.
+
+- **AGT PolicyEvaluator**: richer deterministic rules than simple
+  allow/deny lists (regex matching, priorities, pattern matching
+  on arguments). Plus Merkle-chained audit logs for tamper-proof
+  decision trails.
+
+The idea: replace Guardian's built-in Tier-1 engine with AGT's
+PolicyEvaluator for more expressive rules, and feed every Guardian
+decision into AGT's AuditLog. This gives you the best of both
+worlds: Guardian's multi-tier validation pipeline with AGT's
+enterprise-grade policy engine and audit.
+
+```bash
+python3 govern_06_guardian.py
+```
+
+No API keys needed. The example simulates 10 tool call scenarios
+and runs them through the combined pipeline:
+
+| Scenario | Tool | Tier | Result |
+|----------|------|------|--------|
+| 1 | `read_file` (safe path) | passes both | ALLOW |
+| 2 | `list_directory` | passes both | ALLOW |
+| 3 | `search_docs` | passes both | ALLOW |
+| 4 | `delete_file` | AGT Tier-1 (name pattern) | DENY |
+| 5 | `execute_shell` | AGT Tier-1 (name pattern) | DENY |
+| 6 | `read_file` (path traversal) | AGT Tier-1 (argument pattern) | DENY |
+| 7 | `read_file` (injection) | AGT Tier-1 (argument pattern) | DENY |
+| 8 | `upload_document` | Guardian Tier-2 (not in allowed list) | DENY |
+| 9 | `write_config` | AGT Tier-1 (name pattern) | DENY |
+| 10 | `get_status` | passes both | ALLOW |
+
+The audit trail at the end shows every decision with Merkle chain
+verification. This is the pattern you would use in production: AGT
+handles the fast deterministic checks, Guardian adds LLM-based
+intent evaluation for edge cases, and AGT's audit log gives you a
+tamper-proof record of everything the agent tried to do.
+
 ## How AGT fits into the OWASP Agentic Top 10
 
 AGT maps its enforcement capabilities to all 10 risks in the OWASP

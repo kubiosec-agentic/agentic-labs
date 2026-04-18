@@ -5,4 +5,6 @@ openai-agents
 openai
 # Exercise 5: Microsoft Agent Framework for MCP + middleware
 agent-framework-openai
+# Exercise 6: MCP Guardian integration
+mcp-guardian-ai
 
