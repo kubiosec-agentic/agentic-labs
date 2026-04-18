@@ -7,5 +7,7 @@ openai
 openai-agents
 # Exercise 5: Microsoft Agent Framework + MCP middleware
 agent-framework-openai
-# Exercise 6: MCP Guardian + AGT combined
+# Exercise 6: MCP Guardian + AGT MCP governance
 mcp-guardian-ai
+# Exercise 6 also requires agent-os-kernel (not on PyPI):
+#   pip install "git+https://github.com/microsoft/agent-governance-toolkit.git#subdirectory=packages/agent-os"

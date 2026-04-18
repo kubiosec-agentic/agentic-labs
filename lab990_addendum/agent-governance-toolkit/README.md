@@ -159,41 +159,56 @@ verified against every tool type in your stack. Mitigation options:
 This exercise combines the middleware pattern from lab075 exercise 3
 with the MCP tools from lab075 exercise 5.
 
-## Exercise 6: MCP Guardian + AGT (combined)
+## Exercise 6: MCP Guardian + AGT MCP Governance (combined)
 
-Combines two complementary projects:
+This exercise requires `agent-os-kernel` from the AGT repo:
 
-- **MCP Guardian** (https://github.com/mcp-guardian/mcp-guardian):
-  3-tier validation for MCP tool calls. Tier 1: deterministic rules.
-  Tier 2: LLM-based intent evaluation. Tier 3: human escalation.
+```bash
+pip install "git+https://github.com/microsoft/agent-governance-toolkit.git#subdirectory=packages/agent-os"
+```
 
-- **AGT PromptDefenseEvaluator**: pre-deployment system prompt audit.
+Combines MCP Guardian with three AGT modules from `agent-os-kernel`
+that directly address MCP tool security:
 
-The combination runs in two phases: Phase 1 (pre-deployment) grades the
-agent's system prompt with AGT. Phase 2 (runtime) governs tool calls
-through MCP Guardian's IntentPolicy (allowed/forbidden glob patterns
-plus constraint checking).
+- **MCPSecurityScanner**: fingerprints tool definitions at registration
+  time, then detects rug-pull attacks when an MCP server changes a
+  tool's description or schema after the agent trusts it.
+- **MCPGateway**: `intercept_tool_call()` enforces a `GovernancePolicy`
+  with allowed/denied tool lists, rate limiting per agent, and argument
+  sanitization. This is the server-side complement to Exercise 5's
+  client-side middleware (which does not intercept MCP tools).
+- **MCP Guardian IntentPolicy**: glob-based allow/forbid patterns plus
+  constraint checks (path traversal, etc.). In production, adds
+  LLM-based intent evaluation and human escalation.
 
 ```bash
 python3 govern_06_guardian.py
 ```
 
-No API keys needed. Nine tool call scenarios are tested:
+No API keys needed. The exercise runs four phases:
 
-| Scenario | Tool | Result | Why |
-|----------|------|--------|-----|
-| 1 | `read_file` (safe) | ALLOW | Matches `read_*` allowed pattern |
-| 2 | `search_docs` | ALLOW | Matches `search_*` allowed pattern |
-| 3 | `get_status` | ALLOW | Matches `get_*` allowed pattern |
-| 4 | `delete_file` | DENY | Matches `delete_*` forbidden pattern |
-| 5 | `execute_shell` | DENY | Matches `execute_*` forbidden pattern |
-| 6 | `write_config` | DENY | Matches `write_*` forbidden pattern |
-| 7 | `upload_document` | DENY | Matches `upload_*` forbidden pattern |
-| 8 | `read_file` (traversal) | DENY | `../` violates path constraint |
-| 9 | `list_directory` | ALLOW | Matches `list_*` allowed pattern |
+**Phase 0: Rug-pull detection.** Two fingerprint checks: one unchanged
+tool (no threat) and one tampered tool where `search_docs` was silently
+changed to "execute arbitrary shell commands" (CRITICAL rug-pull).
 
-The combined audit trail shows both the pre-deployment prompt grade and
-all runtime decisions.
+**Phases 1-3: Tool call governance.** Nine scenarios through the
+combined pipeline:
+
+| Scenario | Tool | Blocked by | Reason |
+|----------|------|-----------|--------|
+| 1 | `read_file` (safe) | -- | Allowed by both |
+| 2 | `search_docs` | -- | Allowed by both |
+| 3 | `get_status` | -- | Allowed by both |
+| 4 | `delete_file` | AGT MCPGateway | On deny list |
+| 5 | `execute_shell` | AGT MCPGateway | On deny list |
+| 6 | `write_file` | AGT MCPGateway | Not on allow list |
+| 7 | `upload_document` | AGT MCPGateway | Not on allow list |
+| 8 | `read_file` (traversal) | Guardian constraint | `../` in arguments |
+| 9 | `list_directory` | -- | Allowed by both |
+
+The audit trail shows which layer blocked each call. AGT handles the
+fast policy checks and rate limiting; Guardian adds constraint checks
+and (in production) LLM-based intent evaluation for ambiguous cases.
 
 ## How AGT fits into the OWASP Agentic Top 10
 
