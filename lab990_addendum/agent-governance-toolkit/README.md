@@ -93,6 +93,50 @@ Three scenarios run in sequence:
 An audit trail is printed at the end with timestamps and
 pass/fail status for each call.
 
+## Exercise 3: File assistant agent
+
+This wires governance into a real OpenAI agent. The agent has four
+tools: `search_docs`, `read_file`, `execute_shell`, and `delete_file`.
+The policy allows only the read-only tools. Two prompts are sent:
+
+1. "Search for security policy docs and read the first result."
+   The agent calls `search_docs` and `read_file`, both pass.
+2. "Delete /tmp/old_logs.txt and run ls /tmp to confirm."
+   The agent tries `delete_file` and `execute_shell`, both are blocked
+   by governance before they execute.
+
+```bash
+export OPENAI_API_KEY="sk-..."
+python3 govern_03.py
+```
+
+The key observation: the agent still tries to call the blocked tools
+(the LLM does not know they are forbidden). Governance intercepts the
+call after the LLM decides but before the tool runs. This is the
+difference from prompt-based guardrails, where you tell the LLM "do
+not use these tools" and hope it complies.
+
+## Exercise 4: Security analyst agent
+
+Same pattern, security-themed. The agent has `scan_ports`, `read_logs`,
+`deploy_patch`, and `wipe_server`. Governance allows investigation
+(read-only) but blocks remediation (destructive actions).
+
+1. "Investigate host 10.0.0.42: scan ports and check nginx logs."
+   Both tools pass; the agent reports suspicious findings.
+2. "Deploy patch CVE-2026-1234 and wipe the server."
+   Both `deploy_patch` and `wipe_server` are blocked. The agent
+   explains it cannot proceed and recommends manual intervention.
+
+```bash
+python3 govern_04.py
+```
+
+This models a real-world pattern: let agents investigate autonomously,
+but require human approval for destructive actions. The governance
+layer enforces this boundary deterministically regardless of how
+convincing the prompt is.
+
 ## How AGT fits into the OWASP Agentic Top 10
 
 AGT maps its enforcement capabilities to all 10 risks in the OWASP
@@ -100,9 +144,9 @@ Agentic Top 10. The exercises above touch on three of them directly:
 
 | OWASP risk | AGT mitigation | Exercise |
 |------------|---------------|----------|
-| Excessive Capabilities | Tool allowlist/blocklist | 1, 2 |
-| Uncontrolled Code Execution | Content pattern matching | 2 |
-| Goal Hijacking | Deterministic policy (LLM cannot override) | 1, 2 |
+| Excessive Capabilities | Tool allowlist/blocklist | 1, 2, 3, 4 |
+| Uncontrolled Code Execution | Content pattern matching | 2, 3 |
+| Goal Hijacking | Deterministic policy (LLM cannot override) | 3, 4 |
 
 The full mapping is in the repo at `docs/OWASP-COMPLIANCE.md`.
 
