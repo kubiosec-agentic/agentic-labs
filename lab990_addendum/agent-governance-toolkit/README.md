@@ -41,6 +41,20 @@ pip install -r requirements.txt
 
 Exercises 1-3 need no API keys. Exercises 4-6 are noted individually.
 
+### Optional: full agent-os policy engine
+
+The repo also contains `agent-os-kernel`, which provides runtime
+`PolicyEvaluator`, `GovernancePolicy`, and the `agent_os.lite.govern()`
+API described in the blog post. This package is not yet on PyPI but
+installs directly from GitHub:
+
+```bash
+pip install "git+https://github.com/microsoft/agent-governance-toolkit.git#subdirectory=packages/agent-os"
+```
+
+See the repo's `examples/` directory for demos that use the full
+`agent_os` API, including the 9-scenario OpenAI Agents governance demo.
+
 ## Exercise 1: Prompt Defense Evaluator
 
 Grades agent system prompts for defense coverage against 12 OWASP LLM
