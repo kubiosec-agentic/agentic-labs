@@ -137,6 +137,38 @@ but require human approval for destructive actions. The governance
 layer enforces this boundary deterministically regardless of how
 convincing the prompt is.
 
+## Exercise 5: Governing MCP tool calls
+
+This is where it gets interesting. The agent connects to the Microsoft
+Learn MCP server, which dynamically exposes documentation tools. You
+do not know the tool names at development time; the agent discovers
+them at runtime via MCP. AGT's `PolicyEvaluator` sits inside a
+Microsoft Agent Framework `function_middleware` and checks every tool
+call, including the MCP-discovered ones, before execution.
+
+The policy uses a regex match: tool names containing "fetch", "read",
+"get_page", or "download" are blocked. Search-type tools pass. This
+demonstrates governance over tools you did not write and cannot
+modify.
+
+```bash
+export OPENAI_API_KEY="sk-..."
+export OPENAI_CHAT_MODEL="gpt-4o-mini"
+python3 govern_05_mcp.py
+```
+
+Two prompts are sent:
+
+1. "Search Microsoft Learn for Azure Container Apps documentation."
+   The agent calls an MCP search tool. Governance allows it.
+2. "Fetch the full content of the top result."
+   The agent calls an MCP fetch tool. Governance blocks it.
+
+The middleware pattern here comes from lab075 exercise 3
+(`function_middleware`), combined with lab075 exercise 5 (MCP tools).
+The AGT `PolicyEvaluator` replaces the hardcoded checks with a
+declarative policy that can be loaded from YAML in production.
+
 ## How AGT fits into the OWASP Agentic Top 10
 
 AGT maps its enforcement capabilities to all 10 risks in the OWASP
@@ -144,9 +176,9 @@ Agentic Top 10. The exercises above touch on three of them directly:
 
 | OWASP risk | AGT mitigation | Exercise |
 |------------|---------------|----------|
-| Excessive Capabilities | Tool allowlist/blocklist | 1, 2, 3, 4 |
+| Excessive Capabilities | Tool allowlist/blocklist | 1, 2, 3, 4, 5 |
 | Uncontrolled Code Execution | Content pattern matching | 2, 3 |
-| Goal Hijacking | Deterministic policy (LLM cannot override) | 3, 4 |
+| Goal Hijacking | Deterministic policy (LLM cannot override) | 3, 4, 5 |
 
 The full mapping is in the repo at `docs/OWASP-COMPLIANCE.md`.
 

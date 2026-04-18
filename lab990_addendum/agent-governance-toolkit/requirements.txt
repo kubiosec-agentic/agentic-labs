@@ -3,3 +3,6 @@
 agent-governance-toolkit[full]
 openai-agents
 openai
+# Exercise 5: Microsoft Agent Framework for MCP + middleware
+agent-framework-openai
+
