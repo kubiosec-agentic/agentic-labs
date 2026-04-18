@@ -6,6 +6,14 @@
 
 The A2A (Agent-to-Agent) protocol enables autonomous AI agents to discover, communicate, and collaborate across vendor boundaries. No shared SDK, runtime, or model is required. Agents publish an **agent card** at a well-known endpoint, and any compliant client can discover and invoke them.
 
+A2A reached 1.0 GA in March 2026 under the Linux Foundation, with
+backing from Google, Microsoft, Salesforce, and others. Unlike many
+"open standards" in the AI space, A2A has real multi-vendor adoption
+and is likely to remain the dominant agent interoperability protocol
+for the foreseeable future. Note that as of April 2026, the official
+Python SDK (`a2a-sdk`) still implements the 0.3 spec; the 1.0 SDK is
+in alpha. See the Version Notes section below for details.
+
 This lab has two parts:
 
 - **Part 1** uses the official `a2a-samples` hello world to introduce the protocol basics: agent cards, discovery, message exchange, and the A2A Inspector.
