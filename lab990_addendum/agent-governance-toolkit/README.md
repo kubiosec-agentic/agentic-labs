@@ -178,9 +178,11 @@ that directly address MCP tool security:
   with allowed/denied tool lists, rate limiting per agent, and argument
   sanitization. This is the server-side complement to Exercise 5's
   client-side middleware (which does not intercept MCP tools).
-- **MCP Guardian IntentPolicy**: glob-based allow/forbid patterns plus
-  constraint checks (path traversal, etc.). In production, adds
-  LLM-based intent evaluation and human escalation.
+- **MCP Guardian IntentPolicy**: `fast_check(tool_name, prior_tools)`
+  evaluates glob-based allow/forbid patterns and workflow transition
+  enforcement in one call. Constraint checks catch path traversal, etc.
+  `to_prompt_context()` generates policy text for LLM Tier 2 intent
+  evaluation. In production, adds human escalation for ambiguous cases.
 
 ```bash
 python3 govern_06_guardian.py
@@ -202,7 +204,7 @@ combined pipeline:
 | 3 | `get_status` | -- | Allowed by both |
 | 4 | `delete_file` | AGT MCPGateway | On deny list |
 | 5 | `execute_shell` | AGT MCPGateway | On deny list |
-| 6 | `write_file` | AGT MCPGateway | Not on allow list |
+| 6 | `write_file` | AGT MCPGateway | Sensitive tool, not on allow list |
 | 7 | `upload_document` | AGT MCPGateway | Not on allow list |
 | 8 | `read_file` (traversal) | Guardian constraint | `../` in arguments |
 | 9 | `list_directory` | -- | Allowed by both |

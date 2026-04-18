@@ -15,11 +15,12 @@ Combines two complementary projects for MCP tool security:
     - TrustRoot: multi-policy validation engine
 
 The combination:
-  Phase 1: MCPSecurityScanner registers tool fingerprints, then
+  Phase 0: MCPSecurityScanner registers tool fingerprints, then
            checks for rug-pull (definition tampering)
-  Phase 2: MCPGateway intercepts tool calls (allowed/denied/rate-limited)
-  Phase 3: MCP Guardian IntentPolicy adds glob-based allow/forbid +
-           constraint checks (path traversal, etc.)
+  Phase 1: MCPGateway intercepts tool calls (allowed/denied/rate-limited)
+  Phase 2: MCP Guardian IntentPolicy.fast_check() for glob-based
+           allow/forbid + workflow transition enforcement
+  Phase 3: Argument constraint checks (path traversal, etc.)
 
 No API keys needed.
 
@@ -116,15 +117,27 @@ for tool in TOOL_REGISTRY:
 
 
 # ===================================================================
-# 3. MCP Guardian: IntentPolicy for constraint checks
+# 3. MCP Guardian: IntentPolicy with workflow transitions
 # ===================================================================
+# IntentPolicy.fast_check(tool_name, prior_tools) is the proper API:
+#   - Returns None if the tool is allowed
+#   - Returns VerdictResult(verdict=BLOCK, reason=...) if denied
+# allowed_transitions defines a workflow graph: after search_*,
+# only read_* and list_* are valid next steps. This catches agents
+# that skip steps or jump to unexpected tools.
 
 guardian_policy = IntentPolicy(
     name="read-only-docs",
     description="Allow read-only documentation access, block writes and execution",
-    expected_workflow="search docs, read results, summarize findings",
+    expected_workflow="search docs, read results, list directories, check status",
     allowed_tools=["read_*", "list_*", "search_*", "get_*"],
     forbidden_tools=["write_*", "execute_*", "delete_*", "upload_*", "wipe_*"],
+    allowed_transitions={
+        "search_*": ["read_*", "list_*", "get_*"],
+        "read_*": ["search_*", "list_*", "get_*"],
+        "list_*": ["read_*", "search_*", "get_*"],
+        "get_*": ["read_*", "search_*", "list_*"],
+    },
     constraints=[
         "Do not access files outside the documentation directory",
         "Do not execute arbitrary commands",
@@ -134,16 +147,16 @@ guardian_policy = IntentPolicy(
 
 
 # ===================================================================
-# 4. Combined pipeline
+# 4. Combined pipeline using fast_check()
 # ===================================================================
 
-import fnmatch
-
 audit: list[dict] = []
+prior_tools: list[str] = []   # Track tool call sequence for transitions
 
 
 def check_tool(agent_id: str, tool_name: str, arguments: dict) -> dict:
     """Run the full combined pipeline for a tool call."""
+    global prior_tools
     ts = datetime.now(timezone.utc).isoformat()
     args_str = json.dumps(arguments)
 
@@ -158,34 +171,26 @@ def check_tool(agent_id: str, tool_name: str, arguments: dict) -> dict:
         audit.append(entry)
         return entry
 
-    # --- Phase 2: MCP Guardian IntentPolicy (glob patterns + constraints) ---
-    is_forbidden = any(
-        fnmatch.fnmatch(tool_name, pat)
-        for pat in guardian_policy.forbidden_tools
-    )
-    if is_forbidden:
+    # --- Phase 2: MCP Guardian IntentPolicy.fast_check() ---
+    # fast_check evaluates glob patterns (allowed/forbidden) AND
+    # workflow transitions (prior_tools sequence) in one call.
+    verdict = guardian_policy.fast_check(tool_name, prior_tools)
+    if verdict is not None:
         entry = {
             "tool": tool_name, "action": "DENY",
-            "phase": "Guardian IntentPolicy", "reason": "Forbidden pattern match",
+            "phase": "Guardian fast_check",
+            "reason": verdict.reason,
+            "confidence": verdict.confidence,
+            "step": verdict.step_number,
+            "prior_tools": list(verdict.prior_tools) if verdict.prior_tools else [],
             "timestamp": ts,
         }
         audit.append(entry)
         return entry
 
-    is_allowed = any(
-        fnmatch.fnmatch(tool_name, pat)
-        for pat in guardian_policy.allowed_tools
-    )
-    if not is_allowed:
-        entry = {
-            "tool": tool_name, "action": "DENY",
-            "phase": "Guardian IntentPolicy", "reason": "Not in allowed list",
-            "timestamp": ts,
-        }
-        audit.append(entry)
-        return entry
-
-    # Constraint check: path traversal
+    # --- Phase 3: Argument constraint checks ---
+    # Guardian's constraints are evaluated here deterministically.
+    # In production, ambiguous cases go to LLM Tier 2 evaluation.
     if ".." in args_str:
         entry = {
             "tool": tool_name, "action": "DENY",
@@ -197,6 +202,7 @@ def check_tool(agent_id: str, tool_name: str, arguments: dict) -> dict:
         return entry
 
     # --- Passed all checks ---
+    prior_tools.append(tool_name)   # Track for transition enforcement
     entry = {
         "tool": tool_name, "action": "ALLOW",
         "phase": "all", "reason": "Passed AGT + Guardian",
@@ -247,8 +253,8 @@ def main() -> None:
     print("Phase 1-3: Tool call governance pipeline")
     print("-" * 64)
     print("  Phase 1: AGT MCPGateway (policy + deny list + rate limit)")
-    print("  Phase 2: MCP Guardian IntentPolicy (glob patterns)")
-    print("  Phase 3: MCP Guardian constraints (path traversal)")
+    print("  Phase 2: Guardian IntentPolicy.fast_check() (patterns + transitions)")
+    print("  Phase 3: Guardian argument constraints (path traversal)")
     print()
 
     scenarios = [
@@ -277,8 +283,30 @@ def main() -> None:
         status = result["action"]
         icon = "[+]" if status == "ALLOW" else "[!]"
         print(f"  {i}. {icon} {status:5s}  {tool}({json.dumps(args)})")
-        print(f"           {result['phase']}: {result['reason']}")
+        detail = f"{result['phase']}: {result['reason']}"
+        if result.get("confidence") is not None:
+            detail += f" (confidence={result['confidence']:.1f})"
+        if result.get("prior_tools"):
+            detail += f" after={result['prior_tools']}"
+        print(f"           {detail}")
         print()
+
+    # --- Workflow tracking ---
+    print("-" * 64)
+    print("  Workflow tracking (prior_tools sequence)")
+    print("-" * 64)
+    print(f"  Allowed tool sequence: {prior_tools}")
+    print(f"  Transitions defined: {guardian_policy.allowed_transitions}")
+    print()
+
+    # --- LLM Tier 2 context (for ambiguous cases) ---
+    print("-" * 64)
+    print("  Guardian LLM Tier 2 context (for edge cases)")
+    print("-" * 64)
+    prompt_ctx = guardian_policy.to_prompt_context()
+    for line in prompt_ctx.strip().split("\n"):
+        print(f"  {line}")
+    print()
 
     # --- Rate limiting demo ---
     print("-" * 64)
@@ -305,9 +333,11 @@ def main() -> None:
     print()
     print("Takeaway: AGT MCPGateway handles policy enforcement + rate")
     print("limiting. MCPSecurityScanner catches rug-pull attacks.")
-    print("MCP Guardian adds constraint checks and LLM-based intent")
-    print("evaluation for edge cases. Together they cover the full")
-    print("MCP tool attack surface.")
+    print("MCP Guardian's fast_check() adds glob pattern matching,")
+    print("workflow transition enforcement, and argument constraints.")
+    print("For ambiguous cases, to_prompt_context() feeds the policy")
+    print("to an LLM for Tier 2 intent evaluation. Together they")
+    print("cover the full MCP tool attack surface.")
     print()
 
 
