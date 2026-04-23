@@ -64,7 +64,7 @@ Step 6 - Report:
 """
 
 root_agent = Agent(
-    model=os.getenv("MODEL_ID", "gemini-2.5"),
+    model=os.getenv("MODEL_ID", "gemini-2.5-pro"),
     name="cyber_guardian_orchestrator",
     description="Cybersecurity incident response orchestrator with mock security tools",
     instruction=ORCHESTRATOR_INSTRUCTION,
