@@ -27,6 +27,7 @@ ssh -i agentics-key.pem \
     -L 5055:localhost:5055 \
     -L 5173:localhost:5173 \
     -L 6274:localhost:6274 \
+    -L 6277:localhost:6277 \
     -L 8000:localhost:8000 \
     -L 8001:localhost:8001 \
     -L 8080:localhost:8080 \
