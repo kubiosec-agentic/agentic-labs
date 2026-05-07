@@ -1,22 +1,5 @@
 """
 Exercise 4: Workflow with Worker/Reviewer reflection pattern.
-
-This demonstrates the WorkflowBuilder, which lets you wire executors
-into a cyclic graph. Here a Worker generates a response and a Reviewer
-evaluates it. If the Reviewer rejects, the Worker retries with
-feedback. Only approved responses are emitted.
-
-This is a simplified version of the openai_workflow.py reference file
-in this directory (which has the full implementation). Read that file
-for the complete pattern including structured output and state
-management.
-
-Prerequisites:
-    export OPENAI_API_KEY="sk-..."
-    export OPENAI_CHAT_MODEL="gpt-4o-mini"
-
-Run:
-    python3 MAF_04_workflow.py
 """
 
 import asyncio
@@ -31,13 +14,11 @@ if not os.environ.get("OPENAI_CHAT_MODEL"):
     sys.exit("Error: OPENAI_CHAT_MODEL is not set. Run: export OPENAI_CHAT_MODEL=\"gpt-4o-mini\"")
 
 from agent_framework import (
-    AgentResponseUpdate,
-    Content,
+    AgentResponse,
     Executor,
     Message,
     WorkflowBuilder,
     WorkflowContext,
-    WorkflowEvent,
     handler,
 )
 from agent_framework.openai import OpenAIChatClient
@@ -136,15 +117,10 @@ class Worker(Executor):
         request, messages = self._pending.pop(review.request_id)
 
         if review.approved:
-            contents: list[Content] = []
-            for msg in request.agent_messages:
-                contents.extend(msg.contents)
-            await ctx.add_event(
-                WorkflowEvent(
-                    type="response",
-                    data=AgentResponseUpdate(contents=contents, role="assistant"),
-                    executor_id=self.id,
-                )
+            # FIX: emit AgentResponse (final), not AgentResponseUpdate (delta).
+            # Non-streaming workflows expect the completed response object.
+            await ctx.yield_output(
+                AgentResponse(messages=list(request.agent_messages))
             )
             return
 
