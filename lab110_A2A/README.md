@@ -262,6 +262,20 @@ pip install "a2a-sdk[http-server]>=1.0,<2"
 old `a2a-sdk>=0.3.26,<1.0` pin. Current `agent-framework-a2a` requires
 `a2a-sdk>=1.0,<2` and `agent-framework-core>=1.15.0`.
 
+**`APIConnectionError: Connection error` while `curl` to OpenAI works:**
+a stale `OPENAI_BASE_URL` (or `OPENAI_ENDPOINT`) left over from a local
+Ollama / LiteLLM / Azure setup. The SDK dials that dead host instead of
+OpenAI, so DNS, `curl` and the API key all check out while Python fails.
+Confirm and clear it:
+
+```bash
+env | grep -i -E 'openai|proxy'
+python -c "from agent_framework.openai import OpenAIChatClient; print(OpenAIChatClient().client.base_url)"
+unset OPENAI_BASE_URL OPENAI_ENDPOINT
+```
+
+It should print `https://api.openai.com/v1/`.
+
 **Missing Gemini/Vertex credentials:** If you see `ValueError: Missing key inputs argument!`, configure authentication for the ADK server (Step 5).
 
 **Python 3.14 dependency conflicts:** Don't install the full `agent-framework` meta-package on Python 3.14. Install only the required sub-packages (`core`, `a2a`), as the setup script does.
