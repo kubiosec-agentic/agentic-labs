@@ -14,7 +14,13 @@ source "$VENV/bin/activate"
 
 echo "Installing dependencies ..."
 pip install --quiet --upgrade pip
-pip install --quiet "google-adk[a2a]"
+# google-adk[a2a] pulls in bare a2a-sdk, which does NOT include the
+# server-side HTTP deps (sse-starlette, starlette). Without them ADK logs
+# "Failed to setup A2A agent ...: No module named 'sse_starlette'" at
+# startup, mounts no A2A routes, and every agent-card URL returns 404.
+# The [http-server] extra fixes that. a2a-sdk 1.x is GA and is what
+# agent-framework-a2a requires on the client side.
+pip install --quiet "google-adk[a2a]" "a2a-sdk[http-server]>=1.0,<2"
 
 echo ""
 echo "Setup complete."

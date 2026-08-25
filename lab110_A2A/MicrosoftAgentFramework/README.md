@@ -36,8 +36,8 @@ a2a/
 │   └── remote_a2a/
 │       └── check_prime_agent/
 │           ├── agent.py                 # ADK agent (Gemini + check_prime tool)
-│           ├── agent.json               # Agent metadata
-│           ├── agent-card.json          # A2A discovery card
+│           ├── agent.json               # Agent card ADK reads and serves
+│           ├── agent-card.json          # (unused duplicate of agent.json)
 │           └── __init__.py
 │
 ├── MicrosoftAgentFramework/
@@ -99,6 +99,15 @@ Expected output from the curl test:
     "description": "An agent specialized in checking whether numbers are prime.",
     "version": "1.0.0",
     "url": "http://localhost:8001/a2a/check_prime_agent",
+    "protocolVersion": "0.3.0",
+    "preferredTransport": "JSONRPC",
+    "supportedInterfaces": [
+        {
+            "url": "http://localhost:8001/a2a/check_prime_agent",
+            "protocolBinding": "JSONRPC",
+            "protocolVersion": "0.3.0"
+        }
+    ],
     "skills": [
         {
             "id": "prime_checking",
@@ -199,6 +208,17 @@ Agent card OK.
 The Microsoft agent can discover an external agent via an agent card, wrap it as an `A2AAgent`, and expose it as a tool to an OpenAI-backed `Agent`. The Google ADK agent acts as a fully compliant A2A server, serves metadata, and executes logic on behalf of remote agents. No shared SDK, runtime, or model is required.
 
 ## Common Pitfalls
+
+**`No module named 'sse_starlette'` / agent card 404:** `google-adk[a2a]`
+installs the bare `a2a-sdk` without its server HTTP extras. The ADK
+server then logs `Failed to setup A2A agent check_prime_agent: No module
+named 'sse_starlette'`, starts anyway with no A2A routes mounted, and
+the agent card URL returns `{"detail":"Not Found"}`. Fix with
+`pip install "a2a-sdk[http-server]>=1.0,<2"`.
+
+**`ResolutionImpossible` installing the client:** `agent-framework-a2a`
+requires `a2a-sdk>=1.0,<2` and `agent-framework-core>=1.15.0`. Any pin
+of `a2a-sdk<1.0` will fail to resolve.
 
 **Missing Gemini/Vertex credentials:** If you see `ValueError: Missing key inputs argument!`, configure authentication for the ADK server (Step 1).
 

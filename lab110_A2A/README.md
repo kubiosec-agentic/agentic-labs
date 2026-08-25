@@ -10,9 +10,9 @@ A2A reached 1.0 GA in March 2026 under the Linux Foundation, with
 backing from Google, Microsoft, Salesforce, and others. Unlike many
 "open standards" in the AI space, A2A has real multi-vendor adoption
 and is likely to remain the dominant agent interoperability protocol
-for the foreseeable future. Note that as of April 2026, the official
-Python SDK (`a2a-sdk`) still implements the 0.3 spec; the 1.0 SDK is
-in alpha. See the Version Notes section below for details.
+for the foreseeable future. The official Python SDK (`a2a-sdk`) has
+since shipped 1.x as GA, and the Microsoft `agent-framework-a2a`
+package now requires it. See the Version Notes section below.
 
 This lab has two parts:
 
@@ -97,6 +97,7 @@ graph TB
 |------|-------------|
 | `adk_server/setup.sh` | Setup the ADK server virtual environment |
 | `adk_server/remote_a2a/check_prime_agent/agent.py` | ADK agent: prime number checker (Gemini) |
+| `adk_server/remote_a2a/check_prime_agent/agent.json` | Agent card ADK serves (this is the file ADK reads; `agent-card.json` is an unused duplicate) |
 | `MicrosoftAgentFramework/ms_client/setup.sh` | Setup the MS client virtual environment |
 | `MicrosoftAgentFramework/ms_client/demo.py` | Single-shot demo: "Is 97 prime?" |
 | `MicrosoftAgentFramework/ms_client/demo_conversation.py` | Multi-turn bidirectional conversation |
@@ -224,19 +225,42 @@ The A2A protocol reached 1.0 GA in March 2026 and is now a Linux
 Foundation project. The protocol spec is stable, but the SDK
 implementations are still catching up:
 
-| Package | Latest | Status |
-|---------|--------|--------|
+| Package | Version used here | Status |
+|---------|-------------------|--------|
 | A2A protocol spec | 1.0 | GA |
-| `a2a-sdk` (Python) | 0.3.26 / 1.0.0a3 | 0.3.x stable, 1.0 alpha |
-| `agent-framework-a2a` (Microsoft) | 1.0.0b260409 | Beta |
-| `google-adk` (Google) | GA with A2A support | GA |
+| `a2a-sdk` (Python) | 1.1.x | GA |
+| `agent-framework-a2a` (Microsoft) | 1.0.0b260821 | Beta |
+| `agent-framework-core` (Microsoft) | 1.15.x | GA |
+| `google-adk` (Google) | 2.7.x | GA with A2A support |
 
-The setup scripts pin `a2a-sdk` to `>=0.3.26,<1.0` because the 1.0
-alpha releases have breaking API changes that are not yet compatible
-with `agent-framework-a2a`. Once the SDK ships a proper 1.0 GA, the
-pin can be relaxed.
+The setup scripts now pin `a2a-sdk>=1.0,<2`. `agent-framework-a2a`
+requires `a2a-sdk>=1.0` and `agent-framework-core>=1.15.0`; the older
+`a2a-sdk>=0.3.26,<1.0` pin makes pip fail with `ResolutionImpossible`.
+
+The ADK server also needs `a2a-sdk[http-server]`, not plain `a2a-sdk`.
+`google-adk[a2a]` only depends on the bare SDK, which leaves out
+`sse-starlette` — see Common Pitfalls.
+
+Note that the ADK server still advertises `protocolVersion: 0.3.0` in
+its agent card. That is expected: the wire format of 0.3 and 1.0 is
+compatible for this lab's message flow.
 
 ## Common Pitfalls
+
+**`No module named 'sse_starlette'` / agent card returns 404:** If the
+ADK server logs `Failed to setup A2A agent check_prime_agent: No module
+named 'sse_starlette'` at startup, it starts fine but mounts *no* A2A
+routes, so `curl .../.well-known/agent-card.json` returns
+`{"detail":"Not Found"}`. `google-adk[a2a]` does not pull the SDK's
+server HTTP extras. Fix:
+
+```bash
+pip install "a2a-sdk[http-server]>=1.0,<2"
+```
+
+**`ResolutionImpossible` when installing the MS client:** caused by the
+old `a2a-sdk>=0.3.26,<1.0` pin. Current `agent-framework-a2a` requires
+`a2a-sdk>=1.0,<2` and `agent-framework-core>=1.15.0`.
 
 **Missing Gemini/Vertex credentials:** If you see `ValueError: Missing key inputs argument!`, configure authentication for the ADK server (Step 5).
 

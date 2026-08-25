@@ -50,21 +50,24 @@ for s in d.get('skills', []):
     print(f\"  - {s['name']} ({s['id']}): {s['description']}\")
 " 2>/dev/null
 
-# ── Test 4: Send a test task via A2A protocol ─────────────────────
+# ── Test 4: Send a test task (A2A JSON-RPC) ───────────────────────
 echo ""
-echo "--- Test 4: Send a test task (A2A JSON-RPC) ---"
+echo "--- Test 4: Send a test message (A2A JSON-RPC) ---"
 
+# NOTE: "tasks/send" was the A2A 0.1 method name and no longer exists.
+# A2A 0.3 / 1.0 uses "message/send", requires a "messageId", and parts
+# are discriminated by "kind" (not "type").
 TASK_PAYLOAD=$(cat <<'JSONEOF'
 {
   "jsonrpc": "2.0",
-  "method": "tasks/send",
+  "method": "message/send",
   "id": "test-001",
   "params": {
-    "id": "test-task-001",
     "message": {
       "role": "user",
+      "messageId": "test-msg-001",
       "parts": [
-        {"type": "text", "text": "Is 42 prime?"}
+        {"kind": "text", "text": "Is 42 prime?"}
       ]
     }
   }
@@ -80,12 +83,17 @@ RESPONSE=$(curl -sf -X POST "${ADK_BASE}" \
     -H "Content-Type: application/json" \
     -d "$TASK_PAYLOAD" 2>&1) || true
 
-if [ -n "$RESPONSE" ]; then
+if [ -z "$RESPONSE" ]; then
+    echo "  FAIL: No response from task endpoint"
+else
     echo "$RESPONSE" | python3 -m json.tool 2>/dev/null || echo "$RESPONSE"
     echo ""
-    echo "  PASS: A2A task endpoint responded"
-else
-    echo "  WARN: No response from task endpoint (may need different path)"
+    # A JSON-RPC error still comes back as HTTP 200, so check the body.
+    if echo "$RESPONSE" | python3 -c "import sys,json; sys.exit(0 if 'error' in json.load(sys.stdin) else 1)" 2>/dev/null; then
+        echo "  FAIL: server returned a JSON-RPC error (see above)"
+    else
+        echo "  PASS: A2A message endpoint responded"
+    fi
 fi
 
 echo ""
