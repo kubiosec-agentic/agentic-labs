@@ -26,7 +26,7 @@ import httpx
 
 from a2a.client import A2ACardResolver
 from agent_framework.a2a import A2AAgent
-from agent_framework import Agent
+from agent_framework import Agent, AgentSession
 from agent_framework.openai import OpenAIChatClient
 
 
@@ -125,13 +125,19 @@ async def main():
         },
     ]
 
+    # An AgentSession carries the conversation history. Without it every
+    # run() starts from an empty history, so turn 2 cannot see turn 1's
+    # results and turn 4 has nothing to synthesise ("I don't have access
+    # to past interactions"). Create it once, pass it to every run().
+    session = AgentSession()
+
     for step in conversation:
         print("-" * 60)
         print(f"Turn {step['turn']}: {step['label']}")
         print(f"User: {step['message']}")
         print("-" * 60)
 
-        result = await openai_agent.run(step["message"])
+        result = await openai_agent.run(step["message"], session=session)
         print(f"\nAgent: {result.text}")
         print()
 
