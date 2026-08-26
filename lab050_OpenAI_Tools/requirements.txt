@@ -1,3 +1,4 @@
 openai>=1.40
 wikipedia>=1.4
 pip-audit>=2.7
+httpx
