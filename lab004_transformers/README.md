@@ -17,7 +17,7 @@ Both scripts run on CPU and require no API keys; everything is local.
 ### Setup Commands
 
 #### Option A: Local Python
-Create the virtual environment and install the dependencies (`numpy`, `transformers`, `torch`):
+Create the virtual environment and install the dependencies (`numpy`, `transformers`, `torch`, plus the small extras needed for Example 3):
 ```bash
 ./lab_setup.sh
 ```
@@ -126,6 +126,62 @@ start, end = outputs.start_logits.argmax(), outputs.end_logits.argmax()
 answer = tokenizer.decode(inputs["input_ids"][0][start : end + 1])
 ```
 
+### Example 3 (optional): Serve Qwen as an API with `transformers serve`
+
+So far you called the model *directly* from Python. In the next lab you'll call an LLM over HTTP with `curl`. This example connects the two: the `transformers` package includes a small server that wraps a model in an **OpenAI-compatible HTTP API**, so the `curl` commands from LAB010 work against your own machine. No GPU and no API key needed.
+
+Start the server in a terminal (the first run downloads the model, ~1 GB):
+```bash
+transformers serve Qwen/Qwen2.5-0.5B-Instruct --device cpu
+```
+Inside the Docker container (Option B), add `--host 0.0.0.0` so the port is reachable from your host:
+```bash
+docker exec -it lab004_app transformers serve Qwen/Qwen2.5-0.5B-Instruct --device cpu --host 0.0.0.0
+```
+
+In a second terminal, check which models are served:
+```bash
+curl http://localhost:8000/v1/models | jq
+```
+
+Send a chat request, exactly like the OpenAI Chat Completions API:
+```bash
+curl -XPOST http://localhost:8000/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "Qwen/Qwen2.5-0.5B-Instruct",
+    "messages": [
+      {"role": "system", "content": "You are a helpful assistant"},
+      {"role": "user", "content": "Explain what SQL injection is in 3 sentences."}
+    ]
+  }' | jq
+```
+
+**Expected output (shortened):**
+```json
+{
+  "object": "chat.completion",
+  "model": "Qwen/Qwen2.5-0.5B-Instruct@main",
+  "choices": [
+    {
+      "message": {
+        "role": "assistant",
+        "content": "SQL injection is an attack that occurs when an attacker inserts malicious code into a database query ..."
+      },
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": { "prompt_tokens": 29, "completion_tokens": 163, "total_tokens": 192 }
+}
+```
+
+**Things to observe:**
+- Under the hood the server runs the same tokenize → generate → decode loop as `demo.py`, just behind an HTTP endpoint. The first request is slow because the model is loaded on demand.
+- We use the **Instruct** variant of Qwen here: chat endpoints expect a model trained to follow a chat template (system/user/assistant roles). Try the Log4j question from `demo.py` and compare the answer with the base model.
+- The request and response follow the OpenAI format (`messages`, `choices`, `usage`). Any OpenAI client can point to `http://localhost:8000/v1` instead of `api.openai.com`.
+
+Stop the server with `Ctrl+C`.
+
 ### Decoder vs Encoder: Side by Side
 
 | | demo.py (Qwen) | roberta.py (RoBERTa) |
@@ -213,8 +269,8 @@ lab004_transformers/
 ├── roberta.py              # Extractive QA with RoBERTa
 ├── Dockerfile              # Container build (Python 3.13-slim)
 ├── docker-compose.yml      # Compose config (interactive shell, volume mount)
-├── requirements.txt        # Local dependencies (numpy, transformers, torch)
-├── requirements_docker.txt # Docker dependencies (numpy, transformers, torch)
+├── requirements.txt        # Local dependencies (numpy, transformers[serving], requests, torch)
+├── requirements_docker.txt # Docker dependencies (same as requirements.txt)
 └── README.md
 ```
 

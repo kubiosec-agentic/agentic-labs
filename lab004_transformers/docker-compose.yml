@@ -4,6 +4,8 @@ services:
     container_name: lab004_app
     volumes:
       - .:/app
+    ports:
+      - "8000:8000"   # for Example 3 (transformers serve)
     stdin_open: true
     tty: true
     command: bash
