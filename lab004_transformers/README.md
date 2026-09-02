@@ -290,9 +290,9 @@ Stop and remove the container:
 docker compose down
 ```
 
-Remove the image to reclaim disk space (~1 GB for model layers):
+Or also remove the image to reclaim disk space (~1 GB):
 ```bash
-docker rmi $(docker compose images -q)
+docker compose down --rmi all
 ```
 
 If you also want to remove the downloaded model cache:
