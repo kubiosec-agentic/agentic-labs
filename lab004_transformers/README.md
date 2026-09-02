@@ -24,11 +24,7 @@ Both scripts run on CPU and require no API keys; everything is local.
 source .lab004/bin/activate
 ```
 
-> **Note:** There is no `requirements.txt` for local setup yet. Install dependencies manually:
-> ```bash
-> pip install numpy 'transformers>=4.45,<5' torch
-> ```
-> The `<5` upper bound is important: `transformers` 5.x removed the `question-answering` pipeline that `roberta.py` relies on, and also causes `demo.py` to produce repetitive/degraded output with the Qwen model.
+> **Note:** No version pins are needed. Both scripts work with the latest `transformers` (5.x) and `torch` releases.
 
 #### Option B: Docker (Recommended)
 Build and start the container. The lab folder is mounted as a volume, so any edits you make on your host (changing a prompt, tweaking temperature, etc.) are immediately available inside the container.
@@ -96,9 +92,10 @@ response = tokenizer.decode(outputs[0], skip_special_tokens=True)
 **Model:** [deepset/roberta-base-squad2](https://huggingface.co/deepset/roberta-base-squad2), 125 M parameters, fine-tuned on SQuAD 2.0.
 
 **What the script does:**
-1. Loads a HuggingFace `question-answering` pipeline (handles tokenization, inference, and decoding internally)
-2. Takes a question and a context paragraph
-3. Returns the extracted answer span, along with a confidence score
+1. Loads the RoBERTa tokenizer and model (`AutoModelForQuestionAnswering`) on CPU
+2. Tokenizes the question and the context paragraph *together*
+3. Runs the model, which scores every token as a possible answer start and end
+4. Picks the best start/end tokens and decodes that span back to text
 
 ```bash
 python3 roberta.py
@@ -108,19 +105,21 @@ python3 roberta.py
 ```
 Question: Who wrote The Hobbit?
 Context: ... The Hobbit is a fantasy novel by J. R. R. Tolkien ...
-{'score': 0.97..., 'start': 44, 'end': 62, 'answer': 'J. R. R. Tolkien'}
+Answer: J. R. R. Tolkien
 ```
 
 **Things to observe:**
 - The model *extracts*, meaning it can only return text that already exists in the context. It cannot generate new text.
-- The `score` reflects the model's confidence. Try asking a question that isn't answerable from the context and see what happens.
-- The `pipeline()` API hides the tokenizer/model/postprocessing, which is convenient but less transparent than `demo.py`.
+- Try asking a question that isn't answerable from the context (e.g. *"What year was it published?"*). The model then points at the first token `<s>`, which is how SQuAD 2.0 models say *"no answer"*.
+- Compare with `demo.py`: same tokenize → model → decode flow, but here the model outputs two scores per token (start/end) instead of predicting the next token.
 
 **Key code patterns:**
 ```python
-# HuggingFace pipeline: high-level one-liner
-qa = pipeline("question-answering", model="deepset/roberta-base-squad2", device="cpu")
-result = qa(question="Who wrote The Hobbit?", context="...")
+# Tokenize (question + context) → model → pick best span → decode
+inputs = tokenizer(question, context, return_tensors="pt")
+outputs = model(**inputs)
+start, end = outputs.start_logits.argmax(), outputs.end_logits.argmax()
+answer = tokenizer.decode(inputs["input_ids"][0][start : end + 1])
 ```
 
 ### Decoder vs Encoder: Side by Side
@@ -131,7 +130,7 @@ result = qa(question="Who wrote The Hobbit?", context="...")
 | **Task** | Text generation | Extractive QA |
 | **Output** | New text the model invents | Span from the input context |
 | **Parameters** | 0.5 B | 125 M |
-| **Loading style** | `AutoModelForCausalLM` + manual generate | `pipeline("question-answering")` |
+| **Loading style** | `AutoModelForCausalLM` + `generate()` | `AutoModelForQuestionAnswering` + forward pass |
 | **Randomness** | Yes (`do_sample=True`) | No (deterministic extraction) |
 
 ## Transformer Encoder Architecture Reference
