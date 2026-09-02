@@ -126,44 +126,6 @@ start, end = outputs.start_logits.argmax(), outputs.end_logits.argmax()
 answer = tokenizer.decode(inputs["input_ids"][0][start : end + 1])
 ```
 
-### Example 3 (optional): Serve Qwen as an API with vLLM
-
-So far you called the model *directly* from Python. In the next lab you'll call an LLM over HTTP with `curl`. This optional example connects the two: [vLLM](https://docs.vllm.ai) wraps the same Qwen model in an OpenAI-compatible HTTP server, so the `curl` commands from LAB010 work against your own machine.
-
-> **Requires an NVIDIA GPU.** vLLM also has a CPU build (slower), see the [vLLM CPU docs](https://docs.vllm.ai/en/latest/getting_started/installation/cpu.html).
-
-Start the server (this pulls a large image on first run):
-```bash
-docker compose -f docker-compose.vllm.yml up -d
-```
-
-Wait until the model is loaded, then check which models are served:
-```bash
-curl http://localhost:8000/v1/models | jq
-```
-
-Send a chat request, exactly like the OpenAI Chat Completions API (no API key needed):
-```bash
-curl -XPOST http://localhost:8000/v1/chat/completions \
-  -H "Content-Type: application/json" \
-  -d '{
-    "model": "Qwen/Qwen2.5-0.5B-Instruct",
-    "messages": [
-      {"role": "user", "content": "Explain me what the Log4j exploit issue is about ?"}
-    ]
-  }' | jq
-```
-
-**Things to observe:**
-- Under the hood the server does the same tokenize → generate → decode loop as `demo.py`, just behind an HTTP endpoint.
-- We use the **Instruct** variant of Qwen here: chat endpoints expect a model trained to follow a chat template (system/user/assistant roles).
-- The request/response format is the OpenAI one, so any OpenAI client library can point to `http://localhost:8000/v1` instead of `api.openai.com`.
-
-Stop the server:
-```bash
-docker compose -f docker-compose.vllm.yml down
-```
-
 ### Decoder vs Encoder: Side by Side
 
 | | demo.py (Qwen) | roberta.py (RoBERTa) |
@@ -251,7 +213,6 @@ lab004_transformers/
 ├── roberta.py              # Extractive QA with RoBERTa
 ├── Dockerfile              # Container build (Python 3.13-slim)
 ├── docker-compose.yml      # Compose config (interactive shell, volume mount)
-├── docker-compose.vllm.yml # Optional: vLLM OpenAI-compatible server (GPU)
 ├── requirements.txt        # Local dependencies (numpy, transformers, torch)
 ├── requirements_docker.txt # Docker dependencies (numpy, transformers, torch)
 └── README.md
@@ -276,11 +237,6 @@ docker compose down
 Remove the image to reclaim disk space (~1 GB for model layers):
 ```bash
 docker rmi $(docker compose images -q)
-```
-
-If you ran the optional vLLM example:
-```bash
-docker compose -f docker-compose.vllm.yml down
 ```
 
 If you also want to remove the downloaded model cache:
