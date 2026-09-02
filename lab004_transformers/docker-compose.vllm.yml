@@ -1,0 +1,17 @@
+# Optional: serve Qwen as an OpenAI-compatible API with vLLM (needs an NVIDIA GPU)
+services:
+  vllm:
+    image: vllm/vllm-openai:latest
+    container_name: lab004_vllm
+    ports:
+      - "8000:8000"
+    volumes:
+      - ~/.cache/huggingface:/root/.cache/huggingface   # reuse downloaded models
+    command: --model Qwen/Qwen2.5-0.5B-Instruct --max-model-len 4096
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
