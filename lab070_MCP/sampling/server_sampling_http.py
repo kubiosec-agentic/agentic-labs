@@ -61,7 +61,7 @@ async def analyze_sentiment(text: str, ctx: Context) -> dict:
         "Analyze the sentiment as positive, negative, or neutral. "
         f"Text: {text}"
     )
-    response = await ctx.sample(prompt, model_preferences="claude-3-sonnet")
+    response = await ctx.sample(prompt, model_preferences="gpt-4o")
     print(f"[server] sampling response: {response.text!r}")
     reply = response.text.strip().lower()
     if "positive" in reply:
