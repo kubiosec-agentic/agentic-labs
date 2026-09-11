@@ -1,13 +1,19 @@
-"""
-Simple synchronous agent.
-
-The most minimal example: a single agent with no tools, no handoffs,
-executed via Runner.run_sync (the synchronous wrapper around Runner.run).
-"""
-
+import asyncio
 from agents import Agent, Runner
 
-agent = Agent(name="Assistant", instructions="You are a helpful assistant")
+agent = Agent(
+    name="Assistant",
+    instructions="You are a helpful assistant",
+)
 
-result = Runner.run_sync(agent, "Write a haiku about recursion in programming.")
-print(result.final_output)
+async def main():
+    results = await asyncio.gather(
+        Runner.run(agent, "Write a haiku about recursion."),
+        Runner.run(agent, "Write a haiku about Kubernetes."),
+        Runner.run(agent, "Write a haiku about MCP."),
+    )
+
+    for result in results:
+        print(result.final_output)
+
+asyncio.run(main())

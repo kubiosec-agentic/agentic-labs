@@ -10,3 +10,9 @@ Maintenance log for the labs (not part of the student material).
 - Dropped the `transformers<5` pin in `requirements_docker.txt`; added `requirements.txt` so `lab_setup.sh` creates the venv for Option A.
 - README: documented Option A commands.
 - Added optional Example 3: `transformers serve` (OpenAI-compatible endpoint, CPU). Requires `transformers[serving]` + `requests` (the `serving` extra in 5.16.1 forgets `requests`); both added to the requirements files. A vLLM version was tried first and dropped (needs an NVIDIA GPU, nobody can test it).
+
+## 2026-09-11
+
+### lab060_OpenAI_Agents
+- `agent_01.py`: switched from `Runner.run_sync` to async `Runner.run` with three prompts run concurrently via `asyncio.gather`.
+- README: Step 1 title, table row, intro sentence and "What to observe" updated to match the async version.

@@ -6,11 +6,11 @@
 
 The OpenAI Agent SDK (`openai-agents`) provides a lightweight framework for building multi-agent systems. Agents are defined with a name, instructions, optional tools, and optional handoffs to other agents. The SDK handles the tool-call loop, agent routing, and guardrail enforcement, so you can focus on the agent design rather than the plumbing.
 
-This lab walks through eight examples that progress from a single synchronous agent to a multi-agent security analysis pipeline. Along the way you will see handoffs, function tools, input/output guardrails, and a side-by-side comparison of the raw Responses API versus the Agent SDK.
+This lab walks through eight examples that progress from a single async agent to a multi-agent security analysis pipeline. Along the way you will see handoffs, function tools, input/output guardrails, and a side-by-side comparison of the raw Responses API versus the Agent SDK.
 
 | Step | Script | What it demonstrates |
 |------|--------|---------------------|
-| 1 | `agent_01.py` | Minimal synchronous agent (Runner.run_sync) |
+| 1 | `agent_01.py` | Minimal async agent, three prompts run concurrently (asyncio.gather) |
 | 2 | `agent_02.py` | Multi-agent handoff based on language detection |
 | 3 | `agent_03.py` | Agent with a @function_tool (weather lookup) |
 | 4 | `agent_04.py` | Output guardrail: block dangerous OS commands |
@@ -34,17 +34,19 @@ source .lab060/bin/activate
 
 ## Lab instructions
 
-### Step 1: Minimal synchronous agent (`agent_01.py`)
+### Step 1: Minimal async agent (`agent_01.py`)
 
-A single agent with no tools and no handoffs, executed via `Runner.run_sync`. This is the smallest possible Agent SDK program.
+A single agent with no tools and no handoffs, executed via the async `Runner.run`. Three prompts are launched concurrently with `asyncio.gather`, so the three API calls overlap instead of running one after the other.
 
 ```bash
 python3 agent_01.py
 ```
 
 **What to observe:**
-- `Runner.run_sync` is a convenience wrapper around the async `Runner.run`. Use it for scripts; use the async version in production.
-- The `result.final_output` is a plain string because no `output_type` was specified on the agent.
+- `Runner.run` is a coroutine, so it must be awaited inside an `async def` and driven by `asyncio.run(main())`. The SDK also offers `Runner.run_sync` as a blocking wrapper for quick scripts.
+- `asyncio.gather` returns the results in the same order as the coroutines were passed, regardless of which API call finishes first.
+- Each `result.final_output` is a plain string because no `output_type` was specified on the agent.
+- Compare the wall-clock time with running the three prompts sequentially: concurrency is the main reason to prefer the async API.
 
 ### Step 2: Multi-agent language handoff (`agent_02.py`)
 
