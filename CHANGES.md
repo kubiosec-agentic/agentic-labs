@@ -14,5 +14,5 @@ Maintenance log for the labs (not part of the student material).
 ## 2026-09-11
 
 ### lab060_OpenAI_Agents
-- `agent_01.py`: switched from `Runner.run_sync` to async `Runner.run` with three prompts run concurrently via `asyncio.gather`.
-- README: Step 1 title, table row, intro sentence and "What to observe" updated to match the async version.
+- `agent_01.py`: switched from `Runner.run_sync` to a single awaited `Runner.run` inside `asyncio.run(main())`.
+- README: Step 1 rewritten as a line-by-line walkthrough of the script (Agent vs Runner, `Runner.run` coroutine, `final_output`); table row and intro sentence updated.

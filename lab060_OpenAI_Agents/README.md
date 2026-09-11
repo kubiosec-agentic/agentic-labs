@@ -10,7 +10,7 @@ This lab walks through eight examples that progress from a single async agent to
 
 | Step | Script | What it demonstrates |
 |------|--------|---------------------|
-| 1 | `agent_01.py` | Minimal async agent, three prompts run concurrently (asyncio.gather) |
+| 1 | `agent_01.py` | Your first Agent SDK script: one agent, async `Runner.run` |
 | 2 | `agent_02.py` | Multi-agent handoff based on language detection |
 | 3 | `agent_03.py` | Agent with a @function_tool (weather lookup) |
 | 4 | `agent_04.py` | Output guardrail: block dangerous OS commands |
@@ -34,19 +34,45 @@ source .lab060/bin/activate
 
 ## Lab instructions
 
-### Step 1: Minimal async agent (`agent_01.py`)
+### Step 1: Your first Agent SDK script (`agent_01.py`)
 
-A single agent with no tools and no handoffs, executed via the async `Runner.run`. Three prompts are launched concurrently with `asyncio.gather`, so the three API calls overlap instead of running one after the other.
+The smallest useful Agent SDK program: one agent, no tools, no handoffs. It asks the agent for a haiku and prints the answer.
 
 ```bash
 python3 agent_01.py
 ```
 
+Walk through the script top to bottom:
+
+```python
+from agents import Agent, Runner
+```
+The SDK exposes two core classes. `Agent` describes *what* the agent is; `Runner` *executes* it.
+
+```python
+agent = Agent(
+    name="Assistant",
+    instructions="You are a helpful assistant",
+)
+```
+An agent is just configuration: a name and a system prompt (`instructions`). Nothing is sent to OpenAI yet. Tools, handoffs, guardrails and `output_type` are added to this same constructor in later steps.
+
+```python
+async def main():
+    result = await Runner.run(agent, "Write a haiku about recursion.")
+    print(result.final_output)
+```
+`Runner.run(agent, input)` sends the input to the model together with the agent's instructions and returns a `RunResult`. It is a coroutine, so it must be awaited inside an `async def`. `final_output` is the agent's answer, a plain string here because no `output_type` was set on the agent.
+
+```python
+asyncio.run(main())
+```
+Starts the event loop and runs `main()`. Every async Python program needs this one entry point.
+
 **What to observe:**
-- `Runner.run` is a coroutine, so it must be awaited inside an `async def` and driven by `asyncio.run(main())`. The SDK also offers `Runner.run_sync` as a blocking wrapper for quick scripts.
-- `asyncio.gather` returns the results in the same order as the coroutines were passed, regardless of which API call finishes first.
-- Each `result.final_output` is a plain string because no `output_type` was specified on the agent.
-- Compare the wall-clock time with running the three prompts sequentially: concurrency is the main reason to prefer the async API.
+- The agent definition and the agent execution are separate. You can call `Runner.run` on the same `agent` object as many times as you like.
+- Because `Runner.run` is async, several runs can be awaited concurrently with `asyncio.gather(...)`; Step 8 relies on the async API for its pipeline.
+- If you prefer a blocking call for a quick script, `Runner.run_sync(agent, "...")` does the same thing without `async`/`await`.
 
 ### Step 2: Multi-agent language handoff (`agent_02.py`)
 
