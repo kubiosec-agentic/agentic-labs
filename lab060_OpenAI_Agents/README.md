@@ -6,7 +6,7 @@
 
 The OpenAI Agent SDK (`openai-agents`) provides a lightweight framework for building multi-agent systems. Agents are defined with a name, instructions, optional tools, and optional handoffs to other agents. The SDK handles the tool-call loop, agent routing, and guardrail enforcement, so you can focus on the agent design rather than the plumbing.
 
-This lab walks through eight examples that progress from a single async agent to a multi-agent security analysis pipeline. Along the way you will see handoffs, function tools, input/output guardrails, and a side-by-side comparison of the raw Responses API versus the Agent SDK.
+This lab walks through nine examples that progress from a single async agent to a multi-agent security analysis pipeline. Along the way you will see handoffs, function tools, input/output guardrails, tool guardrails, and a side-by-side comparison of the raw Responses API versus the Agent SDK.
 
 | Step | Script | What it demonstrates |
 |------|--------|---------------------|
@@ -18,6 +18,7 @@ This lab walks through eight examples that progress from a single async agent to
 | 6 | `agent_06.py` | Responses API: security trace analysis (raw client, no SDK) |
 | 7 | `agent_07.py` | Agent SDK: same analysis with structured JSON output |
 | 8 | `agent_08.py` | Multi-agent pipeline: analyzer, summary writer, JSON formatter |
+| 9 | `agent_09.py` | Tool guardrails: screen tool arguments and tool results |
 
 The `data/` directory contains a sysdig system call capture (`docker-curl-https.txt`) used by Steps 6-8.
 
@@ -183,6 +184,55 @@ python3 agent_08.py
 - The pipeline generates two files: `summary.md` (human-readable) and `details.json` (machine-readable). Check both after the run.
 - Compare with the handoff pattern in Step 2. Handoffs let the model decide the routing; pipelines give you explicit control.
 - Think about failure modes: what happens if the analyzer agent produces a poor analysis? The downstream agents will propagate (and possibly amplify) the error.
+
+### Step 9: Tool guardrails (`agent_09.py`)
+
+Steps 4 and 5 screened the *text* going into and out of the agent. Tool guardrails screen the *tool calls* in between. This matters for security: blocking `rm -rf` in the final answer is cosmetic, blocking the tool call that would actually run it is a real control.
+
+The script gives an "Ops Bot" a single `run_command` tool. The tool does not touch your machine: it looks the command up in a small dictionary (`FAKE_SERVER`) and returns a canned answer. Two guardrails are attached to it:
+
+```python
+@tool_input_guardrail
+def block_dangerous_commands(data: ToolInputGuardrailData) -> ToolGuardrailFunctionOutput:
+    args = json.loads(data.context.tool_arguments)
+    command = args.get("command", "")
+    for word in BLOCKED_WORDS:
+        if word in command.split():
+            return ToolGuardrailFunctionOutput.reject_content(f"... blocked ...")
+    return ToolGuardrailFunctionOutput.allow()
+```
+Runs **before** the tool executes. `data.context.tool_arguments` is the JSON string the model produced, so you can inspect the actual arguments, not just the tool name.
+
+```python
+@tool_output_guardrail
+def hide_secrets(data: ToolOutputGuardrailData) -> ToolGuardrailFunctionOutput:
+    if "sk-" in str(data.output):
+        return ToolGuardrailFunctionOutput.reject_content("... withheld ...")
+    return ToolGuardrailFunctionOutput.allow()
+```
+Runs **after** the tool executes. `data.output` is the tool's return value, seen before the model sees it.
+
+```python
+@function_tool(
+    tool_input_guardrails=[block_dangerous_commands],
+    tool_output_guardrails=[hide_secrets],
+)
+def run_command(command: str) -> str:
+    ...
+```
+Guardrails are attached per tool, not per agent. A different tool on the same agent can have different guardrails or none.
+
+```bash
+python3 agent_09.py
+```
+
+Three questions are asked: a harmless one (`uptime`), one that makes the model call `rm -rf` (stopped by the input guardrail), and one that reads a config file containing an API key (the tool runs, but the output guardrail withholds the result).
+
+**What to observe:**
+- `reject_content(msg)` does **not** raise an exception. The run continues and `msg` is handed to the model as if it were the tool result, so the model explains the refusal to the user. Compare with Steps 4 and 5, where a tripwire aborts the run. Use `ToolGuardrailFunctionOutput.raise_exception()` if you want the hard stop instead (it raises `ToolInputGuardrailTripwireTriggered` / `ToolOutputGuardrailTripwireTriggered`).
+- These guardrails are plain Python, no LLM involved: deterministic, cheap, and not vulnerable to prompt injection. The LLM guardrails from Steps 4 and 5 and the deterministic tool guardrails here are complementary layers.
+- Tool guardrails are different from a tool allowlist. An allowlist decides which tools the model is shown at all; a tool guardrail decides how an allowed tool may be used (which arguments, which results).
+- If the model refuses the `rm -rf` request on its own, the guardrail never fires. That is fine: the guardrail is the safety net for the case where the model does not refuse.
 
 ## Cleanup environment
 

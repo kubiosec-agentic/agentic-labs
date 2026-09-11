@@ -16,3 +16,5 @@ Maintenance log for the labs (not part of the student material).
 ### lab060_OpenAI_Agents
 - `agent_01.py`: switched from `Runner.run_sync` to a single awaited `Runner.run` inside `asyncio.run(main())`.
 - README: Step 1 rewritten as a line-by-line walkthrough of the script (Agent vs Runner, `Runner.run` coroutine, `final_output`); table row and intro sentence updated.
+- Added `agent_09.py` (Step 9): tool guardrails (`@tool_input_guardrail` / `@tool_output_guardrail`) on a fake `run_command` tool; README section added, table and intro updated.
+- `requirements.txt`: `openai-agents>=0.22` (tool guardrails need a recent SDK; venv currently has 0.22.2).
