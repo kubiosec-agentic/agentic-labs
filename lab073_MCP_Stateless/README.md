@@ -61,15 +61,16 @@ lesson, see the meta-note at the end.)
 ### 1. Same server, new runtime
 
 Take lab070's streamable server, unchanged, and run it under this venv
-(fastmcp 4.x). With `.lab073` still activated:
+(fastmcp 4.x).
+
+**Terminal 1 (server)** with `.lab073` activated:
 
 ```bash
 cd ../lab070_MCP
 python3 server_streamable.py
 ```
 
-In a second terminal, activate the same venv and hit it with this lab's
-client:
+**Terminal 2 (client)** activate the same venv and hit it with this lab's client:
 
 ```bash
 cd ../lab073_MCP_Stateless
@@ -95,14 +96,16 @@ handshake to report). Stop the server with `Ctrl+C`.
 
 ### 2. Where it breaks: sampling
 
-Now run lab070's **sampling** server, also unchanged, under fastmcp 4.x:
+Now run lab070's **sampling** server, also unchanged, under fastmcp 4.x.
+
+**Terminal 1 (server):**
 
 ```bash
 cd ../lab070_MCP
 python3 sampling/server_sampling_http.py
 ```
 
-In the second terminal (this venv), trigger its `analyze_sentiment` tool:
+**Terminal 2 (probe)** in this venv, trigger its `analyze_sentiment` tool:
 
 ```bash
 cd ../lab073_MCP_Stateless
@@ -144,11 +147,15 @@ on your side.
 `stateless_server.py` is what "stateless" means in the spec's sense: every
 tool is a pure function of its arguments, with no memory between calls.
 
+**Terminal 1 (server):**
+
 ```bash
 python3 stateless_server.py
 ```
+
+**Terminal 2 (client)** same venv:
+
 ```bash
-# second terminal, same venv
 python3 client_demo.py --url http://127.0.0.1:8100/mcp
 ```
 
@@ -170,6 +177,8 @@ moves the state out of the hidden transport session and into explicit tool
 arguments. `stateful_server.py` shows the wrong way and the right way in
 one server.
 
+**Terminal 1 (server):**
+
 ```bash
 python3 stateful_server.py
 ```
@@ -185,8 +194,9 @@ server looks the state up by id. Here the store is an in-memory dict; in
 production it is Redis or Postgres, shared by every replica, so any replica
 can serve any request.
 
+**Terminal 2 (client)** same venv:
+
 ```bash
-# second terminal, same venv
 python3 - <<'PY'
 import asyncio
 from fastmcp import Client
@@ -209,32 +219,72 @@ that thought for the security section.
 
 lab070 section 7 and lab071 taught you to put mitmproxy in front of an MCP
 server. Do it here to *see* the session appear and disappear depending on
-which era the client negotiates.
+which era the client negotiates. This exercise uses **three terminals**:
+Terminal 1 the server, Terminal 2 the client, Terminal 3 mitmproxy.
 
-Start any server from this lab (or lab070) in one terminal, then run
-mitmproxy as a reverse proxy in front of it, exactly as in lab070 section 7
-(reverse mode to `http://127.0.0.1:8100`, mitmweb UI on 8081). Point the
-client at the proxy and run it once in each mode:
+Use lab070's `server_streamable.py` as the target. It binds `0.0.0.0:8000`,
+which the mitmproxy Docker container can reach; `stateless_server.py` binds
+`127.0.0.1` only, so the container could not reach it. The mode/session
+behaviour we are inspecting is a property of the client, so the choice of
+server does not change what you see.
+
+**Terminal 1 (server)** with `.lab073` activated (fastmcp 4.x):
 
 ```bash
+cd ../lab070_MCP
+python3 server_streamable.py
+```
+
+**Terminal 3 (mitmproxy).** mitmproxy runs in Docker, so `127.0.0.1` inside
+the container is the container itself, not the host. Set the host's LAN IP in
+*this* terminal, then start the reverse proxy in front of the server (listens
+on 8080, forwards to the server on 8000; mitmweb UI on 8081):
+
+```bash
+# Linux (e.g. the Ubuntu lab box):
+export HOST_IP=$(hostname -I | awk '{print $1}')
+# macOS (Wi-Fi); use en0 for Ethernet or adjust the interface:
+# export HOST_IP=$(ipconfig getifaddr en0)
+echo "host ip: $HOST_IP"   # must be non-empty
+
+docker run --rm -it \
+    -v ~/.mitmproxy:/home/mitmproxy/.mitmproxy \
+    -p 8080:8080 \
+    -p 8081:8081 \
+    mitmproxy/mitmproxy mitmweb \
+        --web-host 0.0.0.0 \
+        --set block_global=false \
+        --mode reverse:http://${HOST_IP}:8000@8080
+```
+
+> If `HOST_IP` is empty the container cannot reach the server and the proxy
+> fails to connect. Set it in this terminal before running Docker.
+
+**Terminal 2 (client)** in the lab073 venv, hit the server *through the proxy*
+once in each mode:
+
+```bash
+cd ../lab073_MCP_Stateless
 python3 client_demo.py --url http://127.0.0.1:8080/mcp --mode legacy
 python3 client_demo.py --url http://127.0.0.1:8080/mcp --mode auto
 ```
 
-In the mitmweb UI, open the `initialize` request/response for each run and
-compare:
+Now open the mitmweb UI at `http://127.0.0.1:8081`, find the `initialize`
+request/response for each run, and compare:
 
-- **`--mode legacy`**: the client negotiates the older era (you will see
-  `protocol_version` report `2025-11-25` in the client output), and the
-  server's response carries an **`mcp-session-id`** header. That id is the
-  session; subsequent requests are tied to it.
+- **`--mode legacy`**: the client negotiates the older era (its output shows
+  `protocol_version` = `2025-11-25`), and the server's response carries an
+  **`mcp-session-id`** header. That id is the session; subsequent requests
+  are tied to it.
 - **`--mode auto`**: the client negotiates the modern sessionless era. The
-  handshake and session handling differ, and the client's protocol-era
-  field reads `None` because there is no legacy session to report.
+  handshake differs, there is no `mcp-session-id` header, and the client's
+  protocol-era field reads `None` because there is no legacy session to
+  report.
 
 Seeing it on the wire is the point. The word "stateless" stops being an
 abstraction once you have watched the `mcp-session-id` header be there in
-one mode and not the other.
+one mode and not the other. Stop the server (`Ctrl+C` in Terminal 1) and the
+proxy (`Ctrl+C` in Terminal 3) when done.
 
 ## Security risks of going stateless
 
