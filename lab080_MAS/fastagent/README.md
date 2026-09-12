@@ -110,6 +110,60 @@ cd example4 && uv run agent.py
 
 Check `./manifests/` for the generated report and fixed YAML.
 
+## Exposing agents over MCP (agent-as-server)
+
+FastAgent runs in both directions. Everything above *consumes* MCP
+servers, but a FastAgent app can also *be* an MCP server: each
+`@fast.agent` (and orchestrators) is published as a callable MCP tool,
+so another MCP client (Claude Desktop, an IDE, or another agent) can
+drive it. This is built on FastMCP under the hood.
+
+Two ways to do it, both on `fast-agent-mcp` 0.10.x:
+
+Run one of the example scripts as a server. Passing `--transport`
+switches it into server mode:
+
+```bash
+# stdio: what Claude Desktop and most MCP clients speak
+uv run agent.py --transport stdio
+
+# streamable HTTP
+uv run agent.py --transport http --host 127.0.0.1 --port 8000
+```
+
+Or use the dedicated CLI (serves the agents defined in the current
+directory's config):
+
+```bash
+uv run fast-agent serve --transport stdio
+uv run fast-agent serve --transport http --port 8000
+```
+
+MCP transports are `stdio` and `http`. (The `acp` and `a2a` transport
+options are separate agent-to-agent protocols, not classic MCP.)
+
+To wire an agent into Claude Desktop, point an `mcpServers` entry at the
+script over stdio:
+
+```json
+{
+  "mcpServers": {
+    "fastagent-demo": {
+      "command": "uv",
+      "args": ["run", "agent.py", "--transport", "stdio"],
+      "cwd": "/absolute/path/to/lab080_MAS/fastagent/example1"
+    }
+  }
+}
+```
+
+> [SECURITY] Serving an agent over MCP turns the agent itself into an
+> exposed attack surface: its instruction, its tools, and any MCP
+> servers it in turn connects to are now reachable by whatever client
+> calls it. Treat it like any other MCP endpoint (auth, network scope,
+> tool allow-listing) and revisit the MCP security labs (lab070, lab071,
+> lab073) with the agent now sitting on the server side of the boundary.
+
 ## Configuration
 
 Each example has a `fastagent.config.yaml` that defines the default
