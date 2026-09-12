@@ -177,4 +177,3 @@ server configurations. The config supports multiple transports:
 ## Docs
 
 - https://fast-agent.ai/
-- https://fast-agent.ai/llms.txt

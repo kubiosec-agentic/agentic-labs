@@ -1,6 +1,6 @@
 # PydanticAI
 
-[PydanticAI](https://ai.pydantic.dev) is a type-safe agent framework
+[PydanticAI](https://pydantic.dev/docs/ai/) is a type-safe agent framework
 from the team behind Pydantic. It brings the same validation-first
 philosophy to LLM agents: structured output is a first-class concept,
 tool definitions are validated at import time, and the framework
@@ -54,5 +54,5 @@ python3 PD_02.py
 
 ## Docs
 
-- https://ai.pydantic.dev
-- https://ai.pydantic.dev/llms-full.txt
+- https://pydantic.dev/docs/ai/
+- https://pydantic.dev/docs/ai/llms-full.txt
