@@ -86,6 +86,21 @@ async def interactive_loop(agent: Agent, session: SQLiteSession, server: MCPServ
             tools = await server.list_tools(run_context, agent)
             print("Available tools:", [t.name for t in tools])
             continue
+        if user_input.startswith("/diag"):
+            # Bypass the LLM: call browser_navigate directly and print the RAW
+            # result/error. This distinguishes "the model won't call the tool"
+            # from "Chromium won't launch" and shows the real Playwright error.
+            parts = user_input.split(maxsplit=1)
+            url = parts[1].strip() if len(parts) > 1 else "https://example.com"
+            print(f"[diag] calling browser_navigate({url!r}) directly...")
+            try:
+                res = await server.call_tool("browser_navigate", {"url": url})
+                print("[diag] isError:", getattr(res, "isError", "n/a"))
+                print("[diag] raw result:", res)
+            except Exception:
+                import traceback
+                traceback.print_exc()
+            continue
 
         try:
             result = await Runner.run(
@@ -101,12 +116,16 @@ async def interactive_loop(agent: Agent, session: SQLiteSession, server: MCPServ
 async def main():
     start_url = input("Optional starting URL (blank to skip): ").strip()
 
+    pw_args = ["-y", "@playwright/mcp@latest", "--headless"]
+    # Headless servers (AWS Ubuntu, containers) often can't use the Chromium
+    # sandbox; pass --no-sandbox to work around "No usable sandbox" launch
+    # failures. Opt-in because disabling the sandbox is a real security tradeoff.
+    if "--no-sandbox" in sys.argv:
+        pw_args.append("--no-sandbox")
+
     async with MCPServerStdio(
         name="playwright",
-        params={
-            "command": "npx",
-            "args": ["-y", "@playwright/mcp@latest", "--headless"],
-        },
+        params={"command": "npx", "args": pw_args},
         # Browser actions (navigation, waits) take much longer than a
         # filesystem read, so give the MCP client a generous timeout.
         client_session_timeout_seconds=60,
