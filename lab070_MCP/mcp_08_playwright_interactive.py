@@ -11,10 +11,20 @@ this page") with history preserved across turns.
 Run:
     python3 mcp_08_playwright_interactive.py
 
+Install the browser (one time, e.g. on a fresh Ubuntu student box):
+    python3 mcp_08_playwright_interactive.py --install-browser
+
+    That runs `npx playwright install chromium`. On Ubuntu the browser also
+    needs system libraries; if the first launch fails with a missing-library
+    error, install them once with sudo:
+        sudo npx playwright install-deps chromium
+    (or: npx playwright install --with-deps chromium, which also needs sudo).
+
 First run note:
-    @playwright/mcp downloads its browser binaries automatically the first
-    time it launches, so the first navigation can take a while. If it
-    complains about a missing browser, run once:  npx playwright install chromium
+    Without --install-browser, @playwright/mcp still tries to fetch its
+    browser automatically on first launch, so the first navigation can take a
+    while. The explicit flag makes that step visible and lets you run it at
+    setup time instead of mid-demo.
 
 Commands at the prompt:
     /quit, /exit, /q       leave the REPL
@@ -31,6 +41,8 @@ SECURITY NOTE (this is a security course, after all):
 """
 import asyncio
 import shutil
+import subprocess
+import sys
 
 from agents import Agent, Runner
 from agents.run_context import RunContextWrapper
@@ -135,7 +147,27 @@ async def main():
         await interactive_loop(agent, session, server, run_context)
 
 
+def install_browser() -> None:
+    """Install the Chromium build Playwright needs (npx playwright install chromium).
+
+    Idempotent: if the browser is already present this is a fast no-op. On a
+    fresh Ubuntu box the OS libraries may also be missing; that needs sudo and
+    is left to the operator (see the module docstring).
+    """
+    print("[setup] installing Chromium via: npx playwright install chromium")
+    try:
+        subprocess.run(["npx", "playwright", "install", "chromium"], check=True)
+        print("[setup] Chromium install step finished.")
+        print("[setup] If launch later fails on missing system libraries, run:")
+        print("        sudo npx playwright install-deps chromium")
+    except subprocess.CalledProcessError as exc:
+        print(f"[setup] browser install failed (exit {exc.returncode}). "
+              "On Ubuntu you may need: sudo npx playwright install-deps chromium")
+
+
 if __name__ == "__main__":
     if not shutil.which("npx"):
         raise RuntimeError("npx is not installed.")
+    if "--install-browser" in sys.argv:
+        install_browser()
     asyncio.run(main())
