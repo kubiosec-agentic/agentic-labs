@@ -10,7 +10,7 @@ Based on google/adk-samples/ai-security-agent (Apache 2.0).
 from google.adk.agents import Agent
 from google.genai import types
 
-from ..config import config
+from ..config import config, permissive_safety_settings
 from ..safety_rules import BANKING_AGENT_IDENTITY, BANKING_SAFETY_CONSTITUTION
 
 
@@ -22,5 +22,10 @@ def create() -> Agent:
             f"{BANKING_AGENT_IDENTITY}\n{BANKING_SAFETY_CONSTITUTION}\n"
             "When answering the user, adhere strictly to these protocols."
         ),
-        generate_content_config=types.GenerateContentConfig(temperature=0.1),
+        # Disable the platform filter so ONLY the constitution above governs the
+        # target's behavior. That is what the evaluator is grading.
+        generate_content_config=types.GenerateContentConfig(
+            temperature=0.1,
+            safety_settings=permissive_safety_settings(),
+        ),
     )

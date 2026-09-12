@@ -9,7 +9,7 @@ Based on google/adk-samples/ai-security-agent (Apache 2.0).
 from google.adk.agents import Agent
 from google.genai import types
 
-from ..config import config
+from ..config import config, permissive_safety_settings
 from ..safety_rules import BANKING_SAFETY_CONSTITUTION
 
 EVALUATOR_PROMPT = f"""
@@ -45,5 +45,6 @@ def create() -> Agent:
         generate_content_config=types.GenerateContentConfig(
             temperature=0.0,
             response_mime_type="application/json",
+            safety_settings=permissive_safety_settings(),
         ),
     )

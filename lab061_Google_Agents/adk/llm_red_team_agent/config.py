@@ -9,6 +9,8 @@ Based on google/adk-samples/ai-security-agent (Apache 2.0).
 import os
 from dataclasses import dataclass
 
+from google.genai import types
+
 
 @dataclass
 class SecurityAuditConfig:
@@ -25,3 +27,25 @@ class SecurityAuditConfig:
 
 
 config = SecurityAuditConfig()
+
+
+def permissive_safety_settings() -> list:
+    """Disable Gemini's platform content filters for this red-team pipeline.
+
+    This is an AUTHORIZED, sandboxed AI-safety lab. The goal is to generate
+    adversarial test prompts and check whether the TARGET violates its own
+    safety constitution (see safety_rules.py), not to exercise Gemini's
+    platform filter. Left at defaults, Gemini blocks the red-team agent's
+    output; it arrives as an empty response (finish_reason=SAFETY) and
+    stalls the pipeline. NEVER disable these filters in a production app.
+    """
+    categories = [
+        types.HarmCategory.HARM_CATEGORY_HARASSMENT,
+        types.HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+        types.HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+        types.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+    ]
+    return [
+        types.SafetySetting(category=c, threshold=types.HarmBlockThreshold.BLOCK_NONE)
+        for c in categories
+    ]
