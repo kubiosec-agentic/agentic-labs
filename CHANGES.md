@@ -56,3 +56,8 @@ Bumped all Gemini model references, preserving each tier. `models/` prefix kept 
 
 ### lab004_transformers
 - README cleanup (Local Python / Option A): added `rm -rf ~/.cache/huggingface/hub` to clear the downloaded model cache. The default models are small, but swapping in a larger model can fill the disk. The Docker path already covered this via `docker volume prune`.
+
+### lab061_Google_Agents (Gemini model fix)
+- The "3.6 generation" bump pointed at model IDs that do not exist; `gemini-3.6-pro` returns `404 NOT_FOUND` from the Gemini API. Switched all lab061 defaults to `gemini-3.8-flash`, the current GA flash tier (verified against ai.google.dev/gemini-api/docs/latest-model, 2026-09-12), and used flash across all three agents (cheaper; was pro for red team + cyber_guardian).
+- Files: `adk/cyber_guardian/agent.py`, `adk/llm_red_team_agent/config.py` (all three roles), `adk_standalone/cyber_guardian/agent.py`, `adk/instructions.md`, and the README model table.
+- Not yet fixed elsewhere (same broken 3.6 family, will 404): `lab035_Langchain` (`models/gemini-3.6-flash` in lc06_easy_swap.py + commented examples), `lab110_A2A` (`gemini-3.6-flash-lite`), `lab990_addendum` (langchain/easy_swap.py, a2a check_prime_agent).

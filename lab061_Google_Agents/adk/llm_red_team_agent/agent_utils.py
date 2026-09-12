@@ -32,7 +32,7 @@ from tenacity import (
     wait=wait_exponential(multiplier=2, min=4, max=30),
     stop=stop_after_attempt(3),
 )
-def execute_sub_agent(agent: Agent, prompt_text: str) -> str:
+def _run_agent_with_retry(agent: Agent, prompt_text: str) -> str:
     """Run a sub-agent in an isolated thread with a fresh session.
 
     The ThreadPoolExecutor pattern ensures:
@@ -69,9 +69,20 @@ def execute_sub_agent(agent: Agent, prompt_text: str) -> str:
                         result_text += part.text
         return result_text
 
+    with ThreadPoolExecutor() as executor:
+        future = executor.submit(asyncio.run, _run_internal())
+        return future.result()
+
+
+def execute_sub_agent(agent: Agent, prompt_text: str) -> str:
+    """Public entry point. Runs the sub-agent (with 429 retry) and converts
+    ANY failure into a readable string, so the orchestrator can report it
+    instead of the ADK web UI surfacing an opaque 'OTHER / undefined' error.
+
+    This is what makes a bad model name, exhausted quota, or auth problem
+    show up as a legible message in the chat.
+    """
     try:
-        with ThreadPoolExecutor() as executor:
-            future = executor.submit(asyncio.run, _run_internal())
-            return future.result()
-    except (RuntimeError, ValueError, TypeError) as e:
-        return f"Error running sub-agent: {e!s}"
+        return _run_agent_with_retry(agent, prompt_text)
+    except Exception as e:  # incl. google ClientError after retries are exhausted
+        return f"Error running sub-agent ({type(e).__name__}): {e!s}"
