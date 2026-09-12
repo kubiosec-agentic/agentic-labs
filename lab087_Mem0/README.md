@@ -181,135 +181,131 @@ behavior of the SaaS integration.
 python3 mem0_managed/mem_03_agent.py
 ```
 
-## Part 3: OpenMemory, the MCP approach
+## Part 3: Memory over MCP (hosted Mem0 MCP)
 
-OpenMemory is an open-source project from the Mem0 team that exposes
-memory as an MCP server. Instead of importing `mem0` in your code, you
-run OpenMemory as a local service and any MCP-compatible client (Claude
-Desktop, Cursor, your own agent) can store and search memories over
-the standard MCP protocol.
+Parts 1 and 2 import `mem0` and call `m.add()` / `m.search()` from your
+own code. The MCP approach decouples memory from the application
+entirely: memory runs as a service, and any MCP-compatible client
+(Claude Desktop, Cursor, your own agent) stores and searches memories
+over the standard MCP protocol without importing a single library. This
+is the difference between "memory as a library" and "memory as
+infrastructure."
 
-This is interesting because it decouples memory from your application
-code entirely: any tool that speaks MCP gets persistent memory for free.
+> **What changed (2026).** This part used to run *OpenMemory*, a
+> self-hosted MCP server plus dashboard that lived in `mem0ai/mem0`
+> under `openmemory/`. That project has been **archived and removed**
+> from the repo. A read-only snapshot survives at
+> [`mem0ai/openmemory` → `openmemory-archive/`](https://github.com/mem0ai/openmemory/tree/main/openmemory-archive),
+> and the `mem0ai/openmemory` repo name now hosts an unrelated
+> session-sync tool. The maintained "memory over MCP" path today is the
+> **hosted Mem0 MCP** described below. If you specifically need
+> local/self-hosted memory, mem0 now ships a self-hosted **REST** server
+> plus dashboard (`cd server && make bootstrap` in `mem0ai/mem0`, see
+> the [self-hosted docs](https://docs.mem0.ai/open-source/overview)),
+> but that one is REST, not MCP. There is no longer a maintained mem0
+> server that is both self-hosted *and* MCP.
 
-### Quick start
+### The hosted endpoint
+
+Mem0 runs a hosted MCP server at:
+
+```
+https://mcp.mem0.ai/mcp
+```
+
+It speaks streamable **HTTP** (not SSE) and exposes eleven memory tools:
+`add_memory`, `search_memories`, `get_memories`, `get_memory`,
+`update_memory`, `delete_memory`, `delete_all_memories`,
+`delete_entities`, `list_entities`, `list_events`, and
+`get_event_status`.
+
+### Authentication
+
+Two options. Browser sign-in is the default: the first time a client
+calls a Mem0 tool it opens a browser window to authorize access to your
+Mem0 account. For headless clients and CI, send your Mem0 API key from
+[app.mem0.ai](https://app.mem0.ai) as an HTTP
+`Authorization: Bearer <MEM0_API_KEY>` header. This is the same key
+used in Part 2:
 
 ```bash
-git clone https://github.com/mem0ai/mem0.git
-cd mem0/openmemory
+export MEM0_API_KEY="your_key"
 ```
 
-Configure the environment files:
+### Register a client
+
+For most clients the `mcp-add` helper writes the config for you:
 
 ```bash
-cp api/.env.example api/.env
-cp ui/.env.example ui/.env
+npx mcp-add \
+    --name mem0-mcp \
+    --type http \
+    --url "https://mcp.mem0.ai/mcp" \
+    --clients "claude code,cursor,windsurf,vscode,opencode"
 ```
 
-Edit `api/.env` and set your keys:
+Claude Desktop does not support `mcp-add`; add it manually under
+Settings > Connectors > Add custom connector, name `mem0-mcp`, URL
+`https://mcp.mem0.ai/mcp`, then restart.
 
-```
-OPENAI_API_KEY=sk-...
-USER=philippe
-```
+### Test with the MCP Inspector
 
-Edit `ui/.env`:
-
-```
-NEXT_PUBLIC_API_URL=http://localhost:8765
-NEXT_PUBLIC_USER_ID=philippe
-```
-
-Build and start the containers:
-
-```bash
-make build
-make up
-```
-
-This starts three containers: an MCP backend (port 8765), a Qdrant
-vector store, and a web UI (port 3000). Open http://localhost:3000 to
-browse stored memories.
-
-### Fix: search parameter mismatch
-
-The OpenMemory MCP image bundles mem0ai 2.0.0, which renamed the
-vector store search parameter from `limit` to `top_k`. The MCP server
-code was not updated to match, so `search_memory` calls will fail with
-`TypeError: Qdrant.search() got an unexpected keyword argument 'limit'`.
-
-Because the compose file volume-mounts `api/` into the container and
-runs with `--reload`, a one-line sed fix on the host is picked up
-immediately:
-
-```bash
-sed -i 's/limit=10/top_k=10/' api/app/mcp_server.py
-```
-
-This is a good example of a common pain point with fast-moving
-open-source projects: the MCP layer and the core mem0 library are
-maintained by the same team but versioned independently, and internal
-API changes slip through.
-
-### Register and test with the MCP Inspector
-
-The OpenMemory MCP endpoint follows the pattern
-`http://localhost:8765/mcp/<client-name>/sse/<user-id>`. The `/sse`
-suffix means it uses SSE transport, not streamable HTTP.
-
-Register a client (this writes the URL into the client's MCP config):
-
-```bash
-npx @openmemory/install local http://localhost:8765/mcp/claude/sse/philippe --client claude
-```
-
-Before connecting a full client, verify the server is reachable with
-the MCP Inspector CLI. Note the `--transport sse` flag; using `http`
-will fail with "Method Not Allowed" because the endpoint speaks SSE,
-not streamable HTTP:
+Verify connectivity before wiring a full client. Note `--transport
+http` (the hosted endpoint is streamable HTTP; the old OpenMemory
+endpoint used `sse`) and pass the key as a bearer header:
 
 ```bash
 npx -y @modelcontextprotocol/inspector --cli \
-    http://localhost:8765/mcp/claude/sse/philippe \
-    --transport sse \
+    https://mcp.mem0.ai/mcp \
+    --transport http \
+    --header "Authorization: Bearer $MEM0_API_KEY" \
     --method tools/list
 ```
 
-You should see the available memory tools: `add_memories`,
-`search_memory`, `get_all_memories`, and `delete_all_memories`.
-
-You can also test a tool call directly from the CLI:
+A tool call from the CLI:
 
 ```bash
 npx -y @modelcontextprotocol/inspector --cli \
-    http://localhost:8765/mcp/claude/sse/philippe \
-    --transport sse \
+    https://mcp.mem0.ai/mcp \
+    --transport http \
+    --header "Authorization: Bearer $MEM0_API_KEY" \
     --method tools/call \
-    --tool-name search_memory \
+    --tool-name search_memories \
     --tool-arg query="sci-fi movies"
 ```
 
-Once the Inspector confirms connectivity, any MCP-compatible client
-(Claude Desktop, Cursor, your own agent) can call the same memory
-tools transparently.
+Once the Inspector confirms connectivity, any MCP-compatible client can
+call the same memory tools transparently.
 
-### Why this matters
+### Why this matters (and the security angle)
 
-In Part 1 and Part 2, your Python code calls `m.add()` and
-`m.search()` directly. With OpenMemory, the memory layer becomes a
-standalone service that any agent can use via MCP, without importing a
-single library. This is the difference between "memory as a library"
-and "memory as infrastructure."
+Memory-as-infrastructure means any MCP client gets persistent,
+cross-session memory without shipping a library. But moving from the old
+local OpenMemory server to a hosted endpoint changes the threat model,
+which is the interesting part for this course:
+
+- **Data residency.** Memories now leave your machine and live in mem0's
+  cloud. For the local-only guarantee that Part 1 (the self-hosted
+  Qdrant track) makes, use the self-hosted REST server instead; the
+  maintained local option is no longer MCP.
+- **The bearer token is a memory credential.** Anyone holding
+  `MEM0_API_KEY` can read and write the entire memory store over MCP.
+  Treat it like any secret: keep it in an env var, never in source,
+  rotate it, and scope it per environment.
+- **Destructive tools are exposed.** The endpoint includes
+  `delete_all_memories` and `delete_entities`. An agent, or a prompt
+  injection that reaches it, can wipe the store, not just read it.
+  Revisit lab070 and lab073 with this endpoint sitting on the server
+  side of the MCP trust boundary.
 
 ### Cleanup
 
-```bash
-cd mem0/openmemory
-make down
-```
+Nothing to tear down; the server is hosted. To disconnect, remove the
+`mem0-mcp` entry from your client's MCP config (or delete the custom
+connector in Claude Desktop).
 
-For more details, see the
-[OpenMemory repo](https://github.com/mem0ai/mem0/tree/main/openmemory).
+For the current MCP docs, see
+[docs.mem0.ai/platform/mem0-mcp](https://docs.mem0.ai/platform/mem0-mcp).
 
 ## Self-hosted vs SaaS: what changes?
 
