@@ -42,3 +42,5 @@ Expose the server only behind a gateway with TLS and auth. Treat the `/collectio
 ## See it in action
 
 The [rag_poisoning_demo.py](./rag_poisoning_demo.py) script demonstrates LLM01 and LLM03 in a live Chroma environment: it upserts a poisoned document, shows how it hijacks the LLM's answer, and then applies an instruction firewall as mitigation. Run it after completing the [walkthrough](./README.md).
+
+The [rag_overlap_extraction_demo.py](./rag_overlap_extraction_demo.py) script demonstrates LLM06 (and LLM10): the confidentiality counterpart to poisoning. Using nothing but query access, it walks the verbatim chunk overlap from one chunk to the next and reconstructs an entire confidential document, then shows that rebuilding with zero overlap breaks the chain. Poisoning corrupts what comes out of the store; overlap-walking exfiltrates what should never come out.

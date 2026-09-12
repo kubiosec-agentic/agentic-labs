@@ -96,6 +96,8 @@ python3 ./RAG_03.py
 
 **Framework:** LangChain orchestrates the full pipeline. The prompt template is where you control how the model uses the retrieved context, which is key for preventing hallucination.
 
+> **Security aside:** the `chunk_overlap` you just set is also an extraction primitive. Because consecutive chunks share verbatim text, an attacker with only query access can chain from one chunk to the next and reconstruct entire documents, no LLM and no write access required. See the [Chunk-Overlap Extraction Attack PoC](../lab990_addendum/chromadb/README.md#step-8-chunk-overlap-extraction-attack-poc-rag_overlap_extraction_demopy) in the addendum.
+
 ### Step 4: OpenAI managed vector store with Responses API (`RAG_04.py`)
 
 Instead of running your own vector database, OpenAI can host it for you. The Python SDK handles all the setup: create a vector store, upload your file, wait for indexing, and query with `file_search`. No curl commands, no manual IDs to copy.

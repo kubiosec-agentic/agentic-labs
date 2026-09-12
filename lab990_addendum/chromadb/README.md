@@ -189,6 +189,34 @@ The demo runs in three phases:
 
 See [rag_poisoning_demo.py](./rag_poisoning_demo.py) for the full source and [owasp_top10_llm.md](./owasp_top10_llm.md) for the complete OWASP risk mapping.
 
+## Step 8: Chunk-Overlap Extraction Attack PoC (`rag_overlap_extraction_demo.py`)
+
+The confidentiality counterpart to Step 7. Poisoning is an integrity attack that corrupts what comes out of the store. This is an exfiltration attack that pulls out what should never come out, demonstrating **OWASP LLM06 (Sensitive Information Disclosure)** and **LLM10 (systematic scraping)**.
+
+```bash
+python3 rag_overlap_extraction_demo.py
+```
+
+The insight: RAG stores use overlapping chunks so a fact on a chunk boundary is not lost. That same overlap turns the store into a linked list. Every chunk holds a verbatim copy of its neighbour's edge, so an attacker with only query access can chain from one chunk to the next and reconstruct whole documents. No write access, no LLM.
+
+The demo runs in three phases:
+
+**Phase 1: Defender indexes a confidential document.** A fictional internal runbook is split into overlapping chunks and upserted. The attacker never sees the document, the chunk count, or the config.
+
+**Phase 2: Attacker walks the overlap.** Given only a `query()` handle, the attacker gets one foothold chunk from an innocuous query, then uses its last N characters to retrieve the next chunk (which starts with exactly those characters) and its first N to retrieve the previous one. Walking both directions and stripping the duplicated overlap at each join reconstructs the original, verified by diff against the source.
+
+**Phase 3: Mitigation.** The store is rebuilt with `chunk_overlap=0`. With no shared edges the chain cannot form, and the walk degrades to ordinary semantic fishing that recovers only scattered chunks.
+
+**What to observe:**
+- Reconstruction needs no LLM and no write access; retriever read access is the whole trust boundary
+- On this small controlled corpus recovery is near-perfect; on a large repetitive corpus (`lab040_RAG/data/llms-full.txt`) a naive single chain recovers only ~30%, because near-duplicate passages crowd the true successor out of the top-k. Recovery is bounded by retrieval recall, not by the overlap idea
+- Overlap is a recall/latency tradeoff, not free; minimize it and prefer boundary-aware splitting
+- Production defenses: per-caller retrieval scoping, rate limits, capped `n_results`, dedupe of near-identical hits, and not returning raw chunk text to untrusted callers
+
+The script ends with an exercise: raise the large-corpus recovery rate with a larger `k`, literal overlap re-ranking, and multi-seed chain merging.
+
+See [rag_overlap_extraction_demo.py](./rag_overlap_extraction_demo.py) for the full source and [owasp_top10_llm.md](./owasp_top10_llm.md) for the complete OWASP risk mapping.
+
 ## Cleanup
 
 Stop the Chroma server (Ctrl+C in Terminal 1). Deactivate the virtual environment if you used one, and remove persisted data:
