@@ -12,8 +12,13 @@ nothing to keep in sync. No sticky sessions, no shared cache, no session
 affinity. This is the model the modern MCP transport is optimised for.
 
 Run:
-    python3 stateless_server.py          # streamable HTTP on :8100/mcp
-    python3 stateless_server.py --stdio  # stdio transport instead
+    python3 stateless_server.py               # streamable HTTP on 127.0.0.1:8100/mcp
+    python3 stateless_server.py --stdio       # stdio transport instead
+    python3 stateless_server.py --host 0.0.0.0  # bind all interfaces (mitmproxy demo)
+
+The default binds loopback only. The mitmproxy exercise (README section 6)
+runs the proxy in Docker, which must reach this server over the host LAN IP,
+so start it there with --host 0.0.0.0.
 """
 import sys
 from fastmcp import FastMCP
@@ -43,4 +48,10 @@ if __name__ == "__main__":
     if "--stdio" in sys.argv:
         mcp.run(transport="stdio")
     else:
-        mcp.run(transport="http", host="127.0.0.1", port=8100)
+        host = "127.0.0.1"
+        for arg in sys.argv[1:]:
+            if arg.startswith("--host="):
+                host = arg.split("=", 1)[1]
+            elif arg == "--host" and sys.argv.index(arg) + 1 < len(sys.argv):
+                host = sys.argv[sys.argv.index(arg) + 1]
+        mcp.run(transport="http", host=host, port=8100)

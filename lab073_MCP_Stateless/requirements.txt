@@ -6,3 +6,9 @@ fastmcp>=4,<5
 # requests is needed because Exercise 1 runs lab070's server_streamable.py
 # (get_current_weather) unchanged, under this venv.
 requests>=2.32
+# Exercise 6 (agent_demo.py) adds a real OpenAI Agents SDK agent whose OpenAI
+# and MCP traffic are both routed through mitmproxy. openai-agents pulls in the
+# openai client. Everything else in the lab is pure fastmcp and needs neither.
+openai-agents
+openai>=1.50
+

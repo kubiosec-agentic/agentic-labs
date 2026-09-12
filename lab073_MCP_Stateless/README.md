@@ -286,6 +286,83 @@ abstraction once you have watched the `mcp-session-id` header be there in
 one mode and not the other. Stop the server (`Ctrl+C` in Terminal 1) and the
 proxy (`Ctrl+C` in Terminal 3) when done.
 
+### 6. The full flow: an OpenAI Agents SDK agent through mitmproxy
+
+Exercise 5 used the bare `fastmcp` client, so mitmproxy only saw the MCP leg.
+Here `agent_demo.py` is a real **OpenAI Agents SDK** agent: it reasons with the
+model *and* calls the stateless server's MCP tools. Routed through mitmproxy you
+see **both legs of an agentic call** on the wire:
+
+- agent to OpenAI API: the model deciding which tool to call, then composing
+  the answer from the tool results;
+- agent to MCP server: `initialize`, `tools/list`, and `tools/call` for `add`
+  and `celsius_to_fahrenheit`.
+
+This needs a real `OPENAI_API_KEY` (the model call is real) and the
+`openai-agents` package (already in this lab's `requirements.txt`). It uses
+**three terminals**: Terminal 1 the server, Terminal 2 the agent, Terminal 3
+mitmproxy. The proxy runs two reverse modes at once, one per leg.
+
+**Terminal 1 (server)** bind all interfaces so the Docker proxy can reach it:
+
+```bash
+python3 stateless_server.py --host 0.0.0.0
+```
+
+**Terminal 3 (mitmproxy)** one reverse mode for OpenAI (8080) and one for the
+MCP server (8089); mitmweb UI on 8081:
+
+```bash
+# Linux (e.g. the Ubuntu lab box):
+export HOST_IP=$(hostname -I | awk '{print $1}')
+# macOS (Wi-Fi); use en0 for Ethernet or adjust the interface:
+# export HOST_IP=$(ipconfig getifaddr en0)
+echo "host ip: $HOST_IP"   # must be non-empty
+
+docker run --rm -it \
+    -v ~/.mitmproxy:/home/mitmproxy/.mitmproxy \
+    -p 8080:8080 \
+    -p 8081:8081 \
+    -p 8089:8089 \
+    mitmproxy/mitmproxy mitmweb \
+        --web-host 0.0.0.0 \
+        --set block_global=false \
+        --mode reverse:https://api.openai.com:443@8080 \
+        --mode reverse:http://${HOST_IP}:8100@8089
+```
+
+**Terminal 2 (agent)** point both legs at the proxy, then run the agent:
+
+```bash
+export OPENAI_API_KEY="sk-..."
+export OPENAI_BASE_URL="http://127.0.0.1:8080/v1/"
+export MCP_URL="http://127.0.0.1:8089/mcp"
+python3 agent_demo.py
+```
+
+Now open the mitmweb UI at `http://127.0.0.1:8081`. You should see, in order:
+
+- POST to `api.openai.com` (`/v1/responses`) as the model receives the task and
+  the MCP tool schemas and decides to call a tool;
+- POSTs to the MCP server (`/mcp`): `initialize`, `tools/list`, then
+  `tools/call` for `add` and for `celsius_to_fahrenheit`;
+- another POST to `api.openai.com` where the model reads the tool results and
+  writes the final answer.
+
+That is the whole agentic loop in cleartext at one vantage point. Note the
+security weight of it: the model's full prompt (including the tool schemas and
+the injected tool results) and every tool argument and result are readable at
+the proxy. Anyone who can sit on that path, or read those logs, sees the
+reasoning and the data, which is the point tied together in the next section.
+
+**Cleanup.** Stop the agent, then `Ctrl+C` the server (Terminal 1) and the
+proxy (Terminal 3). In Terminal 2, clear the proxy overrides so later runs are
+not silently routed through a now-stopped mitmproxy:
+
+```bash
+unset OPENAI_BASE_URL MCP_URL
+```
+
 ## Security risks of going stateless
 
 Statelessness is good for scaling, but it moves several things around that
