@@ -11,8 +11,10 @@ Key features relevant to this lab:
 - **Model-agnostic**: works with OpenAI, Anthropic, Google, Groq, and
   others. These exercises use Anthropic Claude to show provider
   flexibility.
-- **Built-in tools**: `WebSearchTool` and `CodeExecutionTool` come
-  with the framework, no extra packages needed.
+- **Native tools**: `WebSearchTool` and `CodeExecutionTool` come with
+  the framework, no extra packages needed. In pydantic-ai 2.x they are
+  passed as `capabilities=[NativeTool(WebSearchTool())]` (the older
+  `builtin_tools=` argument was removed).
 - **Structured output**: agents can return Pydantic models instead of
   raw strings, with validation enforced at the framework level.
 - **Logfire integration**: optional observability through Pydantic's

@@ -101,3 +101,10 @@ Bumped all Gemini model references, preserving each tier. `models/` prefix kept 
 
 ### lab080_MAS (crewai memory error - definitive fix)
 - The embedder-pin approach only helps when it's actually deployed AND the on-disk store already matches; it does not fix a box still running the old file or a store built at a different dimension. Replaced it: CRAI_01.py now sets memory=False on both agents and the crew (was memory=True). This demo needs no cross-run vector memory, and disabling it removes the LanceDB store + embedder entirely, so EmbeddingDimensionMismatchError cannot occur regardless of crewai's default-embedder drift. Kept the pin recipe as an in-code comment for anyone who wants to demonstrate memory. No reset needed once memory=False is deployed (there is no store).
+
+### lab080_MAS (pydantic-ai bumped to 2.43.0)
+- `requirements-pydanticai.txt`: pydantic-ai 1.81.0 -> 2.43.0 (latest). The `builtin_tools=` Agent kwarg was removed in 2.x; native (provider-side) tools now go through `capabilities=[NativeTool(...)]` (`from pydantic_ai.capabilities import NativeTool`). Rewrote `pydanticai/PD_01.py` (`NativeTool(WebSearchTool())`) and `PD_02.py` (`NativeTool(CodeExecutionTool())`); `run_sync`/`result.output` unchanged. Verified both agents construct on 2.43.0 in a clean venv. Updated the pydanticai README "Native tools" bullet.
+
+### lab080_MAS (FastAgent updated for fast-agent-mcp 0.10.x)
+- The package was renamed internally `mcp_agent` -> `fast_agent` in the 0.10 line, so the import in all four `fastagent/example*/agent.py` is now `from fast_agent import FastAgent` (old `from mcp_agent.core.fastagent import FastAgent` no longer resolves). Confirmed against the 0.10.24 wheel that the decorator/runtime API is unchanged: `@fast.agent` / `@fast.orchestrator` signatures (name, instruction, servers, agents, plan_type) and `fast.run()` / `agent(...)` / `agent.<name>(...)` all still hold, so no other code changes were needed.
+- `fastagent/README.md`: pinned setup to `fast-agent-mcp==0.10.24`, changed `uv venv` to `uv venv --python 3.12`, and added a note that 0.10.x requires Python 3.12+ and uses the new `fast_agent` import.

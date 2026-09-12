@@ -7,7 +7,7 @@ FastAgent integrates with remote MCP servers over streamable HTTP.
 """
 
 import asyncio
-from mcp_agent.core.fastagent import FastAgent
+from fast_agent import FastAgent
 
 fast = FastAgent("MS Learn Docs Agent")
 

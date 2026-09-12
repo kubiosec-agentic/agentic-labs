@@ -9,6 +9,12 @@ agent coordinates specialist workers).
 FastAgent uses `uv` (not pip) for dependency management and runs in
 its own virtual environment, separate from the lab080 venv.
 
+> These examples are written for `fast-agent-mcp` 0.10.x, which
+> **requires Python 3.12+**. As of 0.10 the package was renamed
+> internally from `mcp_agent` to `fast_agent`, so the import is now
+> `from fast_agent import FastAgent` (older `from mcp_agent...`
+> imports no longer work).
+
 ## Prerequisites
 
 ```bash
@@ -24,9 +30,9 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 ## Setup (one time, from this directory)
 
 ```bash
-uv venv
+uv venv --python 3.12
 uv init --bare
-uv add fast-agent-mcp
+uv add "fast-agent-mcp==0.10.24"
 ```
 
 ## Running examples

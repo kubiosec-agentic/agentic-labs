@@ -1,5 +1,5 @@
 import asyncio
-from mcp_agent.core.fastagent import FastAgent
+from fast_agent import FastAgent
 from pydantic import AnyUrl
 
 fast = FastAgent("My XSS Learning Agent")

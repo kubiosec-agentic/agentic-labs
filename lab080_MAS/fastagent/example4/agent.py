@@ -14,7 +14,7 @@ writer. Uses two local MCP servers (filesystem + fetch), no tokens needed.
 """
 
 import asyncio
-from mcp_agent.core.fastagent import FastAgent
+from fast_agent import FastAgent
 
 fast = FastAgent("K8s-Benchmarked-Review")
 
