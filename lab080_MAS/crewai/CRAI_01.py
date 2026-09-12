@@ -82,6 +82,15 @@ def suggest_answers(topic):
         tasks=[research_task, write_task],
         process=Process.sequential,
         memory=True,
+        # Pin the embedder. crewai's default embedder changed from
+        # text-embedding-3-small (1536-dim) to text-embedding-3-large
+        # (3072-dim) in a recent release, so a memory store built by an older
+        # run (1536-dim) raises EmbeddingDimensionMismatchError against the new
+        # default. Pinning to small keeps runs consistent with existing stores
+        # (and is cheaper). This is also a nice "defaults drift on upgrade"
+        # example. To switch to 3-large instead, delete the memory store first
+        # (crewai reset-memories --memory).
+        embedder={"provider": "openai", "config": {"model": "text-embedding-3-small"}},
         cache=True,
         max_rpm=100,
         share_crew=True

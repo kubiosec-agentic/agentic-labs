@@ -89,3 +89,12 @@ Bumped all Gemini model references, preserving each tier. `models/` prefix kept 
 - AN_03_mcp_agent.py failed at import: agno 2.5.16 imports `streamablehttp_client` from `mcp.client.streamable_http`, but the unbounded `mcp>=1.0.0` pin pulled a newer mcp that renamed it to `streamable_http_client`. Root cause: agno's mcp support is an optional extra with real bounds, but the lab pinned a bare `mcp` that resolved outside them.
 - Fix: `requirements-agno.txt` now uses `agno[mcp]==3.0.9` (latest) and drops the bare `mcp>=1.0.0` line, so pip installs the mcp SDK agno supports (>=2.1,<3) plus fastmcp 4.x. Verified in a clean env: `from agno.tools.mcp import MCPTools` imports, and AN_01/AN_02/AN_03 use only APIs still present in agno 3.0.9 (Agent/Team/OpenAIChat/SqliteDb/MCPTools kwargs, print_response, get_chat_history, MCPTools(url=...)), so no script edits were needed.
 - Students must reinstall the venv: `.venv-agno/bin/pip install -r requirements-agno.txt` (or delete and recreate .venv-agno).
+
+### lab080_MAS (crewai bumped to 1.15.21)
+- `requirements-crewai.txt`: crewai/crewai-tools 1.14.1 -> 1.15.21 (latest), kept equal (crewai's `tools` extra pins crewai-tools to the same version). CRAI_01 uses stable 1.x APIs (Task/Crew/Process/Agent, SerperDevTool, standard kwargs, crew.kickoff), so no script changes needed.
+- Root `requirements.txt`: updated the pydantic-constraint note. crewai 1.15.21 now allows pydantic >=2.11.9,<2.13 (was <2.12), which overlaps pydantic-ai's >=2.12 on 2.12.x; per-framework venvs stay the default anyway to isolate transitive-dependency clashes.
+- Verified: both packages have 1.15.21 on PyPI and crewai 1.15.21 metadata (pydantic range, crewai-tools pin). Not run end to end (crewai is a heavy install and CRAI_01 needs SERPER_API_KEY + OPENAI_API_KEY). Students reinstall: `.venv-crewai/bin/pip install -r requirements-crewai.txt`.
+
+### lab080_MAS (crewai memory embedder pin)
+- After the 1.15.21 bump, CRAI_01 flooded with EmbeddingDimensionMismatchError (store 1536-dim vs new default 3072-dim). Cause: crewai's default embedder changed text-embedding-3-small -> text-embedding-3-large between versions; existing memory stores are 1536-dim. The crew still completed (errors are caught per memory op), but the output is unusable noise.
+- Fix: CRAI_01.py pins `embedder={"provider":"openai","config":{"model":"text-embedding-3-small"}}` on the Crew, matching existing stores (1536-dim) and making the run reproducible regardless of crewai's default drift. Alternative documented in-code: reset memories to adopt 3-large.

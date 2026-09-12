@@ -30,11 +30,11 @@ project.
 export OPENAI_API_KEY="xxxxxxxxx"
 ```
 
-CrewAI and PydanticAI have incompatible pydantic version constraints
-(`crewai` pins `pydantic<2.12`, `pydantic-ai` requires `>=2.12`), so
-each framework gets its own venv. Agno is flexible enough to live with
-either, but gets its own venv to keep things clean. FastAgent uses `uv`
-and has its own setup (see section 4).
+CrewAI and PydanticAI pull different, sometimes clashing dependency pins
+(`crewai` 1.15.21 pins `pydantic>=2.11.9,<2.13`, `pydantic-ai` requires
+`>=2.12`), so each framework gets its own venv to keep those trees apart.
+Agno is flexible enough to live with either, but gets its own venv to keep
+things clean. FastAgent uses `uv` and has its own setup (see section 4).
 
 Create the venvs:
 
