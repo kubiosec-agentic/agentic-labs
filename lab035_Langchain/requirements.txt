@@ -13,5 +13,4 @@ langchain-community==0.3.21
 langchain-huggingface==0.1.2
 torch>=2.2
 accelerate>=0.26
-transformers>=4.45,<5
-# Pin transformers <5: version 5.x can degrade small-model output quality
+transformers>=4.45

@@ -38,7 +38,7 @@ def my_tool(query: str) -> str:
     return f"Result for {query}"
 
 root_agent = Agent(
-    model=os.getenv("MODEL_ID", "gemini-2.0-flash"),
+    model=os.getenv("MODEL_ID", "gemini-3.6-flash"),
     name="my_agent",
     instruction="Help the user by calling your tools.",
     tools=[my_tool],

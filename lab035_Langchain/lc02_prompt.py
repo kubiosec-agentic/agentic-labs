@@ -3,7 +3,7 @@ from langchain_openai import ChatOpenAI, OpenAI
 # from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.output_parsers import StrOutputParser
 
-# llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash")
+# llm = ChatGoogleGenerativeAI(model="models/gemini-3.6-flash")
 llm = ChatOpenAI(model="gpt-4o")
 parser= StrOutputParser()
 

@@ -10,9 +10,9 @@ This lab contains two security-focused agents that demonstrate different agentic
 
 | Directory | Agent | Pattern | Model |
 |-----------|-------|---------|-------|
-| `adk/llm_red_team_agent/` | AI safety red team | 3 sub-agents as tools (attack, target, evaluate) | gemini-2.0-flash |
-| `adk/cyber_guardian/` | Incident response | Orchestrator with 6 direct tool functions | gemini-2.0-flash |
-| `adk_standalone/cyber_guardian/` | Incident response (standalone) | Runner API without `adk` CLI | gemini-2.0-flash |
+| `adk/llm_red_team_agent/` | AI safety red team | 3 sub-agents as tools (attack, target, evaluate) | gemini-3.6-pro |
+| `adk/cyber_guardian/` | Incident response | Orchestrator with 6 direct tool functions | gemini-3.6-pro |
+| `adk_standalone/cyber_guardian/` | Incident response (standalone) | Runner API without `adk` CLI | gemini-3.6-flash |
 
 ## Set up your environment
 

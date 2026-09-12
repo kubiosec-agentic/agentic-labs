@@ -19,7 +19,7 @@ def check_prime(nums: list[int]) -> dict:
 
 root_agent = Agent(
     name="check_prime_agent",
-    model="gemini-2.5-flash-lite",
+    model="gemini-3.6-flash-lite",
     description="Checks whether numbers are prime.",
     instruction=(
         "You check if numbers are prime. "

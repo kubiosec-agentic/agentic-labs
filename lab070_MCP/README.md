@@ -1,4 +1,4 @@
-![MCP](https://img.shields.io/badge/MCP-purple) ![fastmcp](https://img.shields.io/badge/fastmcp-3.2-green) ![OpenAI](https://img.shields.io/badge/OpenAI-lightblue) ![Python](https://img.shields.io/badge/Python-blue) ![Security](https://img.shields.io/badge/Security-red)
+![MCP](https://img.shields.io/badge/MCP-purple) ![fastmcp](https://img.shields.io/badge/fastmcp-3.4.7-green) ![OpenAI](https://img.shields.io/badge/OpenAI-lightblue) ![Python](https://img.shields.io/badge/Python-blue) ![Security](https://img.shields.io/badge/Security-red)
 
 # LAB070: Model Context Protocol
 
@@ -8,7 +8,7 @@ This lab is a deep dive into the Model Context Protocol (MCP): what it is, how
 its transports work, how agents consume MCP servers, and the security model
 you need in your head before shipping one. MCP is a moving target, so the
 code here tracks the spec revision of **2025-03-26** and uses the standalone
-[`fastmcp`](https://gofastmcp.com) library (>=3.2) for all servers and
+[`fastmcp`](https://gofastmcp.com) library (pinned to 3.4.7, see the note below) for all servers and
 non-agent clients. The agent-side examples use the `openai-agents` SDK, which
 speaks MCP natively and is the easiest way to wire an MCP server into a
 tool-using agent.
@@ -57,11 +57,19 @@ export OPENAI_API_KEY="xxxxxxxxx"
 source .lab070/bin/activate
 ```
 
-Sanity-check the fastmcp version (should be 3.2 or newer):
+Sanity-check the fastmcp version (should be `3.4.7`):
 
 ```bash
 python3 -c "import fastmcp; print(fastmcp.__version__)"
 ```
+
+> **Why is this version pinned?** `requirements.txt` pins `fastmcp==3.4.7`.
+> This lab is the one deliberate exception to the labs' "always install the
+> latest" convention: fastmcp 4.x removed client-side **sampling**
+> (section 5) from the standard, so the sampling examples only run on 3.x.
+> The rest of the lab works on 4.x, but the pin keeps every exercise
+> runnable on a single version. Remove the pin only once the sampling
+> examples have been ported to whatever the current fastmcp exposes.
 
 ## Lab instructions
 

@@ -209,3 +209,4 @@ lab060_OpenAI_Agents/details.json
 .gitignore
 lab064_Langgraph/job_review_workflow.mmd
 lab000_setup/get-docker.sh
+lab060_OpenAI_Agents/summary.md

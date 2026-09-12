@@ -1,9 +1,6 @@
 """
 Tool guardrails.
 
-Steps 4 and 5 screened the text going in and out of the agent.
-Tool guardrails screen the *tool calls* in between:
-
   - @tool_input_guardrail  runs BEFORE the tool executes and sees the
     arguments the model chose.
   - @tool_output_guardrail runs AFTER the tool executes and sees the

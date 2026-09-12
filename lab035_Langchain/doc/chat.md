@@ -12,7 +12,7 @@ from langchain_openai import ChatOpenAI, OpenAI
 # initialize a completion or chat model
 # Uncomment the one you want to use
 
-# chat = ChatGoogleGenerativeAI(model="gemini-2.0-flash")
+# chat = ChatGoogleGenerativeAI(model="models/gemini-3.6-flash")
 chat = ChatOpenAI(model="gpt-4o")
 # chat = ChatAnthropic(model="claude-sonnet-4-20250514")
 # chat = ChatOllama(model="deepseek-r1:1.5b")
@@ -41,7 +41,7 @@ A class is like a blueprint in Python. It describes how to build something with 
 ### Step 2:
 You need to instantiate a class to use it.
 ```python
-# chat = ChatGoogleGenerativeAI(model="gemini-2.0-flash")
+# chat = ChatGoogleGenerativeAI(model="models/gemini-3.6-flash")
 chat = ChatOpenAI(model="gpt-4o")
 # chat = ChatAnthropic(model="claude-sonnet-4-20250514")
 # chat = ChatOllama(model="deepseek-r1:1.5b")

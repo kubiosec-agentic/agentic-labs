@@ -74,6 +74,38 @@ python3 ./lc04_multi_turn.py
 
 The script asks three questions about the 2018 World Cup. The second and third questions ("Where was it held?", "Who was the top scorer?") only make sense if the model remembers the topic. Watch the message history printout at the end to see how LangChain tracks the full conversation.
 
+> **Security angle: fast-moving APIs and stale code.** Running this prints
+> `LangChainPendingDeprecationWarning: RunnableWithMessageHistory is deprecated.
+> Use LangGraph's built-in persistence instead.` The script still works, and
+> this pattern is exactly what you will find in most existing tutorials, Stack
+> Overflow answers, and repositories.
+>
+> Read that last point carefully, because this is the part to internalize:
+> `RunnableWithMessageHistory` was not a shortcut we invented. It is first-party
+> LangChain (`langchain_core.runnables.history`) and it was the framework's
+> **own officially recommended** way to add memory to an LCEL chain. It is
+> already the second recommended answer, having replaced the older
+> `ConversationChain` / `langchain.memory` classes, and now it too is being
+> superseded (by LangGraph persistence). So the developer who did everything
+> right, followed the official docs, used the blessed API, still ends up on a
+> deprecated path within a couple of years. That is why a large share of the
+> LangChain (and MCP, and agent-SDK) code you find online is already built on
+> deprecated or removed APIs: not because people wrote it badly, but because the
+> "correct" answer keeps moving. Assume any example older than a few months is
+> stale until you have checked it against the current docs.
+>
+> This is not just a maintenance nuisance, it is an attack surface. Outdated
+> code is where unpatched CVEs, abandoned transitive dependencies, and
+> copy-pasted insecure examples accumulate. When you lift a snippet from a blog,
+> or from an LLM whose training data is frozen at some point in the past, you
+> inherit whatever was current then, known vulnerabilities included. The habit
+> to build is to treat every borrowed snippet and every dependency as possibly
+> stale: read the deprecation warnings instead of suppressing them, check the
+> changelog, scan your dependencies (see lab050's `pip-audit` and lab990's
+> SupplyChainGuard), and know where the ecosystem has actually moved. Here, the
+> modern replacement for `RunnableWithMessageHistory` is LangGraph's persistence
+> layer, which you meet in lab064.
+
 For details, see [doc/multi-turn.md](./doc/multi-turn.md).
 
 ### Step 5: Local model with HuggingFace (`lc05_hf_local.py`)
@@ -88,8 +120,6 @@ python3 ./lc05_hf_local.py
 ```
 
 The first run downloads the model (~1 GB). Subsequent runs use the cached version. Output quality is lower than GPT-4o (it is a 0.5B parameter model), but the point is to see LangChain's provider abstraction at work: same `ChatHuggingFace` interface, same `.invoke()` call.
-
-> **Note:** The requirements pin `transformers<5` because version 5.x can produce degraded output with small models like Qwen2-0.5B.
 
 For details, see [doc/huggingface.md](./doc/huggingface.md).
 
