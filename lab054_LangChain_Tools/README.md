@@ -6,7 +6,7 @@
 
 LangChain provides a high-level abstraction over LLM providers, but the real power comes from connecting models to tools. This lab walks through six examples that progress from a bare LLM call to full tool-call cycles, Responses API hosted tools, and custom chains that wrap raw OpenAI function calling inside LangChain runnables.
 
-The first two examples use LangChain's `bind_tools` and `@tool` decorator. The next two switch to OpenAI's Responses API (`output_version="responses/v1"`) for server-side web search and code execution. The final two drop down to the OpenAI SDK directly, wrapping it in `RunnableLambda` to show how LangChain chains compose with any callable.
+The first two examples use LangChain's `bind_tools` and `@tool` decorator. The next two switch to OpenAI's Responses API (`output_version="responses/v1"`) for server-side web search and code execution. Step 5 returns to native LangChain with a local, executable `@tool` (a Python REPL) driven by a real multi-step agent loop. Step 6 drops down to the OpenAI SDK directly, wrapping it in `RunnableLambda` to show how LangChain chains compose with any callable.
 
 | Step | Script | What it demonstrates |
 |------|--------|---------------------|
@@ -14,8 +14,8 @@ The first two examples use LangChain's `bind_tools` and `@tool` decorator. The n
 | 2 | `LC_02.py` | Tool binding with `@tool` decorator, four-phase tool-call cycle |
 | 3 | `LC_03.py` | Responses API: `web_search_preview` hosted tool |
 | 4 | `LC_04.py` | Responses API: `code_interpreter` hosted tool |
-| 5 | `LC_05.py` | Custom chain: `ChatPromptTemplate` | `RunnableLambda` (raw OpenAI) | `StrOutputParser` |
-| 6 | `LC_06.py` | Same chain pattern with OpenAI function calling and a datetime tool |
+| 5 | `LC_05.py` | Local `@tool` Python REPL + `bind_tools`, multi-step agent loop |
+| 6 | `LC_06.py` | Raw-OpenAI chain pattern with OpenAI function calling and a datetime tool |
 
 ## Set up your environment
 
@@ -90,21 +90,23 @@ python3 LC_04.py
 - The `container: {"type": "auto"}` config lets OpenAI choose the runtime. This is a serverless execution environment, not your local machine.
 - Think about the security implications: what code could a prompt injection trick the interpreter into running?
 
-### Step 5: Custom translation chain (`LC_05.py`)
+### Step 5: Local Python REPL tool with an agent loop (`LC_05.py`)
 
-Drops down to the raw OpenAI SDK but wraps the call in a `RunnableLambda` so it plugs into a LangChain chain. The chain is: `ChatPromptTemplate` | `RunnableLambda(call_openai)` | `StrOutputParser`.
+Where Step 2 executes a single tool call once, this script runs a real multi-step agent loop over a **local, executable** tool: a Python REPL defined with the `@tool` decorator and bound with `bind_tools`. The model writes code, the code runs on this machine, the output is fed back as a `ToolMessage`, and the model decides whether to run more code or answer. The loop continues until the model stops emitting tool calls (capped by `MAX_STEPS`).
 
 ```bash
 python3 LC_05.py
 ```
 
 **What to observe:**
-- The `RunnableLambda` receives a `ChatPromptValue` from the prompt template and must convert it to OpenAI message format manually.
-- This pattern is useful when you need LangChain's prompt templating and chain composition but want full control over the API call (e.g., for custom headers, retries, or provider-specific parameters).
+- The full loop: `invoke -> tool_calls? -> execute locally -> ToolMessage -> invoke again`. The model may emit several tool calls, including in a single turn.
+- The REPL namespace persists between calls, so the model can build up state across steps.
+- Contrast with Step 4's `code_interpreter`: there the code runs in a sandbox on OpenAI's servers; here it runs unsandboxed in your own process.
+- **Security:** this tool runs model-generated Python with no sandbox. A prompt-injected or adversarial model could read files, exfiltrate `OPENAI_API_KEY`, or open network connections. Run it only in a disposable, isolated environment with no secrets. It is a teaching example of tool risk, not a production pattern.
 
 ### Step 6: Chain with function calling (`LC_06.py`)
 
-Extends Step 5 by adding a `get_current_datetime` tool. The `RunnableLambda` now handles the full tool-call cycle internally: if the model requests the tool, the code executes it, appends the result, and makes a second API call for the final answer.
+Takes the raw-OpenAI `RunnableLambda` chain pattern and adds a `get_current_datetime` tool. The `RunnableLambda` handles the full tool-call cycle internally: if the model requests the tool, the code executes it, appends the result, and makes a second API call for the final answer.
 
 ```bash
 python3 LC_06.py
