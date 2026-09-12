@@ -209,13 +209,20 @@ The demo runs in three phases:
 
 **What to observe:**
 - Reconstruction needs no LLM and no write access; retriever read access is the whole trust boundary
-- On this small controlled corpus recovery is near-perfect; on a large repetitive corpus (`lab040_RAG/data/llms-full.txt`) a naive single chain recovers only ~30%, because near-duplicate passages crowd the true successor out of the top-k. Recovery is bounded by retrieval recall, not by the overlap idea
+- On this small controlled corpus recovery is near-perfect; on a large repetitive corpus (`lab040_RAG/data/llms-full.txt`) a naive single chain recovers only a fraction (10-30% depending on the seed chunk), because near-duplicate passages crowd the true successor out of the top-k and one missed link truncates the chain. Recovery is bounded by retrieval recall, not by the overlap idea; Step 8's advanced script below pushes it back above 90%
 - Overlap is a recall/latency tradeoff, not free; minimize it and prefer boundary-aware splitting
 - Production defenses: per-caller retrieval scoping, rate limits, capped `n_results`, dedupe of near-identical hits, and not returning raw chunk text to untrusted callers
 
-The script ends with an exercise: raise the large-corpus recovery rate with a larger `k`, literal overlap re-ranking, and multi-seed chain merging.
+The script ends with an exercise: raise the large-corpus recovery rate with a larger `k`, literal overlap re-ranking, and multi-seed chain merging. The worked answer is [rag_overlap_extraction_advanced.py](./rag_overlap_extraction_advanced.py), which implements all three against `lab040_RAG/data/llms-full.txt` and prints a before/after comparison. Measured on that corpus (737 chunks, size=1000, overlap=200):
 
-See [rag_overlap_extraction_demo.py](./rag_overlap_extraction_demo.py) for the full source and [owasp_top10_llm.md](./owasp_top10_llm.md) for the complete OWASP risk mapping.
+| Attack | Chunk coverage | Text reconstruction |
+|--------|----------------|---------------------|
+| Naive single-chain (k=8, stop on miss) | 13.8% | -- |
+| Advanced frontier crawl (k=100, literal re-rank, multi-seed) | 91.6% | 95.7% |
+
+The advanced crawler needed 2754 `query()` calls, no write access, and no LLM. The three levers each fix a distinct failure: larger `k` puts the true successor in the candidate pool, literal boundary re-ranking picks it out of near-duplicate look-alikes, and the frontier crawl means a single broken link splits the document into fragments that rejoin from the far side instead of truncating recovery. It uses an in-process Chroma client by default (no server needed); set `CHROMA_HTTP=1` to run it against the server from Step 1.
+
+See [rag_overlap_extraction_demo.py](./rag_overlap_extraction_demo.py) and [rag_overlap_extraction_advanced.py](./rag_overlap_extraction_advanced.py) for the full source and [owasp_top10_llm.md](./owasp_top10_llm.md) for the complete OWASP risk mapping.
 
 ## Cleanup
 
