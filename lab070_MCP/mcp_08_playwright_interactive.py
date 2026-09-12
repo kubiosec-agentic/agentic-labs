@@ -11,20 +11,29 @@ this page") with history preserved across turns.
 Run:
     python3 mcp_08_playwright_interactive.py
 
+Browser selection (important):
+    @playwright/mcp defaults to the Google Chrome CHANNEL and looks for branded
+    Chrome. On a box without it you get:
+        Chromium distribution 'chrome' is not found at /opt/google/chrome/chrome
+    The fix is to install that channel (see below). Note that having the bundled
+    `chromium` in ~/.cache/ms-playwright is NOT enough for the default channel.
+
 Install the browser (one time, e.g. on a fresh Ubuntu student box):
     python3 mcp_08_playwright_interactive.py --install-browser
 
-    That runs `npx playwright install chromium`. On Ubuntu the browser also
-    needs system libraries; if the first launch fails with a missing-library
-    error, install them once with sudo:
+    That runs `npx playwright install chrome` (the Chrome channel the server
+    uses by default). On Ubuntu the browser also needs system libraries; if
+    launch fails with a missing-library error, install them once with sudo:
         sudo npx playwright install-deps chromium
-    (or: npx playwright install --with-deps chromium, which also needs sudo).
+    On a headless server that fails on the Chromium sandbox
+    ("No usable sandbox"), start the script with --no-sandbox.
 
-First run note:
-    Without --install-browser, @playwright/mcp still tries to fetch its
-    browser automatically on first launch, so the first navigation can take a
-    while. The explicit flag makes that step visible and lets you run it at
-    setup time instead of mid-demo.
+    Alternative (no branded Chrome): pass `--browser chromium` in main() and
+    install with `npx @playwright/mcp@latest install-browser chrome-for-testing`.
+
+Verified working sequence on a fresh Ubuntu box:
+    npx playwright install chrome            # or: --install-browser (same thing)
+    python3 mcp_08_playwright_interactive.py
 
 Commands at the prompt:
     /quit, /exit, /q       leave the REPL
@@ -116,8 +125,13 @@ async def interactive_loop(agent: Agent, session: SQLiteSession, server: MCPServ
 async def main():
     start_url = input("Optional starting URL (blank to skip): ").strip()
 
+    # @playwright/mcp defaults to the Google Chrome channel. Install it once with
+    # `--install-browser` (npx playwright install chrome); no --browser flag is
+    # then needed. If you would rather not install branded Chrome, add
+    # "--browser", "chromium" here and install with `install-browser
+    # chrome-for-testing` instead.
     pw_args = ["-y", "@playwright/mcp@latest", "--headless"]
-    # Headless servers (AWS Ubuntu, containers) often can't use the Chromium
+    # Headless servers (AWS Ubuntu, containers) sometimes can't use the Chromium
     # sandbox; pass --no-sandbox to work around "No usable sandbox" launch
     # failures. Opt-in because disabling the sandbox is a real security tradeoff.
     if "--no-sandbox" in sys.argv:
@@ -167,18 +181,25 @@ async def main():
 
 
 def install_browser() -> None:
-    """Install the Chromium build Playwright needs (npx playwright install chromium).
+    """Install the browser @playwright/mcp needs (npx playwright install chrome).
 
-    Idempotent: if the browser is already present this is a fast no-op. On a
-    fresh Ubuntu box the OS libraries may also be missing; that needs sudo and
-    is left to the operator (see the module docstring).
+    The MCP server defaults to the Google Chrome channel, so this installs that.
+    Idempotent: if it is already present this is a fast no-op. On a fresh Ubuntu
+    box the OS libraries may also be missing; that needs sudo and is left to the
+    operator (see the module docstring).
     """
-    print("[setup] installing Chromium via: npx playwright install chromium")
+    # @playwright/mcp defaults to the Google Chrome channel, so install that.
+    # (Verified on a fresh Ubuntu box: `npx playwright install chrome` then run.)
+    # Note: plain `npx playwright install chromium` does NOT satisfy the default
+    # channel; you would also have to pass `--browser chromium` at runtime.
+    cmd = ["npx", "playwright", "install", "chrome"]
+    print("[setup] installing browser via:", " ".join(cmd))
     try:
-        subprocess.run(["npx", "playwright", "install", "chromium"], check=True)
-        print("[setup] Chromium install step finished.")
+        subprocess.run(cmd, check=True)
+        print("[setup] browser install step finished.")
         print("[setup] If launch later fails on missing system libraries, run:")
         print("        sudo npx playwright install-deps chromium")
+        print("[setup] If it fails on the Chromium sandbox, run this script with --no-sandbox")
     except subprocess.CalledProcessError as exc:
         print(f"[setup] browser install failed (exit {exc.returncode}). "
               "On Ubuntu you may need: sudo npx playwright install-deps chromium")
