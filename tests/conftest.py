@@ -51,6 +51,7 @@ LAB_REQUIRED_KEYS: dict[str, list[str]] = {
     "lab064": ["OPENAI_API_KEY"],
     "lab070": ["OPENAI_API_KEY"],                        # mcp_05 also needs MCPCLOUD_API_TOKEN
     "lab071": [],                                        # inspector / debugging only
+    "lab073": [],                                        # local MCP; no hosted model needed
     "lab075": ["OPENAI_API_KEY"],
     "lab080": ["OPENAI_API_KEY"],                        # CrewAI optionally needs SERPER_API_KEY
     "lab085": ["OPENAI_API_KEY"],

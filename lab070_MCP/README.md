@@ -70,6 +70,10 @@ python3 -c "import fastmcp; print(fastmcp.__version__)"
 > The rest of the lab works on 4.x, but the pin keeps every exercise
 > runnable on a single version. Remove the pin only once the sampling
 > examples have been ported to whatever the current fastmcp exposes.
+>
+> **See it for yourself:** lab073 runs this exact server on fastmcp 4.x and
+> shows precisely what breaks (`ctx.sample` is removed) and what the
+> stateless `2026-07-28` spec era changes.
 
 ## Lab instructions
 

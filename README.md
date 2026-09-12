@@ -92,6 +92,7 @@ Each lab is structured to gradually build your understanding and capabilities, f
 | [lab064_Langgraph](./lab064_Langgraph) | LangGraph stateful workflows + agent CTF (port 5055) | python, LangGraph, StateGraph, CTF, prompt injection |
 | [lab070_MCP](./lab070_MCP) | Model Context Protocol (MCP) core: transports, sampling, memory graph, security | python, fastmcp, MCP, streamable HTTP, SSE, stdio, sampling |
 | [lab071_MCP_Inspector](./lab071_MCP_Inspector) | MCP Inspector and wire-level debugging | MCP Inspector, mcp-debugging, mitmproxy, Wireshark |
+| [lab073_MCP_Stateless](./lab073_MCP_Stateless) | Stateless MCP (2026-07-28 spec) and the cost of a moving standard | python, fastmcp 4.x, stateless, sessions, mitmproxy, security |
 | [lab075_MS_Agent_Framework](./lab075_MS_Agent_Framework) | Microsoft Agent Framework (GA 1.0) | python, agent-framework, OpenAI, Azure OpenAI, middleware, workflows |
 | [lab080_MAS](./lab080_MAS) | Multi-agent frameworks | python, CrewAI, Agno, PydanticAI, FastAgent |
 | [lab085_OpenAI_Memory](./lab085_OpenAI_Memory) | OpenAI Agents with memory | python, OpenAI Agents SDK, SQLiteSession |

@@ -284,6 +284,11 @@ deactivate
 ./lab_cleanup.sh
 ```
 
+Remove the downloaded model cache to reclaim disk space. The default models are small (~1 GB total), but if you swapped in a larger model it can fill the disk fast, so clear the HuggingFace cache when you are done:
+```bash
+rm -rf ~/.cache/huggingface/hub
+```
+
 ### Docker
 Stop and remove the container:
 ```bash

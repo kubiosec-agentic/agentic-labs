@@ -1,0 +1,8 @@
+# This lab deliberately runs on the fastmcp 4.x generation (the 2026-07-28
+# stateless-first spec era), NOT lab070's pinned 3.4.7. Keeping it bounded to
+# 4.x is intentional: the whole lab is about 4.x-specific behaviour, and we do
+# not want a future 5.x to silently change it again. See the README.
+fastmcp>=4,<5
+# requests is needed because Exercise 1 runs lab070's server_streamable.py
+# (get_current_weather) unchanged, under this venv.
+requests>=2.32
