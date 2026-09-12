@@ -250,7 +250,7 @@ If triage finds a duplicate, STOP.
 Flag actions requiring human approval.
 """
 
-MODEL = os.getenv("MODEL_ID", "gemini-3.6-flash")
+MODEL = os.getenv("MODEL_ID", "gemini-3.8-flash")
 
 root_agent = Agent(
     model=MODEL,

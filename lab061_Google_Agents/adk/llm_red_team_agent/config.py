@@ -19,9 +19,9 @@ class SecurityAuditConfig:
     The evaluator uses zero temperature for deterministic verdicts.
     """
 
-    red_team_model: str = os.getenv("RED_TEAM_MODEL", "gemini-3.6-pro")
-    target_model: str = os.getenv("TARGET_MODEL", "gemini-3.6-pro")
-    evaluator_model: str = os.getenv("EVALUATOR_MODEL", "gemini-3.6-pro")
+    red_team_model: str = os.getenv("RED_TEAM_MODEL", "gemini-3.8-flash")
+    target_model: str = os.getenv("TARGET_MODEL", "gemini-3.8-flash")
+    evaluator_model: str = os.getenv("EVALUATOR_MODEL", "gemini-3.8-flash")
 
 
 config = SecurityAuditConfig()
