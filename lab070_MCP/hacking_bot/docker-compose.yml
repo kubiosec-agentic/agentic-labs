@@ -15,23 +15,11 @@ services:
     container_name: target-nginx
     # No ports published on the host; the target is only reachable
     # from inside the docker network, which is the point.
-    # Tiny footprint; it is just an nginx target.
-    mem_limit: 128m
-    cpus: "0.25"
 
   hack-agent:
     build: .
     image: ubuntu-node-python
     container_name: hack-agent
-    # Cap the agent container so a runaway scan/tool cannot exhaust the host.
-    # memswap_limit is TOTAL memory+swap, so this is 3g RAM + 3g swap. 1g was
-    # too tight in testing (nikto + node OOM'd); 3g/3g runs comfortably while
-    # still bounding the blast radius so the box does not freeze. Adjust to fit
-    # your instance.
-    mem_limit: 3g
-    memswap_limit: 6g
-    cpus: "2.0"
-    pids_limit: 1024
     ports:
       - "8000:8000"
     volumes:
