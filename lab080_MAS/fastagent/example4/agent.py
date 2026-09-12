@@ -84,11 +84,20 @@ async def main() -> None:
             "Write only the YAML to ./manifests/nginx-pod.yaml"
         )
 
-        # Step 2: orchestrate the review, remediation, and report
+        # Step 2: orchestrate the review, remediation, and report.
+        # The objective names the available agents explicitly. Without this
+        # the planner model (gpt-4o) tends to invent task-shaped agent names
+        # (FileLoaderAgent, CISAnalyzerAgent, ...) that are not registered,
+        # and the plan aborts with "invalid agent names".
         await agent.orchestrate(
             "Load ./manifests/nginx-pod.yaml.\n"
             "Fetch and use CIS Kubernetes Benchmark, NSA/CISA Hardening Guide, "
             "and Kubernetes Pod Security Standards as the basis for checks.\n\n"
+            "Delegate every task to one of these agents, using the exact name. "
+            "Do NOT invent any other agent names:\n"
+            "- reviewer: fetch the benchmark docs and audit the manifest against them\n"
+            "- remediator: apply fixes and produce the corrected manifest\n"
+            "- writer: save the review and the fixed manifest to disk\n\n"
             "Deliverables:\n"
             "1) ./manifests/review.md with a checklist table (Item, PASS/FAIL, "
             "Severity, Rationale, Control Mapping) and a References section.\n"
