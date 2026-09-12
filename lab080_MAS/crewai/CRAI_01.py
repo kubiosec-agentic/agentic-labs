@@ -27,7 +27,7 @@ def suggest_answers(topic):
         role='Senior Researcher',
         goal=f'Uncover groundbreaking technologies in {topic}',
         verbose=True,
-        memory=True,
+        memory=False,
         backstory=(
             "Driven by curiosity, you're at the forefront of "
             "innovation, eager to explore and share knowledge that could change "
@@ -41,7 +41,7 @@ def suggest_answers(topic):
         role='Writer',
         goal=f'Narrate compelling tech stories about {topic}',
         verbose=True,
-        memory=True,
+        memory=False,
         backstory=(
             "With a flair for simplifying complex topics, you craft "
             "engaging narratives that captivate and educate, bringing new "
@@ -81,16 +81,18 @@ def suggest_answers(topic):
         agents=[researcher, writer],
         tasks=[research_task, write_task],
         process=Process.sequential,
-        memory=True,
-        # Pin the embedder. crewai's default embedder changed from
-        # text-embedding-3-small (1536-dim) to text-embedding-3-large
-        # (3072-dim) in a recent release, so a memory store built by an older
-        # run (1536-dim) raises EmbeddingDimensionMismatchError against the new
-        # default. Pinning to small keeps runs consistent with existing stores
-        # (and is cheaper). This is also a nice "defaults drift on upgrade"
-        # example. To switch to 3-large instead, delete the memory store first
-        # (crewai reset-memories --memory).
-        embedder={"provider": "openai", "config": {"model": "text-embedding-3-small"}},
+        # memory disabled on purpose. This demo does not need cross-run vector
+        # memory, and enabling it (memory=True) makes crewai build a LanceDB
+        # vector store whose embedding dimension is tied to crewai's default
+        # embedder. crewai changed that default (text-embedding-3-small, 1536
+        # dims -> text-embedding-3-large, 3072 dims), so any store built by an
+        # older run then raises EmbeddingDimensionMismatchError and floods the
+        # output. With memory=False there is no store and no embedder, so the
+        # demo is robust across crewai versions. To demonstrate memory instead,
+        # set memory=True AND pin the embedder to match your store, e.g.:
+        #   embedder={"provider": "openai", "config": {"model": "text-embedding-3-small"}}
+        # and clear any stale store once with:  crewai reset-memories --memory
+        memory=False,
         cache=True,
         max_rpm=100,
         share_crew=True
