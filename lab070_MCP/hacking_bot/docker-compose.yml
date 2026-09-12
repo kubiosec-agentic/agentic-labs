@@ -15,11 +15,23 @@ services:
     container_name: target-nginx
     # No ports published on the host; the target is only reachable
     # from inside the docker network, which is the point.
+    # Tiny footprint; it is just an nginx target.
+    mem_limit: 128m
+    cpus: "0.25"
 
   hack-agent:
     build: .
     image: ubuntu-node-python
     container_name: hack-agent
+    # Cap the agent container so a runaway scan/tool cannot exhaust the host.
+    # memswap_limit == mem_limit disables container swap, so a memory hog is
+    # OOM-killed INSIDE the container instead of dragging the whole box into
+    # swap thrash (the usual "the AWS instance froze" failure). Raise these on
+    # a larger instance if you want heavier scans.
+    mem_limit: 1g
+    memswap_limit: 1g
+    cpus: "1.0"
+    pids_limit: 512
     ports:
       - "8000:8000"
     volumes:

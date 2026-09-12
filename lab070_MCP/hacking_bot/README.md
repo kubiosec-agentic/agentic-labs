@@ -51,6 +51,17 @@ everything online:
 docker compose up -d --build
 ```
 
+> **Resource note (small cloud instances freeze without this).** Building the
+> image and then running a `nikto` scan is the heaviest thing in lab070. On a
+> 1 GB instance it OOMs and the box drags into swap and appears to hang. The
+> compose file now caps `hack-agent` (1 GB RAM, no swap, 1 CPU) so a runaway
+> tool is OOM-killed inside the container instead of freezing the host. Use an
+> instance with at least ~2 GB RAM. If it stalls during the image **build**
+> rather than the scan, the build itself is the load (the Dockerfile installs
+> build-essential + Node + uv); that step runs on the docker daemon and is not
+> covered by the container caps above. Always `docker compose down` when
+> finished so the containers do not keep consuming resources.
+
 This builds `ubuntu-node-python` from the local Dockerfile, starts an
 `nginx:alpine` container named `target-nginx` as the authorized lab
 host, starts `hack-agent` with supergateway + desktop-commander exposed
