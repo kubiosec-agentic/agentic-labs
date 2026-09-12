@@ -24,14 +24,14 @@ services:
     image: ubuntu-node-python
     container_name: hack-agent
     # Cap the agent container so a runaway scan/tool cannot exhaust the host.
-    # memswap_limit == mem_limit disables container swap, so a memory hog is
-    # OOM-killed INSIDE the container instead of dragging the whole box into
-    # swap thrash (the usual "the AWS instance froze" failure). Raise these on
-    # a larger instance if you want heavier scans.
-    mem_limit: 1g
-    memswap_limit: 1g
-    cpus: "1.0"
-    pids_limit: 512
+    # memswap_limit is TOTAL memory+swap, so this is 3g RAM + 3g swap. 1g was
+    # too tight in testing (nikto + node OOM'd); 3g/3g runs comfortably while
+    # still bounding the blast radius so the box does not freeze. Adjust to fit
+    # your instance.
+    mem_limit: 3g
+    memswap_limit: 6g
+    cpus: "2.0"
+    pids_limit: 1024
     ports:
       - "8000:8000"
     volumes:
