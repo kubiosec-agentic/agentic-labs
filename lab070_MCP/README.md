@@ -228,17 +228,19 @@ your MCP server gives you a full view of every message the agent sends
 and receives. This is the low-tech way to audit an agent in flight; the
 richer path is MCP Inspector in lab071.
 
-Make sure the streamable server from exercise 2 is running in another
-terminal (mitmproxy needs something to reverse-proxy to):
+This exercise uses **three terminals**. Keep the MCP server (Terminal 2) and
+mitmproxy (Terminal 3) running while you run the client (Terminal 1).
+
+**Terminal 2 - the MCP server** (mitmproxy needs something to reverse-proxy to):
 
 ```bash
 python3 server_streamable.py
 ```
 
-Because mitmproxy runs in Docker, `127.0.0.1` inside the container is
-the container itself, not the host. You need the host's LAN IP so the
-reverse-proxy can reach `server_streamable.py` running on the host.
-Grab it into an env var:
+**Terminal 3 - mitmproxy.** Because mitmproxy runs in Docker, `127.0.0.1`
+inside the container is the container itself, not the host, so you need the
+host's LAN IP for the reverse-proxy to reach `server_streamable.py`. Set it in
+*this* terminal, then start the container:
 
 ```bash
 # Linux (e.g. the Ubuntu lab box):
@@ -248,22 +250,7 @@ export HOST_IP=$(hostname -I | awk '{print $1}')
 # export HOST_IP=$(ipconfig getifaddr en0)
 
 echo "host ip: $HOST_IP"   # must be non-empty
-```
 
-> If `HOST_IP` is empty, the `docker run` below fails with
-> `Invalid proxy mode specification: reverse:http://:8000@8089` (the mode
-> string collapses to `http://:8000`). Set `HOST_IP` first, then run Docker.
-
-Point the OpenAI SDK at the mitm reverse-proxy:
-
-```bash
-export OPENAI_BASE_URL="http://127.0.0.1:8080/v1/"
-```
-
-Start mitmproxy with two reverse-proxy modes, one for the OpenAI API
-and one for the local MCP server:
-
-```bash
 docker run --rm -it \
     -v ~/.mitmproxy:/home/mitmproxy/.mitmproxy \
     -p 8080:8080 \
@@ -276,12 +263,22 @@ docker run --rm -it \
         --mode reverse:http://${HOST_IP}:8000@8089
 ```
 
-Then run the client, which talks to the MCP server through mitm on
-port 8089:
+> If `HOST_IP` is empty, the `docker run` fails with
+> `Invalid proxy mode specification: reverse:http://:8000@8089` (the mode
+> string collapses to `http://:8000`). Set `HOST_IP` in this terminal first.
+
+**Terminal 1 - the client.** Point the OpenAI SDK at the mitm reverse-proxy
+and run the client **in this same terminal** (the base URL must be exported
+where the client runs):
 
 ```bash
+export OPENAI_BASE_URL="http://127.0.0.1:8080/v1/"
 python mcp_06_streamable_mitm.py
 ```
+
+The client's MCP traffic goes through mitm on port 8089 and the agent's OpenAI
+calls through mitm on port 8080. Watch both live in the mitmweb UI at
+`http://127.0.0.1:8081`.
 
 ### 8. Stateful memory: knowledge-graph server
 
