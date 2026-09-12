@@ -74,3 +74,6 @@ Bumped all Gemini model references, preserving each tier. `models/` prefix kept 
 - `safety_settings` (Gemini-only) are now attached only when the resolved model is a Gemini string, so they aren't sent to OpenAI via LiteLLM.
 - `requirements.txt`: added `litellm>=1.0`. README: added OPENAI_API_KEY to env + `adk/.env`, updated model table, and added a "why two keys / alignment refusal vs platform filter" teaching note.
 - Students must re-run `lab_setup.sh` (or `pip install litellm`) and restart `adk web`.
+
+### lab064_Langgraph/ctf (stage 4 note)
+- Added a docstring NOTE to `stage4_sandboxed.py`: active pen-testing can DoS the service because `exec(byte_code, globs)` runs in-process with no timeout/memory cap (stage 3's subprocess had timeout=10; stage 4 dropped it), and RestrictedPython does not stop control flow. Verified both Bandit (B102 exec_used, CWE-78) and Semgrep (exec-detected) flag the exec() call, with the nuance that SAST flags the primitive, not the missing-timeout DoS itself (that needs DAST/manual review). Stage 4 remains not solvable for flag extraction via the tool (confirmed offline against a replica and live against the running instance).

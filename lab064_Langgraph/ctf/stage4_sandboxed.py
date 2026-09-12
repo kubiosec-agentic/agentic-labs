@@ -28,6 +28,22 @@ Real lesson:
     Sandboxing a dangerous tool is necessary but not sufficient. The safest
     answer is often "don't give the agent that capability in the first place".
 
+NOTE - active testing can cause a DoS, and SAST would have warned you:
+    Pen-testing this sandbox can itself take the service down. execute_python
+    runs `exec(byte_code, globs)` in-process with NO timeout and NO memory cap
+    (stage 3's subprocess had timeout=10; stage 4 dropped it). RestrictedPython
+    blocks I/O and imports but not control flow, so a sandboxed
+    `while True: pass` or a large allocation hangs the Flask worker. Fixing
+    confidentiality (the sandbox) introduced an availability hole. Do not run
+    that payload against a shared instance.
+
+    The root construct is catchable statically: both Bandit (B102 exec_used,
+    Medium, CWE-78) and Semgrep (python...exec-detected) flag the exec() call.
+    The nuance worth teaching: SAST flags the dangerous PRIMITIVE (exec), not
+    the missing timeout/limit that turns it into a DoS. The availability bug
+    still needs runtime/DAST testing or manual review to characterize, so SAST
+    and active testing are complementary, not substitutes.
+
 Run:
     pip install RestrictedPython
     python3 stage4_sandboxed.py
