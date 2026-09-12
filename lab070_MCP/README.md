@@ -77,6 +77,11 @@ python3 -c "import fastmcp; print(fastmcp.__version__)"
 > shows precisely what breaks (`ctx.sample` is removed) and what the
 > stateless `2026-07-28` spec era changes.
 
+> **Note:** most examples need only the steps above. The browser automation
+> example (section 11) additionally needs a browser installed once with
+> `python3 mcp_08_playwright_interactive.py --install-browser`; see that
+> section for details.
+
 ## Lab instructions
 
 ### 1. MCP stdio
@@ -203,13 +208,6 @@ itself; it calls `ctx.sample(...)`, which routes the request back to
 the client's handler, which then calls OpenAI and returns the completion
 up the chain. The server only sees the final text.
 
-SSE variant (same shape, legacy transport):
-
-```bash
-python3 sampling/server_sampling_sse.py
-python3 sampling/client_sampling_sse.py
-```
-
 ### 6. YouTube transcriber (remote hosted MCP)
 
 Example of connecting to a hosted MCP server deployed on
@@ -238,19 +236,23 @@ python3 server_streamable.py
 ```
 
 Because mitmproxy runs in Docker, `127.0.0.1` inside the container is
-the container itself, not your Mac. You need the host's LAN IP so the
+the container itself, not the host. You need the host's LAN IP so the
 reverse-proxy can reach `server_streamable.py` running on the host.
 Grab it into an env var:
 
 ```bash
+# Linux (e.g. the Ubuntu lab box):
+export HOST_IP=$(hostname -I | awk '{print $1}')
+
 # macOS (Wi-Fi); use en0 for Ethernet or adjust the interface:
-export HOST_IP=$(ipconfig getifaddr en0)
+# export HOST_IP=$(ipconfig getifaddr en0)
 
-# Linux:
-# export HOST_IP=$(hostname -I | awk '{print $1}')
-
-echo "host ip: $HOST_IP"
+echo "host ip: $HOST_IP"   # must be non-empty
 ```
+
+> If `HOST_IP` is empty, the `docker run` below fails with
+> `Invalid proxy mode specification: reverse:http://:8000@8089` (the mode
+> string collapses to `http://:8000`). Set `HOST_IP` first, then run Docker.
 
 Point the OpenAI SDK at the mitm reverse-proxy:
 
