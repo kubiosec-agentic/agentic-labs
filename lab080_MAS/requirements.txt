@@ -1,7 +1,10 @@
-# This lab uses per-framework requirements files because CrewAI and
-# PydanticAI have incompatible pydantic version constraints:
-#   crewai 1.14.1  requires pydantic ~=2.11.9  (i.e. <2.12)
-#   pydantic-ai    requires pydantic >=2.12
+# This lab uses per-framework requirements files to keep each framework's
+# dependency tree isolated (they pull different, sometimes clashing, pins of
+# pydantic and other shared libs). Current pydantic constraints:
+#   crewai 1.15.21  requires pydantic >=2.11.9,<2.13
+#   pydantic-ai     requires pydantic >=2.12
+# They now overlap on 2.12.x, but separate venvs stay the reliable default and
+# keep other transitive-dependency clashes out of each other's way.
 #
 # See the README for setup instructions per framework:
 #   requirements-agno.txt

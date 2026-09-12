@@ -1,7 +1,10 @@
 # Agno (AN_01, AN_02, AN_03)
-agno==2.5.16
+# Pinned to agno 3.x. Use the [mcp] extra so pip installs the mcp SDK version
+# agno actually supports (>=2.1,<3) plus fastmcp 4.x. Do NOT add a bare
+# `mcp>=1.0.0` line here: it let pip resolve a newer, incompatible mcp whose
+# streamablehttp_client was renamed, which broke AN_03's import on agno 2.5.16.
+agno[mcp]==3.0.9
 openai>=1.60.0
 ddgs>=9.0.0
-mcp>=1.0.0
 sqlalchemy>=2.0
 aiosqlite>=0.21

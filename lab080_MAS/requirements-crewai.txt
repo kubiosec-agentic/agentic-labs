@@ -1,3 +1,4 @@
 # CrewAI (CRAI_01) -- versions must match exactly
-crewai==1.14.1
-crewai-tools==1.14.1
+# crewai's `tools` extra pins crewai-tools to the same version, so keep them equal.
+crewai==1.15.21
+crewai-tools==1.15.21
