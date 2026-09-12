@@ -262,7 +262,31 @@ npx -y @modelcontextprotocol/inspector --cli \
     --method tools/list
 ```
 
-A tool call from the CLI:
+Now a write/read round-trip. Two things about the tool schema matter,
+and skipping either is why a search comes back empty:
+
+- `add_memory` **requires a scope**: at least one of `user_id`,
+  `agent_id`, or `run_id`. It is also **asynchronous**, it returns an
+  `event_id`, and the memory is not searchable for a second or two.
+- `search_memories` has no `user_id` argument; it scopes through
+  `filters`. If you omit `filters`, it searches only the account's
+  default scope. So you must search the **same** scope you wrote to.
+
+Write a memory under an explicit `user_id`:
+
+```bash
+npx -y @modelcontextprotocol/inspector --cli \
+    https://mcp.mem0.ai/mcp \
+    --transport http \
+    --header "Authorization: Bearer $MEM0_API_KEY" \
+    --method tools/call \
+    --tool-name add_memory \
+    --tool-arg text="I work at RadarSec in Belgium" \
+    --tool-arg user_id="philippe"
+```
+
+Read that same scope back (note the `filters` clause; give the async
+write a moment first):
 
 ```bash
 npx -y @modelcontextprotocol/inspector --cli \
@@ -271,8 +295,32 @@ npx -y @modelcontextprotocol/inspector --cli \
     --header "Authorization: Bearer $MEM0_API_KEY" \
     --method tools/call \
     --tool-name search_memories \
-    --tool-arg query="sci-fi movies"
+    --tool-arg query="where do I work" \
+    --tool-arg filters='{"AND":[{"user_id":"philippe"}]}'
 ```
+
+To see which scopes currently hold anything, use `list_entities`:
+
+```bash
+npx -y @modelcontextprotocol/inspector --cli \
+    https://mcp.mem0.ai/mcp \
+    --transport http \
+    --header "Authorization: Bearer $MEM0_API_KEY" \
+    --method tools/call \
+    --tool-name list_entities
+```
+
+> **Scoping gotcha.** Memories are partitioned by `user_id` (and
+> optionally `agent_id` / `run_id`). When you don't pass a scope, the
+> hosted MCP defaults to a user named after the connector itself,
+> `mem0-mcp`, which starts out empty. So a filter-less `search_memories`
+> looks only at the `mem0-mcp` scope and returns nothing, even though
+> memories you created in Part 2 under `user_id="demo-user"` (or `alex`,
+> etc.) are sitting right there in other buckets. An empty `results`
+> list almost always means wrong scope, not a broken endpoint. Run
+> `list_entities` to see every scope that holds memories, then pass the
+> matching `filters` (e.g. `{"AND":[{"user_id":"demo-user"}]}`) to
+> `search_memories` or `get_memories`.
 
 Once the Inspector confirms connectivity, any MCP-compatible client can
 call the same memory tools transparently.
