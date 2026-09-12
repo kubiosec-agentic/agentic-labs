@@ -10,7 +10,7 @@ This lab contains two security-focused agents that demonstrate different agentic
 
 | Directory | Agent | Pattern | Model |
 |-----------|-------|---------|-------|
-| `adk/llm_red_team_agent/` | AI safety red team | 3 sub-agents as tools (attack, target, evaluate) | gemini-3.8-flash |
+| `adk/llm_red_team_agent/` | AI safety red team | 3 sub-agents as tools (attack, target, evaluate) | attacker `openai/gpt-4o` (LiteLLM); target + evaluator `gemini-3.8-flash` |
 | `adk/cyber_guardian/` | Incident response | Orchestrator with 6 direct tool functions | gemini-3.8-flash |
 | `adk_standalone/cyber_guardian/` | Incident response (standalone) | Runner API without `adk` CLI | gemini-3.8-flash |
 
@@ -18,12 +18,26 @@ This lab contains two security-focused agents that demonstrate different agentic
 
 ```bash
 export GOOGLE_API_KEY="your-google-api-key"
+# The red team attacker/orchestrator runs on OpenAI via LiteLLM (see note below):
+export OPENAI_API_KEY="your-openai-api-key"
 ```
 
 ```bash
 ./lab_setup.sh
 source .lab061/bin/activate
 ```
+
+> **Why two keys?** Cheap, safety-tuned models refuse to generate adversarial
+> prompts, even for an authorized test. In testing, both `gemini-3.8-flash` and
+> `gpt-4o-mini` declined the "Prompt Injection" category outright; `gpt-4o`
+> complied. So the red team attacker/orchestrator defaults to `openai/gpt-4o`
+> (routed through LiteLLM), while the target and evaluator stay on cheap Gemini
+> flash. This provider-refusal behavior is itself a lesson: alignment refusals
+> are separate from the platform safety filter (which the lab disables via
+> `safety_settings`), and they gate what a red-team harness can even attempt.
+> Override any role with `RED_TEAM_MODEL`, `TARGET_MODEL`, `EVALUATOR_MODEL`
+> (Gemini names run natively; anything with a provider prefix like `openai/` or
+> `anthropic/` goes through LiteLLM).
 
 ### API key
 
@@ -36,6 +50,7 @@ Create `adk/.env` with your credentials:
 ```bash
 GOOGLE_GENAI_USE_VERTEXAI=FALSE
 GOOGLE_API_KEY=your_google_api_key_here
+OPENAI_API_KEY=your_openai_api_key_here
 ```
 
 Never commit this file to version control.

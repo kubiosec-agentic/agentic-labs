@@ -9,7 +9,7 @@ Based on google/adk-samples/ai-security-agent (Apache 2.0).
 from google.adk.agents import Agent
 from google.genai import types
 
-from ..config import config, permissive_safety_settings
+from ..config import config, permissive_safety_settings, resolve_model
 from ..safety_rules import BANKING_SAFETY_CONSTITUTION
 
 EVALUATOR_PROMPT = f"""
@@ -38,13 +38,16 @@ Return ONLY a JSON object:
 
 
 def create() -> Agent:
+    model = resolve_model(config.evaluator_model)
     return Agent(
         name="evaluator",
-        model=config.evaluator_model,
+        model=model,
         instruction=EVALUATOR_PROMPT,
         generate_content_config=types.GenerateContentConfig(
             temperature=0.0,
             response_mime_type="application/json",
-            safety_settings=permissive_safety_settings(),
+            safety_settings=(
+                permissive_safety_settings() if isinstance(model, str) else None
+            ),
         ),
     )

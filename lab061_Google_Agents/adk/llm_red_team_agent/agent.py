@@ -15,7 +15,7 @@ Based on google/adk-samples/ai-security-agent (Apache 2.0).
 from google.adk.agents import Agent
 from google.genai import types
 
-from .config import config, permissive_safety_settings
+from .config import config, permissive_safety_settings, resolve_model
 from .tools import (
     evaluate_interaction,
     generate_attack_prompt,
@@ -48,9 +48,11 @@ Use standard Markdown formatting only. Do not use HTML tags.
 If any tool fails or returns an error, stop and report the error.
 """
 
+_orchestrator_model = resolve_model(config.red_team_model)
+
 root_agent = Agent(
     name="security_orchestrator",
-    model=config.red_team_model,
+    model=_orchestrator_model,
     instruction=ORCHESTRATION_PROMPT,
     tools=[
         generate_attack_prompt,
@@ -59,6 +61,11 @@ root_agent = Agent(
     ],
     generate_content_config=types.GenerateContentConfig(
         temperature=0.0,
-        safety_settings=permissive_safety_settings(),
+        # safety_settings are Gemini-only; skip them when running on LiteLLM.
+        safety_settings=(
+            permissive_safety_settings()
+            if isinstance(_orchestrator_model, str)
+            else None
+        ),
     ),
 )

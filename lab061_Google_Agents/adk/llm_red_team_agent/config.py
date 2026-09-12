@@ -21,12 +21,34 @@ class SecurityAuditConfig:
     The evaluator uses zero temperature for deterministic verdicts.
     """
 
-    red_team_model: str = os.getenv("RED_TEAM_MODEL", "gemini-3.8-flash")
+    # The attacker/orchestrator needs a model that will comply with AUTHORIZED
+    # adversarial generation. Cheap safety-tuned models refuse this exercise
+    # (gemini-3.8-flash and gpt-4o-mini both decline "Prompt Injection");
+    # gpt-4o complies. Non-Gemini names are routed through LiteLLM (see
+    # resolve_model), so the attacker runs on OpenAI while the target and
+    # evaluator stay on cheap Gemini flash. Override any of these via env.
+    red_team_model: str = os.getenv("RED_TEAM_MODEL", "openai/gpt-4o")
     target_model: str = os.getenv("TARGET_MODEL", "gemini-3.8-flash")
     evaluator_model: str = os.getenv("EVALUATOR_MODEL", "gemini-3.8-flash")
 
 
 config = SecurityAuditConfig()
+
+
+def resolve_model(name: str):
+    """Return the model ADK should use for `name`.
+
+    Gemini names ('gemini-...', 'models/gemini-...') are passed to ADK as
+    plain strings. Any provider-prefixed name ('openai/gpt-4o',
+    'anthropic/claude-...') is routed through LiteLLM, which lets the pipeline
+    mix providers -- the attacker can run on OpenAI while the target and
+    evaluator run on Gemini. LiteLLM reads the matching provider key from the
+    environment (OPENAI_API_KEY for openai/*).
+    """
+    if "/" in name and not name.startswith("models/"):
+        from google.adk.models.lite_llm import LiteLlm
+        return LiteLlm(model=name)
+    return name
 
 
 def permissive_safety_settings() -> list:

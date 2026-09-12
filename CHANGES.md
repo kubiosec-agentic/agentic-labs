@@ -67,3 +67,10 @@ Bumped all Gemini model references, preserving each tier. `models/` prefix kept 
 - Root cause of empty attack prompts: the agents set no `safety_settings`, so Gemini's platform filter blocked the red-team output (finish_reason=SAFETY -> empty string -> pipeline stalls). Added `permissive_safety_settings()` in `config.py` (BLOCK_NONE for the four harm categories) and applied it to the orchestrator and all three sub-agents (red_team, target, evaluator). Target uses it so only its constitution governs its replies.
 - Reduced model refusals (flash declines "Prompt Injection" outright): added authorized-sandbox framing to the orchestrator and red_team instructions. Verified google.genai enum names (HarmCategory.*, HarmBlockThreshold.BLOCK_NONE) against a current google-genai; `OFF` is also available for a hard disable.
 - NOTE: student must restart `adk web` to pick up module edits.
+
+### lab061_Google_Agents (red team: attacker model refuses)
+- Even with `safety_settings=BLOCK_NONE`, the flash model refuses to GENERATE adversarial prompts (alignment refusal, distinct from the platform filter). Verified independently: `gemini-3.8-flash` and `gpt-4o-mini` both decline "Prompt Injection"; `gpt-4o` complies.
+- Made the pipeline provider-mixable. `config.resolve_model()` returns a plain string for Gemini names and wraps anything provider-prefixed (`openai/...`) in ADK `LiteLlm`. Defaults: `RED_TEAM_MODEL=openai/gpt-4o` (attacker + orchestrator), `TARGET_MODEL`/`EVALUATOR_MODEL=gemini-3.8-flash`. All three overridable by env.
+- `safety_settings` (Gemini-only) are now attached only when the resolved model is a Gemini string, so they aren't sent to OpenAI via LiteLLM.
+- `requirements.txt`: added `litellm>=1.0`. README: added OPENAI_API_KEY to env + `adk/.env`, updated model table, and added a "why two keys / alignment refusal vs platform filter" teaching note.
+- Students must re-run `lab_setup.sh` (or `pip install litellm`) and restart `adk web`.
