@@ -92,7 +92,7 @@ def suggest_answers(topic):
         # set memory=True AND pin the embedder to match your store, e.g.:
         #   embedder={"provider": "openai", "config": {"model": "text-embedding-3-small"}}
         # and clear any stale store once with:  crewai reset-memories --memory
-        memory=False,
+        memory=True,
         cache=True,
         max_rpm=100,
         share_crew=True
