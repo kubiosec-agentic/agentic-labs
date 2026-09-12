@@ -78,7 +78,7 @@ python3 -c "import fastmcp; print(fastmcp.__version__)"
 > stateless `2026-07-28` spec era changes.
 
 > **Note:** most examples need only the steps above. The browser automation
-> example (section 11) additionally needs a browser installed once with
+> example (section 10) additionally needs a browser installed once with
 > `python3 mcp_08_playwright_interactive.py --install-browser`; see that
 > section for details.
 
@@ -309,6 +309,12 @@ product. See [`hacking_bot/README.md`](./hacking_bot/README.md) for
 the architecture, run instructions, and a list of obvious next steps
 (scope enforcement, tool selection, result triage, reporting).
 
+> **First:** if you did section 7, `OPENAI_BASE_URL` is still pointing at the
+> mitmproxy and this lab will fail. Clear it in this terminal before running:
+> ```bash
+> unset OPENAI_BASE_URL
+> ```
+
 ```bash
 cd hacking_bot
 docker compose up -d --build
@@ -322,24 +328,7 @@ docker compose down
 cd ..
 ```
 
-### 10. SSE variants (legacy transport - deprecated)
-
-The `SSE/` subfolder contains the same set of examples implemented over
-SSE instead of streamable HTTP. SSE is the *previous* default transport
-in the MCP spec. It has been superseded by streamable HTTP but is still
-supported by every major client and server and is still the only
-transport some older servers expose, so keeping a working SSE example
-around is the realistic thing to do.
-
-```bash
-python3 SSE/server_sse.py
-python3 SSE/mcp_02_sse.py
-```
-
-The shadowing and prompt-injection scenarios from sections 3 and 4 have
-SSE twins in that same folder.
-
-### 11. Browser automation MCP (Playwright, headless)
+### 10. Browser automation MCP (Playwright, headless)
 
 `mcp_08_playwright_interactive.py` wires the Playwright MCP server
 (`@playwright/mcp`) into an agent over stdio, so the agent drives a real
