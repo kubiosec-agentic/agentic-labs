@@ -1,0 +1,10 @@
+# Deep Agents (LangChain's "harness" layer on top of LangGraph / langchain v1
+# middleware). Unpinned by convention: lab_setup.sh installs latest. The lab was
+# written and verified against deepagents 0.7.x; the create_deep_agent()
+# signature (backend=, subagents=, skills=, memory=, permissions=) is what the
+# exercises rely on.
+deepagents
+# OpenAI provider for init_chat_model("openai:...")
+langchain-openai
+# Exercise 5 talks to the local Docker daemon through the CLI (docker.io/podman
+# binary), no Python SDK needed.

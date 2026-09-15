@@ -90,6 +90,7 @@ Each lab is structured to gradually build your understanding and capabilities, f
 | [lab060_OpenAI_Agents](./lab060_OpenAI_Agents) | Multi-agent orchestration | python, OpenAI Agents SDK, MCP integration |
 | [lab061_Google_Agents](./lab061_Google_Agents) | Google ADK | python, Google ADK, Gemini, agents |
 | [lab064_Langgraph](./lab064_Langgraph) | LangGraph stateful workflows + agent CTF (port 5055) | python, LangGraph, StateGraph, CTF, prompt injection |
+| [lab066_DeepAgents](./lab066_DeepAgents) | Deep Agents: a model-agnostic agent harness (files, skills, sub-agents, sandbox, memory, context) | python, deepagents, LangGraph, OpenAI, Docker sandbox, prompt injection |
 | [lab070_MCP](./lab070_MCP) | Model Context Protocol (MCP) core: transports, sampling, memory graph, security | python, fastmcp, MCP, streamable HTTP, SSE, stdio, sampling |
 | [lab071_MCP_Inspector](./lab071_MCP_Inspector) | MCP Inspector and wire-level debugging | MCP Inspector, mcp-debugging, mitmproxy, Wireshark |
 | [lab073_MCP_Stateless](./lab073_MCP_Stateless) | Stateless MCP (2026-07-28 spec) and the cost of a moving standard | python, fastmcp 4.x, stateless, sessions, mitmproxy, security |

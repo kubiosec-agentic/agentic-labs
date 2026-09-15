@@ -1,0 +1,10 @@
+Nmap scan report for portal.lab.internal (10.0.20.14)
+PORT      STATE  SERVICE
+22/tcp    open   ssh
+80/tcp    open   http
+443/tcp   open   https
+2375/tcp  open   docker
+5432/tcp  open   postgresql
+6379/tcp  open   redis
+8080/tcp  open   http-proxy
+3389/tcp  closed ms-wbt-server

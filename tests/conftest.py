@@ -49,6 +49,7 @@ LAB_REQUIRED_KEYS: dict[str, list[str]] = {
     "lab060": ["OPENAI_API_KEY"],
     "lab061": ["GOOGLE_API_KEY", "SERP_API_KEY"],
     "lab064": ["OPENAI_API_KEY"],
+    "lab066": ["OPENAI_API_KEY"],                        # smoke tests need no key; live test does
     "lab070": ["OPENAI_API_KEY"],                        # mcp_05 also needs MCPCLOUD_API_TOKEN
     "lab071": [],                                        # inspector / debugging only
     "lab073": [],                                        # local MCP; no hosted model needed
