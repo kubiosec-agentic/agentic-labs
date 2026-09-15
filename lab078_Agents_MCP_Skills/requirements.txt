@@ -1,0 +1,9 @@
+# OpenAI Agents SDK: the agent loop, function tools, and MCP client.
+openai-agents
+openai
+# The lab's MCP server is a fastmcp stdio server. fastmcp 4.x is fine here:
+# this lab uses only plain @mcp.tool functions over stdio, none of the 3.x
+# sampling features that lab070 pins 3.4.7 for. Unpinned by convention.
+fastmcp
+# The http_get MCP tool and the header-audit script use requests.
+requests

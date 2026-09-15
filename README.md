@@ -95,6 +95,7 @@ Each lab is structured to gradually build your understanding and capabilities, f
 | [lab071_MCP_Inspector](./lab071_MCP_Inspector) | MCP Inspector and wire-level debugging | MCP Inspector, mcp-debugging, mitmproxy, Wireshark |
 | [lab073_MCP_Stateless](./lab073_MCP_Stateless) | Stateless MCP (2026-07-28 spec) and the cost of a moving standard | python, fastmcp 4.x, stateless, sessions, mitmproxy, security |
 | [lab075_MS_Agent_Framework](./lab075_MS_Agent_Framework) | Microsoft Agent Framework (GA 1.0) | python, agent-framework, OpenAI, Azure OpenAI, middleware, workflows |
+| [lab078_Agents_MCP_Skills](./lab078_Agents_MCP_Skills) | OpenAI Agents SDK + MCP + skills (simple and script/reference) | python, openai-agents, MCP, fastmcp, skills, HTTP security headers |
 | [lab080_MAS](./lab080_MAS) | Multi-agent frameworks | python, CrewAI, Agno, PydanticAI, FastAgent |
 | [lab085_OpenAI_Memory](./lab085_OpenAI_Memory) | OpenAI Agents with memory | python, OpenAI Agents SDK, SQLiteSession |
 | [lab087_Mem0](./lab087_Mem0) | Mem0 intelligent memory layer | python, Mem0, Qdrant, Docker, OpenAI |

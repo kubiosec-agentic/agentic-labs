@@ -54,6 +54,7 @@ LAB_REQUIRED_KEYS: dict[str, list[str]] = {
     "lab071": [],                                        # inspector / debugging only
     "lab073": [],                                        # local MCP; no hosted model needed
     "lab075": ["OPENAI_API_KEY"],
+    "lab078": ["OPENAI_API_KEY"],                        # agent run needs a key; grader/MCP wiring do not
     "lab080": ["OPENAI_API_KEY"],                        # CrewAI optionally needs SERPER_API_KEY
     "lab085": ["OPENAI_API_KEY"],
     "lab087": ["OPENAI_API_KEY"],                        # managed mode also needs MEM0_API_KEY
