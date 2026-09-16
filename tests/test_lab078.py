@@ -28,6 +28,7 @@ SCRIPTS = [
     "agent_03_power_skill.py",
     "skills/http-header-audit/scripts/audit_headers.py",
     "native/anthropic_skill_example.py",
+    "native/anthropic_local_skill.py",
 ]
 
 FIXTURES = [

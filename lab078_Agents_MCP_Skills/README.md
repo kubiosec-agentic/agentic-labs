@@ -179,12 +179,15 @@ radius lives.
 | Where | How | Scripts run | You get |
 |---|---|---|---|
 | Local, DIY (this lab, ex. 1-3) | your loader + function tools | your machine | model-agnostic, portable, works offline |
-| OpenAI Responses, uploaded | `POST /v1/skills`, then `skill_reference` | OpenAI's sandbox | managed, versioned, data leaves your box |
+| OpenAI Responses, uploaded (4a) | `POST /v1/skills`, then `skill_reference` | OpenAI's sandbox | managed, versioned, data leaves your box |
 | OpenAI Responses, local shell | `shell` tool `type: local`, skill by path | your machine | native loop, but a remote model drives your shell |
-| Anthropic Messages, uploaded | `client.skills.create`, then `container.skills` | Anthropic's sandbox | managed, versioned, data leaves your box |
+| Anthropic Messages, uploaded (4b) | `client.skills.create`, then `container.skills` | Anthropic's sandbox | managed, versioned, data leaves your box |
+| Anthropic Messages, local (4c) | hand-rolled tool loop, same loader as ex 1-3 | your machine | local folder, no upload, works with plain Messages API |
 
-The `openai-agents` SDK itself has no native skills, which is why Exercises 1 to
-3 exist. Exercise 4 shows the two managed paths.
+Neither the `openai-agents` SDK nor the Anthropic Messages API has a built-in
+"run this local skill folder" option, which is why the hand-rolled loader (ex 1
+to 3, and 4c) exists. Exercise 4 shows the managed paths (4a, 4b) and the
+local Anthropic path (4c) side by side.
 
 #### 4a. OpenAI, uploaded, with curl (`native/openai_uploaded_skill.sh`)
 
@@ -272,6 +275,29 @@ and skip the upload step. Model strings move here too; set
 Both 4a and 4b hand the headers to the skill inline, so the sandbox needs no
 network. In these managed modes the fetch would be a separate hosted tool, not
 this lab's MCP server.
+
+#### 4c. Anthropic, LOCAL skill, no upload (`native/anthropic_local_skill.py`)
+
+The Anthropic Messages API has no "run this local folder" option either, so to
+use a local skill with Claude you hand-roll the loader, exactly like Exercises
+1 to 3 do for the OpenAI Agents SDK. Same `skills/` folder, same loader logic
+(this file reuses `skills_runtime`), but wired to Anthropic's tool-use loop:
+the three skill operations are declared as Anthropic tools, and a manual loop
+runs each `tool_use` locally (subprocess) and feeds the `tool_result` back.
+
+```bash
+pip install anthropic
+export ANTHROPIC_API_KEY=...
+export ANTHROPIC_MODEL=<a current Claude model>
+python3 native/anthropic_local_skill.py
+```
+
+Nothing is uploaded, no code execution tool, no container. The SKILL.md folder
+stays on your disk and the grader runs on your machine. This is the Anthropic
+counterpart to 4b: 4b sends the folder to Anthropic's sandbox, 4c keeps it
+local and just lets Claude drive. Note the code execution tool is not used here
+at all; that tool is what makes uploaded skills run server-side, and the whole
+point of 4c is to avoid that.
 
 ## Security notes
 
