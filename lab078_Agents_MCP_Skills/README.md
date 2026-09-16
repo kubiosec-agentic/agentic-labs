@@ -202,10 +202,38 @@ tools: [ { type: "shell", environment: {
 ```bash
 export OPENAI_API_KEY=...
 export OPENAI_SKILL_MODEL=<a current model that supports the Responses shell tool>
-./native/openai_uploaded_skill.sh
+./native/openai_uploaded_skill.sh          # upload + run, end to end
 ```
 
-The example model strings in the docs move, so the script reads the model from
+`openai_uploaded_skill.sh` builds the request body with `jq` so the header JSON
+is escaped correctly. Once a skill is uploaded you usually want to run it again
+without re-uploading, so `native/openai_run_skill.sh` is just the run half, as a
+plain literal curl you can copy:
+
+```bash
+export SKILL_ID=skill_...     # from the upload step's output
+./native/openai_run_skill.sh
+```
+
+which is this call (the skill is attached to the shell tool's environment; the
+model reads it and runs its script in OpenAI's sandbox on the headers in
+`input`):
+
+```bash
+curl -sS -L 'https://api.openai.com/v1/responses' \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $OPENAI_API_KEY" \
+  -d '{
+    "model": "'"$OPENAI_SKILL_MODEL"'",
+    "tools": [ { "type": "shell", "environment": {
+      "type": "container_auto",
+      "skills": [ { "type": "skill_reference", "skill_id": "'"$SKILL_ID"'", "version": "latest" } ]
+    } } ],
+    "input": "Use the http-header-audit skill to grade these headers and give the letter grade: {\"Strict-Transport-Security\":\"max-age=0\",\"Server\":\"nginx/1.18.0\"}"
+  }'
+```
+
+The example model strings in the docs move, so the scripts read the model from
 `OPENAI_SKILL_MODEL` rather than hardcoding one. Get a current value from the
 [OpenAI skills guide](https://developers.openai.com/api/docs/guides/tools-skills).
 Needs `jq` and skills access on your account.

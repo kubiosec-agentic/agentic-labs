@@ -35,6 +35,7 @@ FIXTURES = [
     "skills/http-header-audit/SKILL.md",
     "skills/http-header-audit/references/grading.md",
     "native/openai_uploaded_skill.sh",
+    "native/openai_run_skill.sh",
 ]
 
 GRADER = "skills/http-header-audit/scripts/audit_headers.py"
