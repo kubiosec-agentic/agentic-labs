@@ -14,6 +14,13 @@ The model orchestrates them by following SKILL.md: fetch, grade, explain,
 report. None of that logic lives in this file; it lives in the skill. Swap in
 a different skill folder and the same agent does a different job.
 
+NOTE: the agent here is IDENTICAL to agent_02. Same skill loader, same tools,
+same menu. What changed is the prompt: this one is a header-audit task, so the
+model judges its way to the skill that ships a script and a reference and runs
+the full fetch/grade/explain sequence. This prompt also asks for an incident
+note at the end, so the model chains into the incident-note skill too. The
+"advanced" part is the skill the prompt selects, not the agent.
+
 Run (needs OPENAI_API_KEY, and outbound network for the fetch):
     python3 agent_03_power_skill.py
     python3 agent_03_power_skill.py https://github.com

@@ -14,6 +14,14 @@ hand (see skills_runtime.py):
 Compare with lab066, where deepagents did all of this for you. Here it is
 about 30 lines you can read.
 
+NOTE: this is the SAME agent and the SAME skill loader as agent_03. Both see
+both skills on the menu (incident-note and http-header-audit) and both carry
+the same tools (read_skill / read_reference / run_skill_script). The only
+difference between the two exercises is the prompt. This prompt is an
+incident-note task, so the model judges its way to the instruction-only skill.
+Hand this same agent the header-audit prompt and it would behave like
+agent_03. The prompt selects the skill; the agent does not change.
+
 Run (needs OPENAI_API_KEY):
     python3 agent_02_simple_skill.py
 """

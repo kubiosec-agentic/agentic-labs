@@ -52,9 +52,11 @@ Sanity check:
 python3 -c "from importlib.metadata import version as v; print('openai-agents', v('openai-agents'), '| fastmcp', v('fastmcp'))"
 ```
 
-Written against `openai-agents` 0.22.x and `fastmcp` 4.x. The model defaults to
-`gpt-4o-mini`; override with `DA_MODEL` (the same knob as the other labs). All
-OpenAI traffic is plain HTTPS, so lab050's mitmproxy setup works here too. The
+Written against `openai-agents` 0.22.x and `fastmcp` 4.x. The agent model
+defaults to `gpt-4o-mini`; override with `OPENAI_AGENTS_MODEL`. (The native
+examples in Exercise 4 use their own `OPENAI_SKILL_MODEL` /
+`ANTHROPIC_SKILL_MODEL`.) All OpenAI traffic is plain HTTPS, so lab050's
+mitmproxy setup works here too. The
 SDK's telemetry tracing is disabled in `common.py` so a run makes no surprise
 network calls beyond the model and the fetch.
 
@@ -124,31 +126,42 @@ building blocks:
 
 ```
 skills/http-header-audit/
-  SKILL.md              the procedure: fetch, grade, explain, report
-  audit_headers.py      the script: grades headers, deterministic and offline
-  reference/grading.md  the knowledge: per-header rubric, read on demand
+  SKILL.md                     the procedure: fetch, grade, explain, report
+  scripts/audit_headers.py     the script: grades headers, deterministic and offline
+  references/grading.md        the knowledge: per-header rubric, read on demand
 ```
 
 The division of labour is the lesson:
 
 - **MCP `http_get(url)`** does the network fetch (the side effect).
-- **`audit_headers.py`** grades the headers. It is a pure function of its
-  input (headers as JSON on stdin), so it is deterministic and unit-tested.
+- **`scripts/audit_headers.py`** grades the headers. It is a pure function of
+  its input (headers as JSON on stdin), so it is deterministic and unit-tested.
   The agent runs it with `run_skill_script(...)`, level-three disclosure.
-- **`reference/grading.md`** holds the per-header detail, read with
+- **`references/grading.md`** holds the per-header detail, read with
   `read_reference(...)` only when the agent needs to explain a header.
 
 Expected tool sequence:
 
 ```
 http_get (MCP)  ->  read_skill('http-header-audit')  ->
-run_skill_script('audit_headers.py')  ->  read_reference('grading.md')  ->
+run_skill_script('scripts/audit_headers.py')  ->  read_reference('grading.md')  ->
 read_skill('incident-note')
 ```
 
 Four files, one agent: fetch, grade, explain, report. Swap the skill folder and
 the same agent does a different job, without touching `agent_03_power_skill.py`.
 That separation is the whole reason skills exist.
+
+**Same agent as Exercise 2, only the prompt differs.** `agent_02` and
+`agent_03` are the same code: same skill loader, same tools, and both see both
+skills on the menu at startup. What changed is the prompt. Exercise 2's prompt
+is an incident-note task, so the model judges its way to the instruction-only
+skill; Exercise 3's prompt is a header-audit task, so it opens the skill that
+ships a script and a reference and runs the full sequence (and then chains into
+incident-note for the write-up). The agent never decides to be "advanced"; the
+prompt selects the skill, and the skill's contents decide how much happens. If
+you gave `agent_02` the header-audit prompt, it would behave exactly like
+`agent_03`.
 
 To see the grader on its own, feed it headers directly:
 
