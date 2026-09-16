@@ -51,6 +51,10 @@ SKILL_ID=$(echo "$UPLOAD" | jq -r '.id // .skill_id // empty')
 [ -n "$SKILL_ID" ] || { echo "could not read skill id from upload response"; exit 1; }
 echo "skill_id = $SKILL_ID"
 
+# A freshly uploaded version can take a moment to be resolvable by the
+# Responses API. Give it a beat.
+sleep 3
+
 echo
 echo "== 2. Run it on the Responses API =="
 # The task hands the headers inline, so the sandbox needs no network: the
@@ -68,7 +72,9 @@ BODY=$(jq -n \
       { type: "shell",
         environment: {
           type: "container_auto",
-          skills: [ { type: "skill_reference", skill_id: $skill_id, version: "latest" } ]
+          # Omit version to use the skill default_version. The live API
+          # rejected version latest; to pin, use an integer like version: 1.
+          skills: [ { type: "skill_reference", skill_id: $skill_id } ]
         } }
     ],
     input: ("Use the http-header-audit skill to grade these response headers, then give me the letter grade and the two weakest headers. Headers: " + $headers)

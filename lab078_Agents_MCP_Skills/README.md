@@ -227,11 +227,18 @@ curl -sS -L 'https://api.openai.com/v1/responses' \
     "model": "'"$OPENAI_SKILL_MODEL"'",
     "tools": [ { "type": "shell", "environment": {
       "type": "container_auto",
-      "skills": [ { "type": "skill_reference", "skill_id": "'"$SKILL_ID"'", "version": "latest" } ]
+      "skills": [ { "type": "skill_reference", "skill_id": "'"$SKILL_ID"'" } ]
     } } ],
     "input": "Use the http-header-audit skill to grade these headers and give the letter grade: {\"Strict-Transport-Security\":\"max-age=0\",\"Server\":\"nginx/1.18.0\"}"
   }'
 ```
+
+The `skill_reference` omits `version`, so the skill's `default_version` is used.
+Passing `version: "latest"` was rejected by the live API ("Skill version '1'
+not found"); to pin a version, use the integer, e.g. `"version": 1` (or
+`SKILL_VERSION=1 ./native/openai_run_skill.sh`). A freshly uploaded version can
+also take a second to become resolvable, which is why the upload script sleeps
+briefly before the run.
 
 The example model strings in the docs move, so the scripts read the model from
 `OPENAI_SKILL_MODEL` rather than hardcoding one. Get a current value from the
