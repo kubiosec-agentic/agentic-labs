@@ -28,6 +28,11 @@ headers.
 | 1 | Agents SDK agent + stdio MCP server | `agent_01_mcp.py` |
 | 2 | A simple skill (instructions only) | `agent_02_simple_skill.py` |
 | 3 | A powerful skill (SKILL.md + script + reference) | `agent_03_power_skill.py` |
+| 4 | The same skill, native: OpenAI upload (curl) and Anthropic SDK | `native/` |
+
+The skill folders use the layout both vendors use natively, `SKILL.md` at the
+root with `scripts/` and `references/` beside it, so the exact folder you build
+in Exercises 1 to 3 is the one you upload in Exercise 4.
 
 ## Set up your environment
 
@@ -148,8 +153,77 @@ That separation is the whole reason skills exist.
 To see the grader on its own, feed it headers directly:
 
 ```bash
-echo '{"Strict-Transport-Security":"max-age=0"}' | python3 skills/http-header-audit/audit_headers.py
+echo '{"Strict-Transport-Security":"max-age=0"}' | python3 skills/http-header-audit/scripts/audit_headers.py
 ```
+
+### 4. The same skill, native: OpenAI upload (curl) and Anthropic SDK (`native/`)
+
+Exercises 1 to 3 ran the skill locally with a loader you wrote. Both OpenAI and
+Anthropic now support skills natively, using the same `SKILL.md` folder format.
+The difference that matters is where the scripts run, which is where the blast
+radius lives.
+
+| Where | How | Scripts run | You get |
+|---|---|---|---|
+| Local, DIY (this lab, ex. 1-3) | your loader + function tools | your machine | model-agnostic, portable, works offline |
+| OpenAI Responses, uploaded | `POST /v1/skills`, then `skill_reference` | OpenAI's sandbox | managed, versioned, data leaves your box |
+| OpenAI Responses, local shell | `shell` tool `type: local`, skill by path | your machine | native loop, but a remote model drives your shell |
+| Anthropic Messages, uploaded | `client.skills.create`, then `container.skills` | Anthropic's sandbox | managed, versioned, data leaves your box |
+
+The `openai-agents` SDK itself has no native skills, which is why Exercises 1 to
+3 exist. Exercise 4 shows the two managed paths.
+
+#### 4a. OpenAI, uploaded, with curl (`native/openai_uploaded_skill.sh`)
+
+curl because this is the shape you script in CI or a Makefile. It uploads
+`skills/http-header-audit/` (multipart, preserving the folder tree), reads back
+the `skill_id`, then calls `/v1/responses` with the skill attached:
+
+```
+tools: [ { type: "shell", environment: {
+  type: "container_auto",
+  skills: [ { type: "skill_reference", skill_id: "<id>", version: "latest" } ]
+} } ]
+```
+
+```bash
+export OPENAI_API_KEY=...
+export OPENAI_SKILL_MODEL=<a current model that supports the Responses shell tool>
+./native/openai_uploaded_skill.sh
+```
+
+The example model strings in the docs move, so the script reads the model from
+`OPENAI_SKILL_MODEL` rather than hardcoding one. Get a current value from the
+[OpenAI skills guide](https://developers.openai.com/api/docs/guides/tools-skills).
+Needs `jq` and skills access on your account.
+
+#### 4b. Anthropic, uploaded, with the SDK (`native/anthropic_skill_example.py`)
+
+Anthropic's skills mirror OpenAI's hosted mode. Upload the same folder with
+`client.skills.create(files=files_from_dir(...))`, then reference it in a
+Messages call alongside the code execution tool:
+
+```python
+container={"skills": [{"type": "custom", "skill_id": skill_id, "version": "latest"}]},
+tools=[{"type": "code_execution_20250825", "name": "code_execution"}],
+```
+
+```bash
+pip install anthropic
+export ANTHROPIC_API_KEY=...
+export ANTHROPIC_SKILL_MODEL=<a current model that supports code execution>
+python3 native/anthropic_skill_example.py
+```
+
+The Skills API is GA (no beta header). For a built-in skill instead of an
+upload, pass `{"type": "anthropic", "skill_id": "pptx", "version": "latest"}`
+and skip the upload step. Model strings move here too; set
+`ANTHROPIC_SKILL_MODEL` from the
+[Anthropic skills guide](https://platform.claude.com/docs/en/build-with-claude/skills-guide).
+
+Both 4a and 4b hand the headers to the skill inline, so the sandbox needs no
+network. In these managed modes the fetch would be a separate hosted tool, not
+this lab's MCP server.
 
 ## Security notes
 
@@ -170,9 +244,20 @@ a sandbox. Who can write to `skills/` is the question that matters, and on a
 real system that is "anyone who can land a pull request".
 
 Skills are instructions the model is built to obey, loaded by name from disk. A
-poisoned `SKILL.md` (or a poisoned `reference/`) is prompt injection you asked
-for. The same discipline from lab070's tool-description poisoning applies one
-layer up.
+poisoned `SKILL.md` (or a poisoned `references/` file) is prompt injection you
+asked for. The same discipline from lab070's tool-description poisoning applies
+one layer up.
+
+The native modes (Exercise 4) move the trust boundary but do not remove it. An
+uploaded skill runs in the vendor's sandbox, so the RCE blast radius is theirs,
+but the sandbox can still reach whatever it is allowed to (network, connected
+tools) and your data still leaves your box. And versioning is a new attack
+surface: an unpinned `version: "latest"` means whoever can push a new version
+changes what every caller runs, silently. Pin versions in production, and treat
+"who can publish a skill version" as the same class of question as "who can
+merge to main". OpenAI's local-shell mode is the sharp one: a remote model
+driving a shell on your own machine, which is the lab's local RCE lesson with a
+vendor's model at the wheel.
 
 ## Cleanup environment
 

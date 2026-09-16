@@ -117,14 +117,15 @@ def read_skill(skill: str) -> str:
 def read_reference(skill: str, path: str) -> str:
     """Read a reference file bundled with a skill, e.g.
     read_reference('http-header-audit', 'grading.md'). Reference files live
-    under skills/<skill>/reference/ and hold detail the SKILL.md keeps out of
-    the way until it is needed."""
+    under skills/<skill>/references/ and hold detail the SKILL.md keeps out of
+    the way until it is needed. (references/ is the layout OpenAI and Anthropic
+    use for native skills too, so this folder is upload-ready.)"""
     try:
-        ref = _safe(skill, "reference", path)
+        ref = _safe(skill, "references", path)
     except ValueError as e:
         return f"error: {e}"
     if not ref.is_file():
-        return f"error: reference {skill}/reference/{path} not found"
+        return f"error: reference {skill}/references/{path} not found"
     return ref.read_text(encoding="utf-8")
 
 
@@ -132,10 +133,11 @@ def read_reference(skill: str, path: str) -> str:
 def run_skill_script(skill: str, script: str, stdin_text: str = "") -> str:
     """Run a helper script bundled with a skill and return its output.
 
-    Example: run_skill_script('http-header-audit', 'audit_headers.py',
-    stdin_text=<json of the response headers>). The script is executed with
-    the same Python interpreter; stdin_text is passed on stdin. Returns stdout,
-    and stderr appended if the script failed."""
+    Example: run_skill_script('http-header-audit', 'scripts/audit_headers.py',
+    stdin_text=<json of the response headers>). Scripts live under
+    skills/<skill>/scripts/ (the native-skill layout). The script is executed
+    with the same Python interpreter; stdin_text is passed on stdin. Returns
+    stdout, and stderr appended if the script failed."""
     try:
         path = _safe(skill, script)
     except ValueError as e:

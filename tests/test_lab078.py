@@ -26,14 +26,18 @@ SCRIPTS = [
     "agent_01_mcp.py",
     "agent_02_simple_skill.py",
     "agent_03_power_skill.py",
-    "skills/http-header-audit/audit_headers.py",
+    "skills/http-header-audit/scripts/audit_headers.py",
+    "native/anthropic_skill_example.py",
 ]
 
 FIXTURES = [
     "skills/incident-note/SKILL.md",
     "skills/http-header-audit/SKILL.md",
-    "skills/http-header-audit/reference/grading.md",
+    "skills/http-header-audit/references/grading.md",
+    "native/openai_uploaded_skill.sh",
 ]
+
+GRADER = "skills/http-header-audit/scripts/audit_headers.py"
 
 
 @pytest.mark.smoke
@@ -75,6 +79,19 @@ class TestLab078Smoke:
     def test_mcp_server_defines_http_get(self):
         assert "def http_get" in (LAB_DIR / "mcp_server.py").read_text()
 
+    def test_native_skill_layout(self):
+        """Skill folders match the OpenAI/Anthropic native layout (scripts/, references/)."""
+        base = LAB_DIR / "skills/http-header-audit"
+        assert (base / "SKILL.md").is_file()
+        assert (base / "scripts/audit_headers.py").is_file()
+        assert (base / "references/grading.md").is_file()
+
+    def test_native_examples_reference_correct_api(self):
+        sh = (LAB_DIR / "native/openai_uploaded_skill.sh").read_text()
+        assert "/v1/skills" in sh and "skill_reference" in sh and "container_auto" in sh
+        py = (LAB_DIR / "native/anthropic_skill_example.py").read_text()
+        assert "code_execution_20250825" in py and "container=" in py and "files_from_dir" in py
+
     def test_runtime_exposes_three_skill_tools(self):
         c = (LAB_DIR / "skills_runtime.py").read_text()
         for name in ["read_skill", "read_reference", "run_skill_script", "SKILL_TOOLS"]:
@@ -85,7 +102,7 @@ class TestLab078Smoke:
 
 def _load_grader():
     spec = importlib.util.spec_from_file_location(
-        "audit_headers", LAB_DIR / "skills/http-header-audit/audit_headers.py"
+        "audit_headers", LAB_DIR / GRADER
     )
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
@@ -125,7 +142,7 @@ class TestHeaderGrader:
         assert {d["header"] for d in g["disclosures"]} == {"Server", "X-Powered-By"}
 
     def test_cli_accepts_wrapper_and_raw(self):
-        script = LAB_DIR / "skills/http-header-audit/audit_headers.py"
+        script = LAB_DIR / GRADER
         for payload in ['{"X-Content-Type-Options":"nosniff"}', '{"headers":{"X-Content-Type-Options":"nosniff"}}']:
             r = subprocess.run([sys.executable, str(script)], input=payload, capture_output=True, text=True)
             assert r.returncode == 0 and "Overall:" in r.stdout

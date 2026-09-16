@@ -18,7 +18,7 @@ Do NOT eyeball the headers and improvise. Follow these steps.
 2. Grade the headers deterministically with the bundled script instead of
    judging them yourself. Call:
 
-       run_skill_script("http-header-audit", "audit_headers.py",
+       run_skill_script("http-header-audit", "scripts/audit_headers.py",
                         stdin_text=<the headers object as JSON>)
 
    Pass a JSON object. Either the raw `{"Strict-Transport-Security": "...",

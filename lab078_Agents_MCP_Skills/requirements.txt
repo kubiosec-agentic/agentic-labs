@@ -7,3 +7,7 @@ openai
 fastmcp
 # The http_get MCP tool and the header-audit script use requests.
 requests
+# Exercise 4b (native/anthropic_skill_example.py) uploads the lab's skill to
+# Anthropic and runs it via the code execution tool. Only needed for that one
+# example. Exercise 4a (OpenAI) is plain curl, no Python dependency.
+anthropic
