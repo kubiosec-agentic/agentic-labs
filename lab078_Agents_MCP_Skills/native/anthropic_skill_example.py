@@ -15,7 +15,7 @@ is where the blast radius lives.
 Requirements:
   pip install anthropic
   export ANTHROPIC_API_KEY=...
-  export ANTHROPIC_SKILL_MODEL=<a current model that supports code execution>
+  export ANTHROPIC_MODEL=<a current model that supports code execution>
     (the doc example model strings move; do not trust a hardcoded one, read
      the current one from
      https://platform.claude.com/docs/en/build-with-claude/skills-guide)
@@ -39,9 +39,9 @@ SKILL_DIR = HERE.parent / "skills" / "http-header-audit"
 def main() -> None:
     if not os.environ.get("ANTHROPIC_API_KEY"):
         sys.exit("export ANTHROPIC_API_KEY=... first")
-    model = os.environ.get("ANTHROPIC_SKILL_MODEL")
+    model = os.environ.get("ANTHROPIC_MODEL")
     if not model:
-        sys.exit("set ANTHROPIC_SKILL_MODEL to a current model that supports the code execution tool")
+        sys.exit("set ANTHROPIC_MODEL to a current model that supports the code execution tool")
 
     import anthropic
     from anthropic.lib import files_from_dir

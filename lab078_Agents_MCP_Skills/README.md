@@ -28,7 +28,7 @@ headers.
 | 1 | Agents SDK agent + stdio MCP server | `agent_01_mcp.py` |
 | 2 | A simple skill (instructions only) | `agent_02_simple_skill.py` |
 | 3 | A powerful skill (SKILL.md + script + reference) | `agent_03_power_skill.py` |
-| 4 | The same skill, native: OpenAI upload (curl) and Anthropic SDK | `native/` |
+| 4 | The same skill, native: OpenAI upload (curl), Anthropic uploaded + local | `native/` |
 
 The skill folders use the layout both vendors use natively, `SKILL.md` at the
 root with `scripts/` and `references/` beside it, so the exact folder you build
@@ -55,7 +55,7 @@ python3 -c "from importlib.metadata import version as v; print('openai-agents', 
 Written against `openai-agents` 0.22.x and `fastmcp` 4.x. The agent model
 defaults to `gpt-4o-mini`; override with `OPENAI_AGENTS_MODEL`. (The native
 examples in Exercise 4 use their own `OPENAI_SKILL_MODEL` /
-`ANTHROPIC_SKILL_MODEL`.) All OpenAI traffic is plain HTTPS, so lab050's
+`ANTHROPIC_MODEL`.) All OpenAI traffic is plain HTTPS, so lab050's
 mitmproxy setup works here too. The
 SDK's telemetry tracing is disabled in `common.py` so a run makes no surprise
 network calls beyond the model and the fetch.
@@ -169,7 +169,7 @@ To see the grader on its own, feed it headers directly:
 echo '{"Strict-Transport-Security":"max-age=0"}' | python3 skills/http-header-audit/scripts/audit_headers.py
 ```
 
-### 4. The same skill, native: OpenAI upload (curl) and Anthropic SDK (`native/`)
+### 4. The same skill, native: OpenAI upload (curl), Anthropic uploaded and local (`native/`)
 
 Exercises 1 to 3 ran the skill locally with a loader you wrote. Both OpenAI and
 Anthropic now support skills natively, using the same `SKILL.md` folder format.
@@ -262,14 +262,14 @@ tools=[{"type": "code_execution_20250825", "name": "code_execution"}],
 ```bash
 pip install anthropic
 export ANTHROPIC_API_KEY=...
-export ANTHROPIC_SKILL_MODEL=<a current model that supports code execution>
+export ANTHROPIC_MODEL=<a current model that supports code execution>
 python3 native/anthropic_skill_example.py
 ```
 
 The Skills API is GA (no beta header). For a built-in skill instead of an
 upload, pass `{"type": "anthropic", "skill_id": "pptx", "version": "latest"}`
 and skip the upload step. Model strings move here too; set
-`ANTHROPIC_SKILL_MODEL` from the
+`ANTHROPIC_MODEL` from the
 [Anthropic skills guide](https://platform.claude.com/docs/en/build-with-claude/skills-guide).
 
 Both 4a and 4b hand the headers to the skill inline, so the sandbox needs no
