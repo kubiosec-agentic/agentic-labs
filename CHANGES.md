@@ -166,3 +166,7 @@ Bumped all Gemini model references, preserving each tier. `models/` prefix kept 
 
 ### lab054_LangChain_Tools (dropped LC_06)
 - `LC_06.py` moved to `lab990_addendum/langchain/runnable_lambda_tool.py`. It was raw OpenAI SDK function calling (already lab050) with only a `RunnableLambda` wrapper as LangChain content, and its docstring referenced a non-existent `LC_core.py` (fixed in the moved copy). lab054 is now five steps. README, lab990 README (new section 5, later sections renumbered), tests and CHANGES updated.
+
+### lab054_LangChain_Tools (new LC_06: provider swap)
+- Replaced the dropped raw-OpenAI chain with the lab035 `lc06_easy_swap.py` idea as `LC_06.py`, rewritten: provider chosen by `USE_GEMINI` env var (default OpenAI, so it runs with only `OPENAI_API_KEY`), `langchain_core.prompts` instead of the `langchain` meta-package, `StrOutputParser` added, Gemini model `gemini-3.8-flash` (the 3.6 names 404, see lab061 entry). `requirements.txt` +`langchain-google-genai`. README step 6 + table + optional GOOGLE_API_KEY in setup. Test +1 (both providers present, no 3.6 model).
+- `lab990_addendum/langchain/easy_swap.py`: fixed `models/gemini-3.6-flash` -> `gemini-3.8-flash` (was on the "not yet fixed" list). README notes lab054 LC_06 as the cleaner version.

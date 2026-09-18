@@ -6,7 +6,7 @@
 
 In the previous labs you called OpenAI through raw HTTP and the official SDK. LangChain adds a layer on top: a common interface for models, prompt templates, and a way to compose them into chains and tool-calling loops.
 
-This lab goes from a bare LangChain call to a real agent loop in five short scripts. The security angle is in the last steps: where does the tool code actually run, and what can go wrong when the model controls it.
+This lab goes from a bare LangChain call to a real agent loop in six short scripts. The security angle is in the last steps: where does the tool code actually run, and what can go wrong when the model controls it.
 
 | Step | Script | What it shows |
 |------|--------|---------------|
@@ -15,11 +15,14 @@ This lab goes from a bare LangChain call to a real agent loop in five short scri
 | 3 | `LC_03.py` | `@tool` + `bind_tools`, the four-phase tool-call cycle |
 | 4 | `LC_04.py` | Hosted tools via the Responses API (web search, code interpreter) |
 | 5 | `LC_05.py` | Local Python REPL tool in a multi-step agent loop |
+| 6 | `LC_06.py` | Same chain, different provider (OpenAI or Gemini) |
 
 ## Set up your environment
 
 ```bash
 export OPENAI_API_KEY="your-key-here"
+# Optional, only for the Gemini path in Step 6
+# export GOOGLE_API_KEY="your-key-here"
 ```
 
 ```bash
@@ -101,6 +104,20 @@ python3 LC_05.py
 - The REPL namespace persists between calls, so the model can build up state.
 - **Security:** model-generated Python runs unsandboxed in your process. It can read files, leak `OPENAI_API_KEY`, open network connections. Run this only in a disposable environment. Compare with Step 4 where the same idea runs in OpenAI's sandbox.
 
+### Step 6: Swapping providers (`LC_06.py`)
+
+The same `prompt | llm | parser` chain, with the model chosen by an environment variable. Nothing else changes.
+
+```bash
+python3 LC_06.py                 # OpenAI
+USE_GEMINI=1 python3 LC_06.py    # Gemini, needs GOOGLE_API_KEY
+```
+
+**What to observe:**
+- Only the `llm` object differs between the two runs. Prompt, chain and output code are identical.
+- Compare the Terraform output from both providers.
+- This is the main reason to use LangChain: write once, swap providers without touching your business logic. It also means a supply-chain change (new provider package, new model name) is one line away from your code.
+
 ## Note: fast-moving APIs
 
 LangChain's API changes often. Older tutorials use `ConversationChain`, `langchain.memory`, or `RunnableWithMessageHistory` for conversation memory. All of these were the official recommendation at some point and all are now deprecated (LangGraph persistence replaced them, see lab064).
@@ -120,7 +137,7 @@ deactivate
 
 ## Going further
 
-[lab990_addendum/langchain](../lab990_addendum/langchain/) has more LangChain examples: running a local HuggingFace model, raw OpenAI function calling wrapped in a `RunnableLambda`, swapping providers (OpenAI vs Gemini), a real weather API tool, shell script security reviews, and a Gradio writing assistant.
+[lab990_addendum/langchain](../lab990_addendum/langchain/) has more LangChain examples: running a local HuggingFace model, raw OpenAI function calling wrapped in a `RunnableLambda`, a real weather API tool, shell script security reviews, and a Gradio writing assistant.
 
 ## What's next
 

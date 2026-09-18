@@ -40,7 +40,7 @@ class TestLab054Smoke:
 
     @pytest.mark.parametrize("script", [
         "LC_01.py", "LC_02.py", "LC_03.py",
-        "LC_04.py", "LC_05.py",
+        "LC_04.py", "LC_05.py", "LC_06.py",
     ])
     def test_script_exists(self, script):
         """Each LangChain script file must exist."""
@@ -50,7 +50,7 @@ class TestLab054Smoke:
 
     @pytest.mark.parametrize("script", [
         "LC_01.py", "LC_02.py", "LC_03.py",
-        "LC_04.py", "LC_05.py",
+        "LC_04.py", "LC_05.py", "LC_06.py",
     ])
     def test_script_valid_syntax(self, script):
         """Every Python script must parse without syntax errors."""
@@ -93,7 +93,7 @@ class TestLab054Smoke:
 
     @pytest.mark.parametrize("script", [
         "LC_01.py", "LC_02.py", "LC_03.py",
-        "LC_04.py", "LC_05.py",
+        "LC_04.py", "LC_05.py", "LC_06.py",
     ])
     def test_no_emdashes_in_script(self, script):
         """Check for em-dashes in script files."""
@@ -134,3 +134,8 @@ class TestLab054Smoke:
                 if line.strip().startswith("#"):
                     continue
                 assert "gpt-3.5-turbo" not in line, f"{py.name}: {line.strip()}"
+
+    def test_lc06_swaps_providers(self):
+        src = (LAB_DIR / "LC_06.py").read_text()
+        assert "ChatGoogleGenerativeAI" in src and "ChatOpenAI" in src
+        assert "gemini-3.6" not in src, "gemini-3.6 family does not exist (404)"

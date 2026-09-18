@@ -40,7 +40,7 @@ python3 weather_forecast.py
 
 ### 2. Multi-provider LLM swapping (`easy_swap.py`)
 
-A single boolean flips the entire pipeline between OpenAI and Google Gemini. The prompt, chain, and output code stay identical. Generates Terraform plans as an example workload.
+A single boolean flips the entire pipeline between OpenAI and Google Gemini. The prompt, chain, and output code stay identical. Generates Terraform plans as an example workload. A cleaner env-var driven version of this is lab054 `LC_06.py`.
 
 ```bash
 # Requires GOOGLE_API_KEY for the Gemini path
