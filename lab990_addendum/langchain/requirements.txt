@@ -2,7 +2,7 @@
 langchain-openai
 langchain-google-genai
 langchain
-langchain-community   # ChatMessageHistory (multi_turn.py)
+langchain-community   # GitLoader (review_with_gitloader.py); package is being sunset
 pydantic
 
 # Weather API dependencies

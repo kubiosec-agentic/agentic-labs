@@ -6,15 +6,22 @@ store in Chroma -> search. No LLM yet, this is retrieval only. RAG_03 adds
 the generation step.
 """
 
-from langchain_community.document_loaders import TextLoader
+from pathlib import Path
+from langchain_core.documents import Document
 from langchain_openai import OpenAIEmbeddings
 from langchain_text_splitters import CharacterTextSplitter
 from langchain_chroma import Chroma
 
 embeddings = OpenAIEmbeddings()   # reads OPENAI_API_KEY from the environment
 
-# 1. Load and chunk
-raw_documents = TextLoader("data/llms-full.txt").load()
+# 1. Load and chunk. A "document" is just text plus metadata; no loader needed
+#    for a plain text file (langchain-community's TextLoader is being sunset).
+source = "data/llms-full.txt"
+raw_documents = [Document(page_content=Path(source).read_text(), metadata={"source": source})]
+# CharacterTextSplitter only cuts on its separator (blank lines by default), so a
+# paragraph longer than chunk_size stays whole and you get a "longer than the
+# specified" warning. RAG_03 uses RecursiveCharacterTextSplitter, which falls
+# back to smaller separators.
 text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
 documents = text_splitter.split_documents(raw_documents)
 print(f"Loaded {len(raw_documents)} document(s), split into {len(documents)} chunks")

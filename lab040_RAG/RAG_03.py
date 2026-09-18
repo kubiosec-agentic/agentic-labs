@@ -1,16 +1,13 @@
-import os
-import openai
-from langchain_community.document_loaders import TextLoader
+from pathlib import Path
+from langchain_core.documents import Document
 from langchain_openai import OpenAIEmbeddings, ChatOpenAI
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_chroma import Chroma
 from langchain_core.prompts import PromptTemplate
 
-# Set your OpenAI API key from environment variable
-openai.api_key = os.getenv("OPENAI_API_KEY")
-
-# Load and split document
-raw_documents = TextLoader('data/llms-full.txt').load()
+# Load and split document (OPENAI_API_KEY is read from the environment)
+source = "data/llms-full.txt"
+raw_documents = [Document(page_content=Path(source).read_text(), metadata={"source": source})]
 text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
 documents = text_splitter.split_documents(raw_documents)
 

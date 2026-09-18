@@ -79,6 +79,7 @@ python3 ./RAG_02.py
 - Retrieval returns a **ranked list**, not one answer. The script prints the top 4 chunks with their distance (lower = closer). Look at rank 3 and 4: are they still about the query?
 - Two entry points, same result: `similarity_search_with_score` takes text and embeds it for you, `similarity_search_by_vector_with_relevance_scores` takes a vector you embedded yourself. The script prints the query vector (1536 floats) so you see what "embedding" actually is.
 - The chunking parameters: `chunk_size=1000, chunk_overlap=0`. No overlap means chunks are independent. Compare with Step 3 which uses overlap.
+- The `Created a chunk of size 9799, which is longer than the specified 1000` warnings are real: `CharacterTextSplitter` only cuts on blank lines, so a long paragraph stays one chunk. Step 3's `RecursiveCharacterTextSplitter` fixes that.
 - Try changing `query` and `K`, and lowering `chunk_size` to 300: watch how the ranking and the number of chunks change.
 
 **Framework:** LangChain provides the document loading and text splitting. Chroma is an in-memory/persistent vector database. OpenAI provides the embeddings.
