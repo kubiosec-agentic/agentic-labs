@@ -1,7 +1,8 @@
 """
 LangChain runnables with OpenAI function calling.
 
-Extends the LC_core.py pattern by adding a tool (get_current_datetime).
+Wraps a raw OpenAI SDK call (with a get_current_datetime tool) in a
+RunnableLambda so it composes as a LangChain chain: prompt | llm | parser.
 The RunnableLambda handles the three-phase tool-call cycle internally:
 
   1. Model requests the tool via tool_calls

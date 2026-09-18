@@ -66,7 +66,15 @@ pip install torch transformers accelerate langchain-huggingface
 python3 hf_local.py
 ```
 
-### 5. CLI command execution tool (`bash_tool.py`)
+### 5. Raw OpenAI function calling inside a chain (`runnable_lambda_tool.py`)
+
+Drops down to the OpenAI SDK directly (lab050 style JSON tool schema, `get_current_datetime` tool) and wraps the call in a `RunnableLambda` so it still composes as `prompt | llm | parser`. The chain has no idea a tool is involved; the tool loop is hidden inside the lambda. Shows that any Python callable can be a chain step.
+
+```bash
+python3 runnable_lambda_tool.py
+```
+
+### 6. CLI command execution tool (`bash_tool.py`)
 
 Gives the LLM a `run_cli_command` tool that can execute shell commands. Includes a safelist (`ls`, `pwd`, `whoami`, `date`, etc.) to prevent arbitrary execution. Demonstrates the full tool-call loop: LLM requests a command, tool runs it, output is fed back for a natural-language answer.
 
@@ -76,7 +84,7 @@ From a security training perspective, pay attention to the safelist approach and
 python3 bash_tool.py
 ```
 
-### 6. Shell script security analysis, local files (`file_security_review.py`)
+### 7. Shell script security analysis, local files (`file_security_review.py`)
 
 Loads `.sh` files from a local `test_repo/` directory and sends them to GPT-4o for a security review. Looks for command injection, hardcoded credentials, path traversal, missing error handling, and more.
 
@@ -88,7 +96,7 @@ curl -O --output-dir test_repo https://raw.githubusercontent.com/xxradar/TLSSAN_
 python3 file_security_review.py
 ```
 
-### 7. Shell script security analysis, via Git (`review_with_gitloader.py`)
+### 8. Shell script security analysis, via Git (`review_with_gitloader.py`)
 
 Same security review, but uses LangChain's `GitLoader` to clone a repository and extract `.sh` files directly. Useful when you want to analyze a remote repo without manually downloading files.
 
@@ -98,7 +106,7 @@ Same security review, but uses LangChain's `GitLoader` to clone a repository and
 python3 review_with_gitloader.py
 ```
 
-### 8. Code security review with structured output (`security_review.py`)
+### 9. Code security review with structured output (`security_review.py`)
 
 Uses a Pydantic model (`SecurityAnalysis`) to get structured JSON output from the LLM: a list of vulnerabilities, mitigation suggestions, and a risk level. Analyzes any source file you point it at. Defaults to `sample.py` (an intentionally vulnerable Flask app with XSS).
 
@@ -110,7 +118,7 @@ python3 security_review.py
 python3 security_review.py /path/to/your/code.py
 ```
 
-### 9. Vulnerable Flask app (`sample.py`)
+### 10. Vulnerable Flask app (`sample.py`)
 
 A deliberately vulnerable web application used as input for `security_review.py`. Contains an XSS vulnerability through unescaped user input in a Jinja2 template. Do not deploy this; it exists purely as a target for the security review.
 
@@ -120,7 +128,7 @@ python3 sample.py
 # Then visit http://127.0.0.1:5000/?q=<script>alert(1)</script>
 ```
 
-### 10. Writing assistant with Gradio UI (`writing_assistant.py`)
+### 11. Writing assistant with Gradio UI (`writing_assistant.py`)
 
 A simple web-based writing assistant that checks grammar, spelling, style, and conciseness. Uses Gradio for the frontend and LangChain + GPT-4o for the analysis. Includes a temperature slider to control creativity.
 
