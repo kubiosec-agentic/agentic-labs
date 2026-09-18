@@ -244,7 +244,37 @@ curl https://api.openai.com/v1/responses \
   }' | jq -r '.output[].content[0].text'
 ```
 
-Try another prompt, for example: `"How can MCP influence attention in LLM reasoning?"`
+The first line printed is `null`: `.output[]` contains a `file_search_call` item (no `content`) before the `message` item. Step 4b filters properly.
+
+**4b. Look at the citations**
+
+Same query, but the jq filter keeps only the `message` item and shows the text together with its `annotations`, the `file_citation` entries that point back to the file and chunk the answer was built from.
+
+```bash
+curl https://api.openai.com/v1/responses \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $OPENAI_API_KEY" \
+  -d '{
+    "model": "gpt-4o",
+    "tools": [{
+      "type": "file_search",
+      "vector_store_ids": ["'$VS_ID'"]
+    }],
+    "input": "How can MCP influence attention in LLM reasoning?"
+  }' | jq '
+    .output[]
+    | select(.type == "message")
+    | .content[]
+    | {
+        text: .text,
+        annotations: .annotations
+      }
+  '
+```
+
+With the PDF from step 3b in the store, this question spans both documents. Check which `file_id`s show up in the annotations: does the model cite the MCP docs, the attention paper, or both? Citations are your only evidence of what the retrieval actually returned, so this is what you inspect when an answer looks off (or when you suspect a poisoned document in the store, see lab120).
+
+To see the retrieval step itself, drop the `select` and look at the `file_search_call` item: it lists the queries the model ran against the store.
 
 **5. Cleanup**
 
