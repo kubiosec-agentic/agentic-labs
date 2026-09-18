@@ -122,7 +122,7 @@ The script does everything in one run:
 - Compare the answer quality with Steps 1-3: same data, different retrieval infrastructure.
 - The cleanup step at the end is important: managed vector stores have storage costs.
 
-> **Note:** The vector stores API is part of the Assistants infrastructure, which is scheduled for deprecation in August 2026. OpenAI is migrating these capabilities to the Responses API. The Python SDK handles the required `OpenAI-Beta: assistants=v2` header automatically, so your code will keep working until the migration is complete.
+> **Note:** Vector stores started life as part of the Assistants API. Assistants was sunset on 26 August 2026, but vector stores and `file_search` live on as part of the Responses API. One leftover: the Python SDK still sends an `OpenAI-Beta: assistants=v2` header on `/v1/vector_stores` calls. You do not have to care about it here; Step 6 shows it.
 
 For the raw HTTP version of these same operations (useful for understanding what the SDK does under the hood), see **Step 6** below.
 
@@ -155,7 +155,7 @@ For a detailed walkthrough of how this works, see [AgenticRAG.md](./AgenticRAG.m
 
 Step 4 used the Python SDK, which abstracts HTTP calls and headers. This step does the exact same thing with raw `curl` commands, so you see every request, header, and response. This is useful for debugging, for understanding what the SDK does behind the scenes, and for working with the API from languages without an official SDK.
 
-> **Important:** Vector store management endpoints require the `OpenAI-Beta: assistants=v2` header. The Responses API query endpoint does not. The Assistants API is scheduled for deprecation in August 2026; OpenAI is migrating these capabilities into the Responses API.
+> **Note on the `OpenAI-Beta: assistants=v2` header:** the official reference examples for `/v1/vector_stores` still include it and the Python SDK still sends it, so the curl commands below keep it. It is a leftover from when vector stores were part of the Assistants API (sunset 26 August 2026). `/v1/files` and `/v1/responses` never needed it. Try a vector store call without the header and see what happens; that is the kind of check you should make instead of trusting a README.
 
 **1. Create a managed vector store**
 
@@ -265,9 +265,9 @@ curl -X DELETE https://api.openai.com/v1/files/$FILE_ID2 \
 ```
 
 **What to observe:**
-- The `OpenAI-Beta: assistants=v2` header is needed for `/v1/vector_stores` and `/v1/files`, but not for `/v1/responses`. This tells you which endpoints are still on the Assistants infrastructure.
+- Only the `/v1/vector_stores` calls carry the `OpenAI-Beta: assistants=v2` header; `/v1/files` and `/v1/responses` do not. The header is a leftover from the Assistants era (see the note above), not a security control and not something the Responses API needs.
 - Compare the JSON output from curl with what the Python SDK returns in Step 4. The SDK parses the same JSON into Python objects.
-- The Responses API endpoint (`/v1/responses`) is the new unified API. It does not need the beta header.
+- The Responses API endpoint (`/v1/responses`) is the unified API that replaced Assistants. `file_search` plus a vector store ID is all it needs to do RAG.
 - The `jq` filter at the end extracts just the answer text. Remove it to see the full response structure including `file_citation` annotations.
 
 ## Framework comparison
