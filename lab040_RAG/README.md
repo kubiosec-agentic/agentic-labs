@@ -69,15 +69,17 @@ python3 ./RAG_01.py
 
 ### Step 2: Vector search with Chroma (`RAG_02.py`)
 
-This script uses LangChain + Chroma to load a text file, split it into chunks, embed them, and perform both similarity search and vector search.
+This script uses LangChain + Chroma to load a text file, split it into chunks, embed them, and search. No LLM yet: this step is retrieval only, so you can see exactly what a RAG pipeline hands to the model later.
 
 ```bash
 python3 ./RAG_02.py
 ```
 
 **What to observe:**
-- Two search modes: `similarity_search` (text query in, matching chunks out) vs. `similarity_search_by_vector` (raw embedding vector in). Same results, different entry points.
+- Retrieval returns a **ranked list**, not one answer. The script prints the top 4 chunks with their distance (lower = closer). Look at rank 3 and 4: are they still about the query?
+- Two entry points, same result: `similarity_search_with_score` takes text and embeds it for you, `similarity_search_by_vector_with_relevance_scores` takes a vector you embedded yourself. The script prints the query vector (1536 floats) so you see what "embedding" actually is.
 - The chunking parameters: `chunk_size=1000, chunk_overlap=0`. No overlap means chunks are independent. Compare with Step 3 which uses overlap.
+- Try changing `query` and `K`, and lowering `chunk_size` to 300: watch how the ranking and the number of chunks change.
 
 **Framework:** LangChain provides the document loading and text splitting. Chroma is an in-memory/persistent vector database. OpenAI provides the embeddings.
 
