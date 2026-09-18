@@ -1,4 +1,4 @@
-# Analyzing `lc01_chat.py`
+# Analyzing `LC_01.py (lab054)`
 ## Introduction
 Let's analyse the following code
 ```python

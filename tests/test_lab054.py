@@ -99,3 +99,38 @@ class TestLab054Smoke:
         """Check for em-dashes in script files."""
         content = (LAB_DIR / script).read_text()
         assert "\u2014" not in content, f"{script} contains em-dashes"
+
+    # --- Structural checks (lab035 merged into lab054) ---
+
+    def test_lc02_uses_chat_prompt_template_and_pipe(self):
+        src = (LAB_DIR / "LC_02.py").read_text()
+        assert "ChatPromptTemplate" in src
+        assert "StrOutputParser" in src
+        assert "| llm |" in src, "LC_02 should build an LCEL chain with the pipe operator"
+
+    def test_lc03_uses_tool_binding(self):
+        src = (LAB_DIR / "LC_03.py").read_text()
+        assert "@tool" in src
+        assert "bind_tools" in src
+        assert "ToolMessage" in src
+
+    def test_lc04_uses_responses_api_hosted_tools(self):
+        src = (LAB_DIR / "LC_04.py").read_text()
+        assert 'output_version="responses/v1"' in src
+        assert "web_search_preview" in src
+        assert "code_interpreter" in src
+
+    def test_lc05_has_security_warning(self):
+        src = (LAB_DIR / "LC_05.py").read_text()
+        assert "SECURITY WARNING" in src
+
+    def test_readme_has_deprecation_note(self):
+        content = (LAB_DIR / "README.md").read_text()
+        assert "RunnableWithMessageHistory" in content
+
+    def test_no_gpt35_turbo_active(self):
+        for py in LAB_DIR.glob("*.py"):
+            for line in py.read_text().splitlines():
+                if line.strip().startswith("#"):
+                    continue
+                assert "gpt-3.5-turbo" not in line, f"{py.name}: {line.strip()}"

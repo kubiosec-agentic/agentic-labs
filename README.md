@@ -83,10 +83,9 @@ Each lab is structured to gradually build your understanding and capabilities, f
 | [lab010_ChatCompletion](./lab010_ChatCompletion) | OpenAI Chat Completions basics | curl, few-shot prompts, image analysis |
 | [lab020_ResponsesAPI](./lab020_ResponsesAPI) | OpenAI Responses API basics | curl, tools, web search, structured output |
 | [lab032_PythonFrameworks](./lab032_PythonFrameworks) | Advanced OpenAI features | python, chat completions, responses API, structured output |
-| [lab035_Langchain](./lab035_Langchain) | LangChain and advanced prompting | python, multi-turn conversations, HuggingFace |
 | [lab040_RAG](./lab040_RAG) | Retrieval Augmented Generation (RAG) | python, LlamaIndex, Chroma, OpenAI VectorStore |
 | [lab050_OpenAI_Tools](./lab050_OpenAI_Tools) | OpenAI function calling and tool use | python, tools, pip-audit, mitmproxy |
-| [lab054_LangChain_Tools](./lab054_LangChain_Tools) | LangChain tools and agents | python, LangChain, tool integration |
+| [lab054_LangChain_Tools](./lab054_LangChain_Tools) | LangChain basics, chains and tools | python, LangChain, LCEL, tool integration |
 | [lab060_OpenAI_Agents](./lab060_OpenAI_Agents) | Multi-agent orchestration | python, OpenAI Agents SDK, MCP integration |
 | [lab061_Google_Agents](./lab061_Google_Agents) | Google ADK | python, Google ADK, Gemini, agents |
 | [lab064_Langgraph](./lab064_Langgraph) | LangGraph stateful workflows + agent CTF (port 5055) | python, LangGraph, StateGraph, CTF, prompt injection |

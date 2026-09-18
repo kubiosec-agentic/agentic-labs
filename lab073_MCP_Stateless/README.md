@@ -406,7 +406,7 @@ The sharpest lesson is Exercise 2. A spec revision, shipped as a library
 major version, **removed a capability** (`ctx.sample`) and **flipped session
 semantics** for servers whose code nobody touched. If your deployment tracks
 "latest", an unattended upgrade can break a running server, or worse, change
-its behaviour without breaking it loudly. This is the lab035 lesson (fast
+its behaviour without breaking it loudly. This is the lab054 lesson (fast
 APIs are an attack surface) and lab070's "MCP moves fast" meta-risk, made
 concrete and reproducible. The defense is boring and effective: pin the
 generation you validated (as lab070 does with `fastmcp==3.4.7` and as this

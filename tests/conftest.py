@@ -42,7 +42,6 @@ LAB_REQUIRED_KEYS: dict[str, list[str]] = {
     "lab010": ["OPENAI_API_KEY"],
     "lab020": ["OPENAI_API_KEY"],
     "lab032": ["OPENAI_API_KEY"],
-    "lab035": ["OPENAI_API_KEY"],
     "lab040": ["OPENAI_API_KEY"],
     "lab050": ["OPENAI_API_KEY"],
     "lab054": ["OPENAI_API_KEY"],

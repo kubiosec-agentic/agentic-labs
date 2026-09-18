@@ -1,7 +1,7 @@
 """
 LangChain agent loop with a local Python REPL tool.
 
-Where LC_02 shows a single tool call executed once, this script shows a real
+Where LC_03 shows a single tool call executed once, this script shows a real
 multi-step agent loop over a LOCAL, executable tool: a Python REPL. The model
 writes code, the code runs on THIS machine, the output is fed back, and the
 model decides whether to run more code or answer. The loop continues until the

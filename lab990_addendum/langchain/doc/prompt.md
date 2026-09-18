@@ -1,4 +1,4 @@
-# Analyzing Prompt and Chain Usage in `lc02_prompt.py`
+# Analyzing Prompt and Chain Usage in `LC_02.py (lab054)`
 ## Introduction
 Let’s analyze the following Python code that uses LangChain to generate and analyze a story.
 ```

@@ -2,6 +2,7 @@
 langchain-openai
 langchain-google-genai
 langchain
+langchain-community   # ChatMessageHistory (multi_turn.py)
 pydantic
 
 # Weather API dependencies
@@ -19,3 +20,9 @@ flask
 
 # Optional: for better data handling
 numpy
+
+# Optional, only for hf_local.py (large download):
+# torch
+# transformers
+# accelerate
+# langchain-huggingface

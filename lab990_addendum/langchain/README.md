@@ -4,17 +4,17 @@
 
 ## Introduction
 
-These examples go beyond the basics covered in [lab035](../../lab035_Langchain/README.md). They show how LangChain works in more realistic scenarios: calling external APIs through tools, running CLI commands, reviewing code for security issues, and building a simple writing assistant with a web UI.
+These examples go beyond the basics covered in [lab054](../../lab054_LangChain_Tools/README.md). They show how LangChain works in more realistic scenarios: calling external APIs through tools, running CLI commands, reviewing code for security issues, and building a simple writing assistant with a web UI.
 
 Each script is self-contained and can be run independently.
 
 ## Set up your environment
 
-This addendum runs inside the lab035 virtual environment. Complete the [lab035 setup](../../lab035_Langchain/README.md) first, then install the additional dependencies:
+This addendum runs inside the lab054 virtual environment. Complete the [lab054 setup](../../lab054_LangChain_Tools/README.md) first, then install the additional dependencies:
 
 ```bash
-cd ../../lab035_Langchain
-source .lab035/bin/activate
+cd ../../lab054_LangChain_Tools
+source .lab054/bin/activate
 pip install -r ../lab990_addendum/langchain/requirements.txt
 cd ../lab990_addendum/langchain
 ```
@@ -42,14 +42,31 @@ python3 weather_forecast.py
 
 A single boolean flips the entire pipeline between OpenAI and Google Gemini. The prompt, chain, and output code stay identical. Generates Terraform plans as an example workload.
 
-> **Note:** A copy of this script also lives in **lab035** as `lc06_easy_swap.py`.
-
 ```bash
 # Requires GOOGLE_API_KEY for the Gemini path
 python3 easy_swap.py
 ```
 
-### 3. CLI command execution tool (`bash_tool.py`)
+### 3. Multi-turn conversation with memory, deprecated pattern (`multi_turn.py`)
+
+Adds conversation memory to an LCEL chain with `RunnableWithMessageHistory`. The script asks three follow-up questions about the 2018 World Cup; the second and third only make sense if the model remembers the first.
+
+Running it prints `LangChainPendingDeprecationWarning: RunnableWithMessageHistory is deprecated. Use LangGraph's built-in persistence instead.` That is the point: this was the officially recommended memory API (itself the replacement for `ConversationChain`), and it is now on its way out. Most tutorials online still use it. See the "fast-moving APIs" note in lab054 and the LangGraph checkpointer in lab064 for the current approach. Details in [doc/multi-turn.md](./doc/multi-turn.md).
+
+```bash
+python3 multi_turn.py
+```
+
+### 4. Local model with HuggingFace (`hf_local.py`)
+
+Runs a small model (Qwen2-0.5B-Instruct) entirely on your machine through `ChatHuggingFace`, no API key needed. Same `.invoke()` interface as the cloud providers. The first run downloads about 1 GB. Output quality is low (0.5B parameters), the point is the provider abstraction. Details in [doc/huggingface.md](./doc/huggingface.md).
+
+```bash
+pip install torch transformers accelerate langchain-huggingface
+python3 hf_local.py
+```
+
+### 5. CLI command execution tool (`bash_tool.py`)
 
 Gives the LLM a `run_cli_command` tool that can execute shell commands. Includes a safelist (`ls`, `pwd`, `whoami`, `date`, etc.) to prevent arbitrary execution. Demonstrates the full tool-call loop: LLM requests a command, tool runs it, output is fed back for a natural-language answer.
 
@@ -59,7 +76,7 @@ From a security training perspective, pay attention to the safelist approach and
 python3 bash_tool.py
 ```
 
-### 4. Shell script security analysis, local files (`file_security_review.py`)
+### 6. Shell script security analysis, local files (`file_security_review.py`)
 
 Loads `.sh` files from a local `test_repo/` directory and sends them to GPT-4o for a security review. Looks for command injection, hardcoded credentials, path traversal, missing error handling, and more.
 
@@ -71,7 +88,7 @@ curl -O --output-dir test_repo https://raw.githubusercontent.com/xxradar/TLSSAN_
 python3 file_security_review.py
 ```
 
-### 5. Shell script security analysis, via Git (`review_with_gitloader.py`)
+### 7. Shell script security analysis, via Git (`review_with_gitloader.py`)
 
 Same security review, but uses LangChain's `GitLoader` to clone a repository and extract `.sh` files directly. Useful when you want to analyze a remote repo without manually downloading files.
 
@@ -81,7 +98,7 @@ Same security review, but uses LangChain's `GitLoader` to clone a repository and
 python3 review_with_gitloader.py
 ```
 
-### 6. Code security review with structured output (`security_review.py`)
+### 8. Code security review with structured output (`security_review.py`)
 
 Uses a Pydantic model (`SecurityAnalysis`) to get structured JSON output from the LLM: a list of vulnerabilities, mitigation suggestions, and a risk level. Analyzes any source file you point it at. Defaults to `sample.py` (an intentionally vulnerable Flask app with XSS).
 
@@ -93,7 +110,7 @@ python3 security_review.py
 python3 security_review.py /path/to/your/code.py
 ```
 
-### 7. Vulnerable Flask app (`sample.py`)
+### 9. Vulnerable Flask app (`sample.py`)
 
 A deliberately vulnerable web application used as input for `security_review.py`. Contains an XSS vulnerability through unescaped user input in a Jinja2 template. Do not deploy this; it exists purely as a target for the security review.
 
@@ -103,7 +120,7 @@ python3 sample.py
 # Then visit http://127.0.0.1:5000/?q=<script>alert(1)</script>
 ```
 
-### 8. Writing assistant with Gradio UI (`writing_assistant.py`)
+### 10. Writing assistant with Gradio UI (`writing_assistant.py`)
 
 A simple web-based writing assistant that checks grammar, spelling, style, and conciseness. Uses Gradio for the frontend and LangChain + GPT-4o for the analysis. Includes a temperature slider to control creativity.
 
@@ -115,12 +132,15 @@ python3 writing_assistant.py
 
 ## Dependencies
 
-See `requirements.txt`. Core packages: `langchain-openai`, `langchain-core`, `langchain`, `pydantic`. Weather-specific: `openmeteo-requests`, `pandas`, `requests-cache`, `retry-requests`, `geopy`. Writing assistant requires `gradio` (install separately).
+See `requirements.txt`. Core packages: `langchain-openai`, `langchain-core`, `langchain`, `pydantic`. Weather-specific: `openmeteo-requests`, `pandas`, `requests-cache`, `retry-requests`, `geopy`. Writing assistant requires `gradio`, the local HuggingFace example requires `torch`, `transformers`, `accelerate` and `langchain-huggingface` (all installed separately, see the sections above).
+
+The `doc/` folder holds longer write-ups of the basic LangChain building blocks (chat, prompts, roles, memory, HuggingFace) for reference.
 
 ## Notes
 
 - The weather example uses the free Open-Meteo API (no key required), but Nominatim geocoding can be slow
 - The multi-provider example requires both `OPENAI_API_KEY` and `GOOGLE_API_KEY`
+- `multi_turn.py` prints a deprecation warning on purpose; do not "fix" it, read it
 - The security analysis tools are designed for educational purposes and defensive security only
 - `sample.py` is intentionally vulnerable; do not expose it to a network
 

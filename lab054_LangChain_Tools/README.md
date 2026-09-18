@@ -1,21 +1,21 @@
 ![OpenAI](https://img.shields.io/badge/OpenAI-lightblue) ![LangChain](https://img.shields.io/badge/LangChain-lightgrey) ![Tools](https://img.shields.io/badge/Tools-purple) ![Python](https://img.shields.io/badge/Python-blue)
 
-# LAB054: LangChain Tool Integration
+# LAB054: LangChain Basics and Tools
 
 ## Introduction
 
-LangChain provides a high-level abstraction over LLM providers, but the real power comes from connecting models to tools. This lab walks through six examples that progress from a bare LLM call to full tool-call cycles, Responses API hosted tools, and custom chains that wrap raw OpenAI function calling inside LangChain runnables.
+In the previous labs you called OpenAI through raw HTTP and the official SDK. LangChain adds a layer on top: a common interface for models, prompt templates, and a way to compose them into chains and tool-calling loops.
 
-The first two examples use LangChain's `bind_tools` and `@tool` decorator. The next two switch to OpenAI's Responses API (`output_version="responses/v1"`) for server-side web search and code execution. Step 5 returns to native LangChain with a local, executable `@tool` (a Python REPL) driven by a real multi-step agent loop. Step 6 drops down to the OpenAI SDK directly, wrapping it in `RunnableLambda` to show how LangChain chains compose with any callable.
+This lab goes from a bare LangChain call to a real agent loop in six short scripts. The security angle is in the last steps: where does the tool code actually run, and what can go wrong when the model controls it.
 
-| Step | Script | What it demonstrates |
-|------|--------|---------------------|
-| 1 | `LC_01.py` | Bare LLM invoke, no tools |
-| 2 | `LC_02.py` | Tool binding with `@tool` decorator, four-phase tool-call cycle |
-| 3 | `LC_03.py` | Responses API: `web_search_preview` hosted tool |
-| 4 | `LC_04.py` | Responses API: `code_interpreter` hosted tool |
-| 5 | `LC_05.py` | Local `@tool` Python REPL + `bind_tools`, multi-step agent loop |
-| 6 | `LC_06.py` | Raw-OpenAI chain pattern with OpenAI function calling and a datetime tool |
+| Step | Script | What it shows |
+|------|--------|---------------|
+| 1 | `LC_01.py` | Bare LLM call, no tools |
+| 2 | `LC_02.py` | Prompt templates with roles, chains with the `\|` operator (LCEL) |
+| 3 | `LC_03.py` | `@tool` + `bind_tools`, the four-phase tool-call cycle |
+| 4 | `LC_04.py` | Hosted tools via the Responses API (web search, code interpreter) |
+| 5 | `LC_05.py` | Local Python REPL tool in a multi-step agent loop |
+| 6 | `LC_06.py` | Raw OpenAI function calling wrapped in a LangChain chain |
 
 ## Set up your environment
 
@@ -28,7 +28,7 @@ export OPENAI_API_KEY="your-key-here"
 source .lab054/bin/activate
 ```
 
-To suppress LangSmith tracing warnings (optional):
+Optional, to silence LangSmith tracing warnings:
 
 ```bash
 export LANGCHAIN_TRACING_V2="false"
@@ -37,85 +37,90 @@ export LANGCHAIN_API_KEY=""
 
 ## Lab instructions
 
-### Step 1: Basic LLM query (`LC_01.py`)
+### Step 1: Basic LLM call (`LC_01.py`)
 
-A minimal call with no tools. LangChain's `ChatOpenAI` sends a single `HumanMessage` to gpt-4o and prints the raw response object.
+The simplest LangChain program: create a `ChatOpenAI` model, call `.invoke()`, print the result.
 
 ```bash
 python3 LC_01.py
 ```
 
 **What to observe:**
-- The response is an `AIMessage` object with `.content`, `.response_metadata`, and token usage fields.
-- No tool calls happen here; the model answers from its parametric knowledge.
+- The result is an `AIMessage` with `.content` and `.response_metadata` (model, token usage).
+- No tools yet, the model answers from what it learned during training.
 
-### Step 2: Tool binding and structured output (`LC_02.py`)
+### Step 2: Prompts and chains (`LC_02.py`)
 
-Defines a `get_weather` tool with a Pydantic input schema, binds it to the model via `bind_tools`, and walks through the complete four-phase cycle: tool request, local execution, result feedback, final answer.
+Two things LangChain is good at: prompt templates with `system` and `user` roles, and chaining components with the pipe operator.
 
 ```bash
 python3 LC_02.py
 ```
 
 **What to observe:**
-- The first response contains `tool_calls` instead of a text answer. The model decided to call `get_weather` rather than answer directly.
-- `tool_call_response.tool_calls[0]` gives you the function name and arguments as a dict.
-- The `ToolMessage` must include the matching `tool_call_id` or the API rejects the request (same constraint as lab050's OA_02 exercise).
-- Compare with lab050: same four-phase pattern, but LangChain's `@tool` decorator replaces the manual JSON schema.
+- `prompt | llm | parser` is a chain. Each piece is a "Runnable", the output of one becomes the input of the next.
+- `StrOutputParser` turns the `AIMessage` into a plain string.
+- The second part pipes one chain into another: the joke becomes the input of the review.
+- Compare the roles with lab010: same system/user concept, one abstraction level higher.
 
-There is a real weather API example in [lab990_addendum/langchain](../lab990_addendum/langchain).
+### Step 3: Tool binding (`LC_03.py`)
 
-### Step 3: Responses API with web search (`LC_03.py`)
-
-Uses `output_version="responses/v1"` to access the OpenAI Responses API through LangChain. The `web_search_preview` tool is a hosted tool: OpenAI runs the search server-side, so you do not need to implement anything locally.
+Defines a `get_weather` tool with the `@tool` decorator and a Pydantic input schema, binds it with `bind_tools`, and walks through the full cycle: model asks for the tool, your code runs it, the result goes back, the model answers.
 
 ```bash
 python3 LC_03.py
 ```
 
 **What to observe:**
-- The model fetches live web content to answer the query. Compare with Step 1 where the model can only use its training data.
-- The `responses/v1` output format returns a different response structure than the default Chat Completions format. Check the raw object for annotations and source URLs.
+- The first response has no text, only `tool_calls`. The model decided it needs the tool.
+- The `ToolMessage` must carry the matching `tool_call_id` or the API rejects it (same as lab050).
+- Compare with lab050: same four phases, but `@tool` generates the JSON schema for you.
 
-### Step 4: Responses API with code interpreter (`LC_04.py`)
+### Step 4: Hosted tools (`LC_04.py`)
 
-Same pattern, different hosted tool. The `code_interpreter` tool lets the model write and execute Python code on OpenAI's servers to solve a math problem.
+`output_version="responses/v1"` switches `ChatOpenAI` to the Responses API. That gives you OpenAI's hosted tools: web search and a code interpreter that run on OpenAI's servers.
 
 ```bash
 python3 LC_04.py
 ```
 
 **What to observe:**
-- The model generates Python code, runs it in a sandboxed container, and returns the computed result.
-- The `container: {"type": "auto"}` config lets OpenAI choose the runtime. This is a serverless execution environment, not your local machine.
-- Think about the security implications: what code could a prompt injection trick the interpreter into running?
+- Web search: the model uses live data, unlike Step 1. In the `responses/v1` format `response.content` is a list of blocks, look for the text block and the annotations with source URLs.
+- Code interpreter: the model writes Python and runs it in an OpenAI sandbox. Nothing runs on your machine.
+- Think about it: what could a prompt injection make that interpreter do?
 
-### Step 5: Local Python REPL tool with an agent loop (`LC_05.py`)
+### Step 5: Local Python REPL agent loop (`LC_05.py`)
 
-Where Step 2 executes a single tool call once, this script runs a real multi-step agent loop over a **local, executable** tool: a Python REPL defined with the `@tool` decorator and bound with `bind_tools`. The model writes code, the code runs on this machine, the output is fed back as a `ToolMessage`, and the model decides whether to run more code or answer. The loop continues until the model stops emitting tool calls (capped by `MAX_STEPS`).
+Now the code runs on **your** machine. A `python_repl` tool is bound to the model, and a loop keeps going until the model stops emitting tool calls (capped by `MAX_STEPS`).
 
 ```bash
 python3 LC_05.py
 ```
 
 **What to observe:**
-- The full loop: `invoke -> tool_calls? -> execute locally -> ToolMessage -> invoke again`. The model may emit several tool calls, including in a single turn.
-- The REPL namespace persists between calls, so the model can build up state across steps.
-- Contrast with Step 4's `code_interpreter`: there the code runs in a sandbox on OpenAI's servers; here it runs unsandboxed in your own process.
-- **Security:** this tool runs model-generated Python with no sandbox. A prompt-injected or adversarial model could read files, exfiltrate `OPENAI_API_KEY`, or open network connections. Run it only in a disposable, isolated environment with no secrets. It is a teaching example of tool risk, not a production pattern.
+- The loop: `invoke -> tool_calls? -> run locally -> ToolMessage -> invoke again`.
+- The REPL namespace persists between calls, so the model can build up state.
+- **Security:** model-generated Python runs unsandboxed in your process. It can read files, leak `OPENAI_API_KEY`, open network connections. Run this only in a disposable environment. Compare with Step 4 where the same idea runs in OpenAI's sandbox.
 
-### Step 6: Chain with function calling (`LC_06.py`)
+### Step 6: Function calling inside a chain (`LC_06.py`)
 
-Takes the raw-OpenAI `RunnableLambda` chain pattern and adds a `get_current_datetime` tool. The `RunnableLambda` handles the full tool-call cycle internally: if the model requests the tool, the code executes it, appends the result, and makes a second API call for the final answer.
+Drops down to the raw OpenAI SDK, wrapped in a `RunnableLambda` so it still composes as a chain. Adds a `get_current_datetime` tool.
 
 ```bash
 python3 LC_06.py
 ```
 
 **What to observe:**
-- The tool schema is defined as raw JSON (same format as lab050), not via LangChain's `@tool` decorator. This shows the manual approach for comparison.
-- The chain caller (`prompt | llm | parser`) has no idea tools are involved; the tool-call logic is encapsulated inside the `RunnableLambda`.
-- The model's response includes the current timestamp, proving the tool was called.
+- The tool schema is raw JSON (lab050 style), not `@tool`.
+- The chain `prompt | llm | parser` has no idea tools are involved. The tool loop is hidden inside the `RunnableLambda`.
+
+## Note: fast-moving APIs
+
+LangChain's API changes often. Older tutorials use `ConversationChain`, `langchain.memory`, or `RunnableWithMessageHistory` for conversation memory. All of these were the official recommendation at some point and all are now deprecated (LangGraph persistence replaced them, see lab064).
+
+This is not just a maintenance issue. Code copied from a blog, Stack Overflow, or an LLM with an old training cutoff comes with whatever was current then, including known vulnerabilities and abandoned dependencies. Read deprecation warnings instead of silencing them, check the changelog, and scan your dependencies (lab050 `pip-audit`).
+
+A working example of the deprecated memory pattern is kept in [lab990_addendum/langchain](../lab990_addendum/langchain/) (`multi_turn.py`) if you want to see the warning yourself.
 
 ## Cleanup environment
 
@@ -125,5 +130,14 @@ unset LANGCHAIN_API_KEY
 deactivate
 ./lab_cleanup.sh
 ```
+
+## Going further
+
+[lab990_addendum/langchain](../lab990_addendum/langchain/) has more LangChain examples: running a local HuggingFace model, swapping providers (OpenAI vs Gemini), a real weather API tool, shell script security reviews, and a Gradio writing assistant.
+
+## What's next
+
+- **lab060**: OpenAI Agents SDK
+- **lab064**: LangGraph, stateful agent graphs and a CTF
 
 Back to [Lab Overview](https://github.com/kubiosec-agentic/agentic-labs/blob/master/README.md#-lab-overview)
